@@ -16,3 +16,6 @@ build/
 *.egg-info/
 
 .idea/
+
+run-API.command
+run-backend.command
