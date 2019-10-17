@@ -1,6 +1,6 @@
 #! /bin/bash
 
-cd /Users/sarah/Documents/UZH/Masterarbeit/project/Configuration-System
+cd /Users/sarah/Documents/UZH/Masterarbeit/project/Configuration-System/backend
 
 chmod u+x run.command
 
