@@ -40,6 +40,7 @@ import { IconContext } from "react-icons";
 import {icon, text} from "@fortawesome/fontawesome-svg-core";
 import {faCog, faEnvelopeOpenText, faHome, faTh, faToolbox} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Logo from "./images/logo_nfp73_en.png";
 
 const Main = styled.main`
     position: relative;
@@ -92,6 +93,7 @@ export default class App extends React.Component {
                 <Router>
                     <Switch>
                         <Menu width={ 340 } isOpen={this.state.menuOpen} onStateChange={(state) => this.handleStateChange(state)}>
+                            <img src={Logo} alt="website logo" style={{className:"img", align:"center", height:49, marginBottom:50}}/>
                             <Link to="/" style={{ textDecoration: 'none' }}>
                                 <IconContext.Provider value={{ color: iconColor, className: "global-class-name" }}>
                                     <div>

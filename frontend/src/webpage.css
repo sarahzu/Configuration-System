@@ -112,3 +112,7 @@ Note: Beware of modifying this element as it can break the animations - you shou
 .bm-item:focus {
     outline: none;
 }
+
+.img {
+    height:10px;
+}
