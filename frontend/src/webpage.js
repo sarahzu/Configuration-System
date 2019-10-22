@@ -37,7 +37,9 @@ import styled from 'styled-components';
 import Menu from 'react-burger-menu/lib/menus/slide'
 import {FaHome, FaCog, FaToolbox, FaTh} from "react-icons/fa";
 import { IconContext } from "react-icons";
-
+import {icon, text} from "@fortawesome/fontawesome-svg-core";
+import {faCog, faEnvelopeOpenText, faHome, faTh, faToolbox} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Main = styled.main`
     position: relative;
@@ -83,37 +85,38 @@ export default class App extends React.Component {
     }
 
     render () {
-        let color = "white";
+        let iconColor = "white";
+        let iconSize = 30;
         return (
             <div>
                 <Router>
                     <Switch>
-                        <Menu width={ 280 } isOpen={this.state.menuOpen} onStateChange={(state) => this.handleStateChange(state)}>
-                            <Link to="/">
-                                <IconContext.Provider value={{ color: color, className: "global-class-name" }}>
+                        <Menu width={ 340 } isOpen={this.state.menuOpen} onStateChange={(state) => this.handleStateChange(state)}>
+                            <Link to="/" style={{ textDecoration: 'none' }}>
+                                <IconContext.Provider value={{ color: iconColor, className: "global-class-name" }}>
                                     <div>
-                                        <FaHome /> Home
+                                        <FontAwesomeIcon icon={faHome}/><span>Home</span>
                                     </div>
                                 </IconContext.Provider>
                             </Link>
-                            <Link to="/set">
-                                <IconContext.Provider value={{ color: color, className: "global-class-name" }}>
+                            <Link to="/set" style={{ textDecoration: 'none' }}>
+                                <IconContext.Provider value={{ color: iconColor, className: "global-class-name" }}>
                                     <div>
-                                        <FaCog /> Set Components
+                                        <FontAwesomeIcon icon={faCog}/><span>Set Components </span>
                                     </div>
                                 </IconContext.Provider>
                             </Link>
-                            <Link to="/create">
-                                <IconContext.Provider value={{ color: color, className: "global-class-name" }}>
+                            <Link to="/create" style={{ textDecoration: 'none' }}>
+                                <IconContext.Provider value={{ color: iconColor, className: "global-class-name" }}>
                                     <div>
-                                        <FaToolbox /> Create Decision Cards
+                                        <FontAwesomeIcon icon={faToolbox}/><span>Create Decision Cards</span>
                                     </div>
                                 </IconContext.Provider>
                             </Link>
-                            <Link to="/arrange">
-                                <IconContext.Provider value={{ color: color, className: "global-class-name" }}>
+                            <Link to="/arrange" style={{ textDecoration: 'none' }}>
+                                <IconContext.Provider value={{ color: iconColor, className: "global-class-name" }}>
                                     <div>
-                                        <FaTh /> Arrange Components
+                                        <FontAwesomeIcon icon={faTh}/><span>Arrange Components </span>
                                     </div>
                                 </IconContext.Provider>
                             </Link>

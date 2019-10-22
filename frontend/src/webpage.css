@@ -1,3 +1,4 @@
+
 /* Position and sizing of burger button */
 .bm-burger-button {
     position: fixed;
@@ -63,4 +64,51 @@ Note: Beware of modifying this element as it can break the animations - you shou
 /* Styling of overlay */
 .bm-overlay {
     background: rgba(0, 0, 0, 0.3);
+}
+
+/*Burger menu custom styles*/
+.bm-burger-button {
+    position: fixed;
+    width: 36px;
+    height: 30px;
+    left: 36px;
+    top: 36px;
+}
+
+.right .bm-burger-button {
+    left: initial;
+    right: 36px;
+}
+
+.bm-burger-bars {
+    background: #373a47;
+}
+
+.bm-morph-shape {
+    fill: #373a47;
+}
+
+.bm-menu {
+    background: #373a47;
+}
+.bm-menu a {
+    color: #b8b7ad;
+
+}
+.bm-menu a:hover,
+.bm-menu a:focus {
+    color: #c94e50;
+}
+
+.bm-item-list a {
+    padding: 0.8em;
+}
+.bm-item-list a span {
+    margin-left: 20px;
+    font-weight: 100;
+    font-family: "Roboto", sans-serif;
+}
+
+.bm-item:focus {
+    outline: none;
 }
