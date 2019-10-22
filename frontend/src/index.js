@@ -1,59 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-//import './index.css';
-import axios from 'axios';
-require('dotenv').config()
-
-class Configurator extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state =
-            {
-                startDate: new Date(),
-                endDate: new Date(),
-                status: "none yet",
-            };
-    }
-
-    async getResult() {
-
-        //send to server
-        let json_req = {
-            "latitude": 37.386051,
-            "longitude": -122.083855,
-            "start_date": "2019-03-01",
-            "end_date": "2019-03-03"
-        };
-        const response = await axios.post(process.env.REACT_APP_BACKEND_API, json_req, {headers: {'Content-Type': 'application/json'}});
-
-        this.setState({
-            status: JSON.stringify(response.data)
-        });
-    }
-
-
-    render()
-    {
-        return (
-            <div>
-                <h1>Test</h1>
-                <div className="comp">
-                    <button
-                        onClick={() => this.getResult()}
-                        className="button"
-                    >
-                        SUBMIT
-                    </button>
-                    <div>{"state: " + this.state.status}</div>
-                </div>
-            </div>
-        );
-    }
-}
+import ReactDOM from "react-dom";
+import App from "./webpage";
 
 ReactDOM.render(
-    <Configurator />,
+    <App />,
     document.getElementById('root')
 );
 
