@@ -1,4 +1,20 @@
 
+/* variables */
+:root {
+    --sidebar-background-color: #000043;
+    --sidebar-burger-hover-color: #e35658;
+    --sidebar-cross-color: #e4e3d9;
+    --sidebar-item-list-color: #e4e3d9;
+    --sidebar-item-hover-and-focus-color: #e35658;
+
+    /* old default colors */
+    --old-sidebar-background-color: #373a47;
+    --old-sidebar-bars-hover-color: #a90000;
+    --old-sidebar-cross-color: #bdc3c7;
+    --old-sidebar-item-list-color: #b8b7ad;
+    --old-sidebar-item-focus-color: #c94e50;
+}
+
 /* Position and sizing of burger button */
 .bm-burger-button {
     position: fixed;
@@ -10,12 +26,12 @@
 
 /* Color/shape of burger icon bars */
 .bm-burger-bars {
-    background: #373a47;
+    background: var(--sidebar-background-color);
 }
 
 /* Color/shape of burger icon bars on hover*/
 .bm-burger-bars-hover {
-    background: #a90000;
+    background: var(--sidebar-burger-hover-color);
 }
 
 /* Position and sizing of clickable cross button */
@@ -26,7 +42,7 @@
 
 /* Color/shape of close button cross */
 .bm-cross {
-    background: #bdc3c7;
+    background: var(--sidebar-cross-color);
 }
 
 /*
@@ -40,19 +56,19 @@ Note: Beware of modifying this element as it can break the animations - you shou
 
 /* General sidebar styles */
 .bm-menu {
-    background: #373a47;
+    background: var(--sidebar-background-color);
     padding: 2.5em 1.5em 0;
     font-size: 1.15em;
 }
 
 /* Morph shape necessary with bubble or elastic */
 .bm-morph-shape {
-    fill: #373a47;
+    fill: var(--sidebar-background-color);
 }
 
 /* Wrapper for item list */
 .bm-item-list {
-    color: #b8b7ad;
+    color: var(--sidebar-item-list-color);
     padding: 0.8em;
 }
 
@@ -64,7 +80,10 @@ Note: Beware of modifying this element as it can break the animations - you shou
 /* Styling of overlay */
 .bm-overlay {
     background: rgba(0, 0, 0, 0.3);
+    bottom: 0;
+    left: 0;
 }
+
 
 /*Burger menu custom styles*/
 .bm-burger-button {
@@ -81,23 +100,23 @@ Note: Beware of modifying this element as it can break the animations - you shou
 }
 
 .bm-burger-bars {
-    background: #373a47;
+    background: var(--sidebar-background-color);
 }
 
 .bm-morph-shape {
-    fill: #373a47;
+    fill: var(--sidebar-background-color);
 }
 
 .bm-menu {
-    background: #373a47;
+    background: var(--sidebar-background-color);
 }
 .bm-menu a {
-    color: #b8b7ad;
+    color: var(--sidebar-item-list-color);
 
 }
 .bm-menu a:hover,
 .bm-menu a:focus {
-    color: #c94e50;
+    color: var(--sidebar-item-hover-and-focus-color);
 }
 
 .bm-item-list a {
@@ -113,6 +132,7 @@ Note: Beware of modifying this element as it can break the animations - you shou
     outline: none;
 }
 
-.img {
-    height:10px;
+.bm-menu-wrap {
+    bottom: 0;
+    left: 0;
 }

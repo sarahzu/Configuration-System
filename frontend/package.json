@@ -20,6 +20,7 @@
     "react-click-outside": "github:tj/react-click-outside",
     "react-datepicker": "^2.9.6",
     "react-dom": "^16.10.2",
+    "react-grid-layout": "^0.16.6",
     "react-grid-system": "^5.0.2",
     "react-icons": "^3.7.0",
     "react-router": "^5.1.2",
