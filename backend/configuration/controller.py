@@ -13,5 +13,12 @@ class Controller:
         }
         return json.dumps(json_request)
 
+    def get_visual_components_name_list(self):
+        """
+        get a list with the names of all visual components
+        :return: dummy values so far
+        """
+        return ["Component 1", "Component 2", "Component 3", "Component 4", "Component 5", "Component 6"]
+
     def get_models(self):
         pass

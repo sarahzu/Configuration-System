@@ -6,8 +6,18 @@ import "../../../node_modules/react-resizable/css/styles.css";
 import GridLayout from 'react-grid-layout';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import VisualComponentsLayout from "../../layout/visual_components_layout";
+import styled from "styled-components";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const Main = styled.main`
+    position: relative;
+    overflow: hidden;
+    transition: all .15s;
+    padding: 0 20px;
+    margin-left: margin-left: ${props => (props.expanded ? 240 : 64)}px;;
+    margin-top: 100px
+`;
 
 class ArrangeComponents extends React.Component {
 
@@ -31,8 +41,6 @@ class ArrangeComponents extends React.Component {
         //this.setState({layout: storedObject});
     }
 
-    doNothing() {}
-
     stringifyLayout() {
         return this.state.layout.map(function(l) {
             return (
@@ -43,56 +51,12 @@ class ArrangeComponents extends React.Component {
         });
     }
 
-
-
-    // render() {
-        // layout is an array of objects, see the demo for more complete usage
-        /*const layouts = {
-            lg: [{i: 'a', x: 0, y: 0, w: 1, h: 2, static: true}],
-            mg: [{i: 'b', x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4}],
-            sm: [{i: 'c', x: 4, y: 0, w: 1, h: 2}]
-        };
-        return (
-            <ResponsiveGridLayout className="layout" layouts={layouts}
-                                  breakpoints={{lg: 1200, mg: 996, sm: 768}}
-                                  cols={{lg: 12, mg: 10, sm: 6}}>
-                <div key="1">1</div>
-                <div key="2">2</div>
-                <div key="3">3</div>
-            </ResponsiveGridLayout>
-        );*/
-        /*const layout = [
-            {i: 'a', x: 0, y: 0, w: 1, h: 2, static: true},
-            {i: 'b', x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4},
-            {i: 'c', x: 4, y: 0, w: 1, h: 2}
-        ];
-
-        return (
-            <GridLayout className="layout" layout={layout} cols={12} rowHeight={30} width={1200}>
-                <div key="a">{TestComponent.render}</div>
-                <div key="b">b</div>
-                <div key="c">c</div>
-            </GridLayout>
-        )*/
-    // }
-
-    /*render() {
-        return (
-            <div>
-                <div className="layoutJSON">
-                    Displayed as <code>[x, y, w, h]</code>:
-                    <div className="columns">{this.stringifyLayout()}</div>
-                </div>
-                <div>
-                    <VisualComponentsLayout onLayoutChange={this.onLayoutChange} />
-                </div>
-            </div>
-        );
-    }*/
     render() {
         return (
             <div>
-                <VisualComponentsLayout onLayoutChange={this.onLayoutChange} />
+                <Main>
+                    <VisualComponentsLayout onLayoutChange={this.onLayoutChange} />
+                </Main>
             </div>
         );
     }

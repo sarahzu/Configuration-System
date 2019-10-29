@@ -16,7 +16,15 @@ class ConfigurationAPI(Resource):
         reports = controller.get_components()
         return {'reports': reports}
 
+class ConfigurationAPI_2(Resource):
+
+    def get_comp_names(self):
+        controller = Controller()
+        return controller.get_visual_components_name_list()
+
 
 api.add_resource(ConfigurationAPI, '/config_api')
+api.add_resource(ConfigurationAPI, '/config_api/comp_names')
+
 if __name__ == '__main__':
     app.run(debug=False)

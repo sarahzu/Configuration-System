@@ -1,0 +1,21 @@
+.layout {
+    background-color: #dcdcdc;
+    border-style: dashed;
+    height: auto;
+    width: auto;
+}
+.box {
+    color:white;
+}
+.not-static{
+    background-color: #373a47;
+}
+
+.button {
+    height: 50px;
+    width: 50px;
+    position: relative;
+    margin-left: 95%;
+    background-color: lightgray;
+    border-color: lightgray;
+}
