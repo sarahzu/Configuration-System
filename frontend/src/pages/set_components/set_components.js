@@ -96,15 +96,21 @@ class SetComponents extends React.Component {
         };
         const stylesSelected = {
             overflow:"scroll",
-            height:"500px"
         };
 
         const stylesGridUpper = {
-            background:"lightgray"
+            background:"lightgray",
+            borderRadius: "10px",
+            marginTop:"5px",
+            marginBottom: "10px"
         };
 
         const stylesGridLower = {
-            background: "lightblue"
+            background: "lightblue",
+            marginTop: "10px",
+            marginBottom:"5px",
+            borderRadius: "10px",
+
         };
 
         let i;

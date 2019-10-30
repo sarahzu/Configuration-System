@@ -2,8 +2,3 @@
     display:flex;
     flex-direction:row;
 }
-
-.upper-grid-layout {
-    background-color: lightblue;
-    color: lightblue;
-}
