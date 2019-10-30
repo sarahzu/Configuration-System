@@ -12,31 +12,15 @@ import Grid from "@material-ui/core/Grid";
 import ReactDataGrid from "react-data-grid";
 import { Editors } from "react-data-grid-addons";
 
+import {Buffer, input} from "./input";
+
 
 const ListItem = require("react-list-select");
-
-
-const components = ["Component 1", "Component 2", "Component 3", "Component 4", "Component 5", "Component 6"];
-const decisionCards = ["Decision Card 1", "Decision Card 2", "Decision Card 3", "Decision Card 4",
-    "Decision Card 5", "Decision Card 6"];
+const components = input.components;
+const decisionCards = input.decisionCards;
 
 const { DropDownEditor } = Editors;
-const issueTypes = [
-    { id: "value1", value: "Value 1" },
-    { id: "value2", value: "Value 2" },
-    { id: "value3", value: "Value 3" }
-];
-const IssueTypeEditor = <DropDownEditor options={issueTypes} />;
 
-const componentsColumns = [
-    { key: "parameter", name: "Parameter" },
-    { key: "value", name: "Value", editor: IssueTypeEditor },
-];
-const componentsRows = [
-    { parameter: "Parameter 1", value: "Value 1"},
-    { parameter: "Parameter 2", value: "Value 2"},
-    { parameter: "Parameter 3", value: "Value 3"}
-];
 
 class SetComponents extends React.Component {
 
@@ -47,7 +31,16 @@ class SetComponents extends React.Component {
             decision_cards: [],
             selected: "",
             selectValues:[],
-            componentsRows: componentsRows
+            componentsRows: [],
+            dcRows:[],
+            issueTypesComponents: [],
+            issueTypesDc: [],
+            selectedItemUpper: [],
+            selectedItemLower: [],
+            issueTypeEditorComponents: null,
+            issueTypeEditorDc: null,
+            componentsColumns: [],
+            dcColumns:[]
         }
 
     }
@@ -77,6 +70,42 @@ class SetComponents extends React.Component {
         }
         return rows
     }
+
+    findSelected(name, list) {
+        let i;
+        for (i = 0; i < list.length; i++) {
+            if(list[i].name === name) {
+                return list[i];
+            }
+        }
+        return null;
+    }
+
+    getSelectedComponentsInput = selectedItemUpper => {
+        this.setState({selectedItemUpper: selectedItemUpper});
+        let selectedComponent = this.findSelected(selectedItemUpper.label, input.componentsParameters);
+        this.setState({componentsRows: selectedComponent.rows});
+        this.setState({issueTypesComponents: selectedComponent.issueTypes});
+
+        this.setState({issueTypeEditorComponents: <DropDownEditor options={this.state.issueTypesComponents} />});
+        this.setState({componentsColumns: [
+                { key: "parameter", name: "Parameter" },
+                { key: "value", name: "Value", editor: this.state.issueTypeEditorComponents}
+                ]});
+    };
+
+    getSelectedDcInput = selectedItemLower => {
+        this.setState({selectedItemLower: selectedItemLower});
+        let selectedDc = this.findSelected(selectedItemLower.label, input.decisionCardsParameters);
+        this.setState({dcRows: selectedDc.rows});
+        this.setState({issueTypesDc: selectedDc.issueTypes});
+
+        this.setState({issueTypeEditorDc: <DropDownEditor options={this.state.issueTypesDc} />});
+        this.setState({dcColumns: [
+                { key: "parameter", name: "Parameter" },
+                { key: "value", name: "Value", editor: this.state.issueTypeEditorDc}
+            ]});
+    };
 
     render() {
         {/********* need to be extracted from backend ***************/}
@@ -131,7 +160,7 @@ class SetComponents extends React.Component {
                         <h1> Set Components</h1>
 
                             <Grid container spacing={3}  style={stylesGridUpper}>
-                                <Grid item xs={2} spacing={3}>
+                                <Grid item xs={2}>
                                     <div style={stylesCheckbox}>
                                         <h4>Visual Components</h4>
                                         <CheckboxList
@@ -140,15 +169,15 @@ class SetComponents extends React.Component {
                                         />
                                     </div>
                                 </Grid>
-                                <Grid item xs={2} spacing={3}>
+                                <Grid item xs={2}>
                                     <div>
                                         <h4>Selected</h4>
                                         <div>
-                                            <Select options={ selectedFormattedComponentsList } maxMenuHeight={180} />
+                                            <Select options={ selectedFormattedComponentsList } maxMenuHeight={180} onChange = {this.getSelectedComponentsInput}/>
                                         </div>
                                     </div>
                                 </Grid>
-                                <Grid xs={2} spacing={3}>
+                                <Grid xs={2}>
                                     <div>
                                         <h4>Description</h4>
                                         <div> blablabla </div>
@@ -157,7 +186,7 @@ class SetComponents extends React.Component {
                                 <Grid item xs={6}>
                                     <div>
                                         <ReactDataGrid
-                                            columns={componentsColumns}
+                                            columns={this.state.componentsColumns}
                                             rowGetter={i => this.state.componentsRows[i]}
                                             rowsCount={this.state.componentsRows.length}
                                             onGridRowsUpdated={this.onGridRowsUpdated}
@@ -182,11 +211,11 @@ class SetComponents extends React.Component {
                                     <div>
                                         <h4>Selected</h4>
                                         <div>
-                                            <Select options={ selectedFormattedDcList } maxMenuHeight={180} />
+                                            <Select options={ selectedFormattedDcList } maxMenuHeight={180} onChange = {this.getSelectedDcInput}/>
                                         </div>
                                     </div>
                                 </Grid>
-                                <Grid xs={2} spacing={3}>
+                                <Grid xs={2}>
                                     <div>
                                         <h4>Description</h4>
                                         <div> blablabla </div>
@@ -195,9 +224,9 @@ class SetComponents extends React.Component {
                                 <Grid item xs={6}>
                                     <div>
                                         <ReactDataGrid
-                                            columns={componentsColumns}
-                                            rowGetter={i => this.state.componentsRows[i]}
-                                            rowsCount={this.state.componentsRows.length}
+                                            columns={this.state.dcColumns}
+                                            rowGetter={i => this.state.dcRows[i]}
+                                            rowsCount={this.state.dcRows.length}
                                             onGridRowsUpdated={this.onGridRowsUpdated}
                                             enableCellSelect={true}
                                         />
