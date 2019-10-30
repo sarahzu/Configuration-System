@@ -16,6 +16,7 @@ export const input =
                     { id: "value2", value: "Value 2" },
                     { id: "value3", value: "Value 3" }
                 ],
+                description: "bla bla bla"
             },
             {
                 name: "Component 2",
@@ -27,6 +28,8 @@ export const input =
                     { id: "value1", value: "Value 1" },
                     { id: "value2", value: "Value 2" },
                 ],
+                description: "bli bla"
+
             },
             {
                 name: "Component 3",
@@ -42,6 +45,7 @@ export const input =
                     { id: "value3", value: "Value 3" },
                     { id: "value4", value: "Value 4" }
                 ],
+                description: "bli bli bli bli"
             },
             {
                 name: "Component 4",
@@ -51,6 +55,7 @@ export const input =
                 issueTypes: [
                     { id: "value1", value: "Value 1" }
                 ],
+                description: "blibli"
             },
             {
                 name: "Component 5",
@@ -62,6 +67,7 @@ export const input =
                     { id: "value1", value: "Value 1" },
                     { id: "value2", value: "Value 2" }
                 ],
+                description: "bla blaaaaa"
             },
             {
                 name: "Component 6",
@@ -71,6 +77,7 @@ export const input =
                 issueTypes: [
                     { id: "value1", value: "Value 1" }
                 ],
+                description: "blaaaa"
             }
         ],
         decisionCards: ["Decision Card 1", "Decision Card 2", "Decision Card 3"],
@@ -85,6 +92,7 @@ export const input =
                     { id: "value1", value: "Value 1" },
                     { id: "value2", value: "Value 2" },
                 ],
+                description: "bliiiiii"
             },
             {
                 name: "Decision Card 2",
@@ -100,6 +108,7 @@ export const input =
                     { id: "value3", value: "Value 3" },
                     { id: "value4", value: "Value 4" }
                 ],
+                description: "blooob"
             },
             {
                 name: "Decision Card 3",
@@ -109,6 +118,7 @@ export const input =
                 issueTypes: [
                     { id: "value1", value: "Value 1" }
                 ],
+                description: "blob blob blob"
             }
         ],
 

@@ -40,7 +40,9 @@ class SetComponents extends React.Component {
             issueTypeEditorComponents: null,
             issueTypeEditorDc: null,
             componentsColumns: [],
-            dcColumns:[]
+            dcColumns:[],
+            descriptionComponents:"",
+            descriptionDc: "",
         }
 
     }
@@ -86,6 +88,7 @@ class SetComponents extends React.Component {
         let selectedComponent = this.findSelected(selectedItemUpper.label, input.componentsParameters);
         this.setState({componentsRows: selectedComponent.rows});
         this.setState({issueTypesComponents: selectedComponent.issueTypes});
+        this.setState({descriptionComponents: selectedComponent.description})
 
         this.setState({issueTypeEditorComponents: <DropDownEditor options={this.state.issueTypesComponents} />});
         this.setState({componentsColumns: [
@@ -99,6 +102,7 @@ class SetComponents extends React.Component {
         let selectedDc = this.findSelected(selectedItemLower.label, input.decisionCardsParameters);
         this.setState({dcRows: selectedDc.rows});
         this.setState({issueTypesDc: selectedDc.issueTypes});
+        this.setState({descriptionDc: selectedDc.description})
 
         this.setState({issueTypeEditorDc: <DropDownEditor options={this.state.issueTypesDc} />});
         this.setState({dcColumns: [
@@ -114,9 +118,6 @@ class SetComponents extends React.Component {
 
         let selectedComponents = Object.keys(this.state.vis_components).filter(k => this.state.vis_components[k]);
         let selectedDc = Object.keys(this.state.decision_cards).filter(k => this.state.decision_cards[k]);
-
-
-
 
         {/* *********************************************** */}
 
@@ -180,7 +181,7 @@ class SetComponents extends React.Component {
                                 <Grid xs={2}>
                                     <div>
                                         <h4>Description</h4>
-                                        <div> blablabla </div>
+                                        <div> {this.state.descriptionComponents} </div>
                                     </div>
                                 </Grid>
                                 <Grid item xs={6}>
@@ -218,7 +219,7 @@ class SetComponents extends React.Component {
                                 <Grid xs={2}>
                                     <div>
                                         <h4>Description</h4>
-                                        <div> blablabla </div>
+                                        <div> {this.state.descriptionDc} </div>
                                     </div>
                                 </Grid>
                                 <Grid item xs={6}>
