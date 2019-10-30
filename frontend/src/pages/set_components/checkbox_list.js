@@ -17,7 +17,7 @@ export default class CheckboxList extends React.Component {
 
     render() {
         return (
-            <div className="list-group-item form-group">
+            <div>
                 {this.props.values.map((value, i) => (
                     <div className="checkbox" key={i}>
                         <label>
