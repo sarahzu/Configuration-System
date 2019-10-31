@@ -113,7 +113,9 @@ export default class App extends React.Component {
                     <Main>
                         <Switch>
                             <Route path="/" exact component={props => <Home/>}/>
-                            <Route path="/set" exact component={props => <SetComponents/>}/>
+                            <Route exact path="/set" render={props => (
+                                <SetComponents {...props}/>
+                            )}/>
                             <Route path="/create" exact component={props => <CreateDecisionCard/>}/>
                             <Route exact path="/arrange" render={props => (
                                 <ArrangeComponents {...props}/>

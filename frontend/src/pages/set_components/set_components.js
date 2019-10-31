@@ -31,7 +31,6 @@ class SetComponents extends React.Component {
             decision_cards: [],
             checkedComponents: [],
             checkedDc: [],
-            selectValues:[],
             componentsDataGridRows: [],
             dcDataGridRows:[],
             issueTypesDataGridComponents: [],
@@ -44,8 +43,49 @@ class SetComponents extends React.Component {
             dcDataGridColumns:[],
             descriptionComponents:"",
             descriptionDc: "",
-        }
+        };
 
+        this.updateLocalStorage = this.updateLocalStorage.bind(this);
+
+    }
+
+    /*componentWillMount() {
+        localStorage.clear()
+        if (localStorage.getItem("visualComponents")) {this.setState({vis_components: localStorage.getItem("visualComponents")});}
+        if (localStorage.getItem("decisionCards")) {this.setState({vis_components: localStorage.getItem("decisionCards")});}
+        if (localStorage.getItem("checkedComponents")) {this.setState({vis_components: localStorage.getItem("checkedComponents")});}
+        if (localStorage.getItem("checkedDecisionCards")) {this.setState({vis_components: localStorage.getItem("checkedDecisionCards")});}
+        if (localStorage.getItem("componentsDataGridRows")) {this.setState({vis_components: localStorage.getItem("componentsDataGridRows")});}
+        if (localStorage.getItem("dcDataGridRows")) {this.setState({vis_components: localStorage.getItem("dcDataGridRows")});}
+        if (localStorage.getItem("issueTypesDataGridComponents")) {this.setState({vis_components: localStorage.getItem("issueTypesDataGridComponents")});}
+        if (localStorage.getItem("issueTypesDataGridDC")) {this.setState({vis_components: localStorage.getItem("issueTypesDataGridDC")});}
+        if (localStorage.getItem("selectedComponents")) {this.setState({vis_components: localStorage.getItem("selectedComponents")});}
+        if (localStorage.getItem("selectedDc")) {this.setState({vis_components: localStorage.getItem("selectedDc")});}
+        if (localStorage.getItem("issueTypeEditorDataGridComponents")) {this.setState({vis_components: localStorage.getItem("issueTypeEditorDataGridComponents")});}
+        if (localStorage.getItem("issueTypeEditorDataGridDc")) {this.setState({vis_components: localStorage.getItem("issueTypeEditorDataGridDc")});}
+        if (localStorage.getItem("componentsDataGridColumns")) {this.setState({vis_components: localStorage.getItem("componentsDataGridColumns")});}
+        if (localStorage.getItem("dcDataGridColumns")) {this.setState({vis_components: localStorage.getItem("dcDataGridColumns")});}
+        if (localStorage.getItem("descriptionComponents")) {this.setState({vis_components: localStorage.getItem("descriptionComponents")});}
+        if (localStorage.getItem("descriptionDc")) {this.setState({vis_components: localStorage.getItem("descriptionDc")});}
+    }*/
+
+    updateLocalStorage() {
+        /*localStorage.setItem("visualComponents", this.state.vis_components);
+        localStorage.setItem("decisionCards", this.state.decisionCards);
+        localStorage.setItem("checkedComponents", this.state.checkedComponents);
+        localStorage.setItem("checkedDecisionCards", this.state.checkedDc);
+        localStorage.setItem("componentsDataGridRows", this.state.componentsDataGridRows);
+        localStorage.setItem("issueTypesDataGridComponents", this.state.issueTypesDataGridComponents);
+        localStorage.setItem("issueTypesDataGridDC", this.state.issueTypesDataGridDc);
+        localStorage.setItem("selectedComponents", this.state.selectedItemUpper);
+        localStorage.setItem("selectedDc", this.state.selectedItemLower);
+        localStorage.setItem("issueTypeEditorDataGridComponents", this.state.issueTypeEditorDataGridComponents);
+        localStorage.setItem("issueTypeEditorDataGridDc", this.state.issueTypeEditorDataGridDc);
+        localStorage.setItem("componentsDataGridColumns", this.state.componentsDataGridColumns);
+        localStorage.setItem("dcDataGridColumns", this.state.dcDataGridColumns);
+        localStorage.setItem("dcDataGridRows", this.state.dcDataGridRows);
+        localStorage.setItem("descriptionComponents", this.state.descriptionComponents);
+        localStorage.setItem("descriptionDc", this.state.descriptionDc);*/
     }
 
     onCheckboxChange(name, values) {
@@ -76,6 +116,7 @@ class SetComponents extends React.Component {
                 this.setState({dcDataGridColumns: []});
             }
         }
+        this.updateLocalStorage();
     }
 
     getComponentNames() {
@@ -90,6 +131,7 @@ class SetComponents extends React.Component {
 
     onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
         this.setState({componentsDataGridRows: this.getGridRows(fromRow, toRow, updated)});
+        this.updateLocalStorage();
     };
 
     getGridRows(fromRow, toRow, updated) {
@@ -128,13 +170,14 @@ class SetComponents extends React.Component {
         this.setState({componentsDataGridRows: selectedComponent.rows});
         this.setState({issueTypesDataGridComponents: selectedComponent.issueTypes});
         this.setState({descriptionComponents: selectedComponent.description});
-        this.setState({issueTypeEditorDataGridComponents: <DropDownEditor options={this.state.issueTypesDataGridComponents}/>});
-        let dropdown = <DropDownEditor options={selectedComponent.issueTypes}/>
+        // this.setState({issueTypeEditorDataGridComponents: <DropDownEditor options={this.state.issueTypesDataGridComponents}/>});
+        // let dropdown = <DropDownEditor options={selectedComponent.rows.issueTypes}/>
         this.setState({
             componentsDataGridColumns: [
                 {key: "parameter", name: "Parameter"},
-                {key: "value", name: "Value", editor: dropdown}]
+                {key: "value", name: "Value", editor: null}]
         });
+        this.updateLocalStorage();
     };
 
     /**
@@ -148,14 +191,19 @@ class SetComponents extends React.Component {
         this.setState({dcDataGridRows: selectedDc.rows});
         this.setState({issueTypesDataGridDc: selectedDc.issueTypes});
         this.setState({descriptionDc: selectedDc.description});
-        this.setState({issueTypeEditorDataGridDc: <DropDownEditor options={this.state.issueTypesDataGridDc}/>});
-        let dropdown = <DropDownEditor options={selectedDc.issueTypes}/>
+        //this.setState({issueTypeEditorDataGridDc: <DropDownEditor options={this.state.issueTypesDataGridDc}/>});
+        // let dropdown = <DropDownEditor options={selectedDc.issueTypes}/>
 
         this.setState({
             dcDataGridColumns: [
                 {key: "parameter", name: "Parameter"},
-                {key: "value", name: "Value", editor: dropdown}]
+                {key: "value", name: "Value", editor: null}]
         });
+        this.updateLocalStorage();
+    };
+
+    onDataGridCellExpand = subRowOptions => {
+        let test = subRowOptions;
     };
 
     render() {
@@ -204,6 +252,9 @@ class SetComponents extends React.Component {
                         <h1> Set Components</h1>
 
                             <Grid container spacing={3}  style={stylesGridUpper}>
+                                <Grid item xs={12}>
+                                    <h3> Components Settings </h3>
+                                </Grid>
                                 <Grid item xs={2}>
                                     <div style={stylesCheckbox}>
                                         <h4>Visual Components</h4>
@@ -217,7 +268,7 @@ class SetComponents extends React.Component {
                                     <div>
                                         <h4>Selected</h4>
                                         <div>
-                                            <Select options={selectedFormattedComponentsList} maxMenuHeight={180} onChange = {this.getSelectedComponentsInput}/>
+                                            <Select value={this.state.selectedItemUpper} options={selectedFormattedComponentsList} maxMenuHeight={180} onChange = {this.getSelectedComponentsInput}/>
                                         </div>
                                     </div>
                                 </Grid>
@@ -236,12 +287,16 @@ class SetComponents extends React.Component {
                                             onGridRowsUpdated={this.onGridRowsUpdated}
                                             enableCellSelect={true}
                                         />
+                                        {/*onCellExpand={this.onDataGridCellExpand}*/}
                                         {/*<PageGuide />*/}
                                     </div>
                                 </Grid>
                             </Grid>
 
                             <Grid container spacing={3} style={stylesGridLower} >
+                                <Grid item xs={12}>
+                                    <h3> Decision Cards Settings </h3>
+                                </Grid>
                                 <Grid item xs={2}>
                                     <div style={stylesCheckbox}>
                                         <h4>Decision Cards</h4>
@@ -255,7 +310,7 @@ class SetComponents extends React.Component {
                                     <div>
                                         <h4>Selected</h4>
                                         <div>
-                                            <Select options={ selectedFormattedDcList } maxMenuHeight={180} onChange = {this.getSelectedDcInput}/>
+                                            <Select value={this.state.selectedItemLower} options={ selectedFormattedDcList } maxMenuHeight={180} onChange = {this.getSelectedDcInput}/>
                                         </div>
                                     </div>
                                 </Grid>
