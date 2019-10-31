@@ -29,26 +29,53 @@ class SetComponents extends React.Component {
         this.state = {
             vis_components: [],
             decision_cards: [],
-            selected: "",
+            checkedComponents: [],
+            checkedDc: [],
             selectValues:[],
-            componentsRows: [],
-            dcRows:[],
-            issueTypesComponents: [],
-            issueTypesDc: [],
+            componentsDataGridRows: [],
+            dcDataGridRows:[],
+            issueTypesDataGridComponents: [],
+            issueTypesDataGridDc: [],
             selectedItemUpper: [],
             selectedItemLower: [],
-            issueTypeEditorComponents: null,
-            issueTypeEditorDc: null,
-            componentsColumns: [],
-            dcColumns:[],
+            issueTypeEditorDataGridComponents: null,
+            issueTypeEditorDataGridDc: null,
+            componentsDataGridColumns: [],
+            dcDataGridColumns:[],
             descriptionComponents:"",
             descriptionDc: "",
         }
 
     }
 
-    onChange(name, values) {
-        this.setState({ [name]: values })
+    onCheckboxChange(name, values) {
+        this.setState({[name]: values});
+
+        // Check if a item was deselected which is selected by another component
+        // if so, deselect it on the other components as well
+        let checkedItems = Object.keys(values).filter(k => values[k]);
+        if (name === 'vis_components') {
+            this.setState({checkedComponents: checkedItems});
+            if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemUpper.label) < 0) {
+                this.setState({selectedItemUpper: []});
+                this.setState({componentsDataGridRows: []});
+                this.setState({issueTypesDataGridComponents: []});
+                this.setState({descriptionComponents: ""});
+                this.setState({issueTypeEditorDataGridComponents: null});
+                this.setState({componentsDataGridColumns: []});
+            }
+        }
+        else if (name === 'decision_cards') {
+            this.setState({checkedDc: checkedItems});
+            if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemLower.label) < 0) {
+                this.setState({selectedItemLower: []});
+                this.setState({dcDataGridRows: []});
+                this.setState({issueTypesDataGridDc: []});
+                this.setState({descriptionDc: ""});
+                this.setState({issueTypeEditorDataGridDc: null});
+                this.setState({dcDataGridColumns: []});
+            }
+        }
     }
 
     getComponentNames() {
@@ -62,17 +89,24 @@ class SetComponents extends React.Component {
     // setValues = selectValues => this.setState({ selectValues });
 
     onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-        this.setState({componentsRows: this.getGridRows(fromRow, toRow, updated)});
+        this.setState({componentsDataGridRows: this.getGridRows(fromRow, toRow, updated)});
     };
 
     getGridRows(fromRow, toRow, updated) {
-        const rows = this.state.componentsRows.slice();
+        const rows = this.state.componentsDataGridRows.slice();
         for (let i = fromRow; i <= toRow; i++) {
             rows[i] = { ...rows[i], ...updated };
         }
         return rows
     }
 
+    /**
+     * Find the dictionary in the given list, which contains for the name value the given  key
+     *
+     * @param name {String}  name representing the searched key of the "name" value in the dictionary list
+     * @param list  list in the form [ {name: "", ...}, {name: "", ...}, ...]
+     * @returns {null|*}    dictionary that contains entry name with given key
+     */
     findSelected(name, list) {
         let i;
         for (i = 0; i < list.length; i++) {
@@ -83,43 +117,48 @@ class SetComponents extends React.Component {
         return null;
     }
 
+    /**
+     * Action happening after item is selected in the upper selection bar. All states are updated according to selection.
+     *
+     * @param selectedItemUpper selected item in the selection. In the form {label:"name", value: -1}
+     */
     getSelectedComponentsInput = selectedItemUpper => {
         this.setState({selectedItemUpper: selectedItemUpper});
         let selectedComponent = this.findSelected(selectedItemUpper.label, input.componentsParameters);
-        this.setState({componentsRows: selectedComponent.rows});
-        this.setState({issueTypesComponents: selectedComponent.issueTypes});
-        this.setState({descriptionComponents: selectedComponent.description})
-
-        this.setState({issueTypeEditorComponents: <DropDownEditor options={this.state.issueTypesComponents} />});
-        this.setState({componentsColumns: [
-                { key: "parameter", name: "Parameter" },
-                { key: "value", name: "Value", editor: this.state.issueTypeEditorComponents}
-                ]});
+        this.setState({componentsDataGridRows: selectedComponent.rows});
+        this.setState({issueTypesDataGridComponents: selectedComponent.issueTypes});
+        this.setState({descriptionComponents: selectedComponent.description});
+        this.setState({issueTypeEditorDataGridComponents: <DropDownEditor options={this.state.issueTypesDataGridComponents}/>});
+        let dropdown = <DropDownEditor options={selectedComponent.issueTypes}/>
+        this.setState({
+            componentsDataGridColumns: [
+                {key: "parameter", name: "Parameter"},
+                {key: "value", name: "Value", editor: dropdown}]
+        });
     };
 
+    /**
+     * Action happening after item is selected in the lower selection bar. All states are updated according to selection.
+     *
+     * @param selectedItemLower selected item in the selection. In the form {label:"name", value: -1}
+     */
     getSelectedDcInput = selectedItemLower => {
         this.setState({selectedItemLower: selectedItemLower});
         let selectedDc = this.findSelected(selectedItemLower.label, input.decisionCardsParameters);
-        this.setState({dcRows: selectedDc.rows});
-        this.setState({issueTypesDc: selectedDc.issueTypes});
-        this.setState({descriptionDc: selectedDc.description})
+        this.setState({dcDataGridRows: selectedDc.rows});
+        this.setState({issueTypesDataGridDc: selectedDc.issueTypes});
+        this.setState({descriptionDc: selectedDc.description});
+        this.setState({issueTypeEditorDataGridDc: <DropDownEditor options={this.state.issueTypesDataGridDc}/>});
+        let dropdown = <DropDownEditor options={selectedDc.issueTypes}/>
 
-        this.setState({issueTypeEditorDc: <DropDownEditor options={this.state.issueTypesDc} />});
-        this.setState({dcColumns: [
-                { key: "parameter", name: "Parameter" },
-                { key: "value", name: "Value", editor: this.state.issueTypeEditorDc}
-            ]});
+        this.setState({
+            dcDataGridColumns: [
+                {key: "parameter", name: "Parameter"},
+                {key: "value", name: "Value", editor: dropdown}]
+        });
     };
 
     render() {
-        {/********* need to be extracted from backend ***************/}
-
-        //let components = this.getComponentNames();
-
-        let selectedComponents = Object.keys(this.state.vis_components).filter(k => this.state.vis_components[k]);
-        let selectedDc = Object.keys(this.state.decision_cards).filter(k => this.state.decision_cards[k]);
-
-        {/* *********************************************** */}
 
         const stylesCheckbox = {
             overflow:"scroll",
@@ -143,15 +182,19 @@ class SetComponents extends React.Component {
 
         };
 
+        let checkedComponents = Object.keys(this.state.vis_components).filter(k => this.state.vis_components[k]);
+        let checkedDc = Object.keys(this.state.decision_cards).filter(k => this.state.decision_cards[k]);
+
+
         let i;
         let selectedFormattedComponentsList = [];
-        for (i = 0; i < selectedComponents.length; i++) {
-            selectedFormattedComponentsList.push({label: selectedComponents[i], value: i-1})
+        for (i = 0; i < checkedComponents.length; i++) {
+            selectedFormattedComponentsList.push({label: checkedComponents[i], value: i-1})
         }
         let j;
         let selectedFormattedDcList = [];
-        for (i = 0; i < selectedDc.length; i++) {
-            selectedFormattedDcList.push({label: selectedDc[i], value: i-1})
+        for (i = 0; i < checkedDc.length; i++) {
+            selectedFormattedDcList.push({label: checkedDc[i], value: i-1})
         }
 
         return (
@@ -165,7 +208,7 @@ class SetComponents extends React.Component {
                                     <div style={stylesCheckbox}>
                                         <h4>Visual Components</h4>
                                         <CheckboxList
-                                            onChange={(values) => this.onChange('vis_components', values)}
+                                            onChange={(values) => this.onCheckboxChange('vis_components', values)}
                                             values={components}
                                         />
                                     </div>
@@ -174,7 +217,7 @@ class SetComponents extends React.Component {
                                     <div>
                                         <h4>Selected</h4>
                                         <div>
-                                            <Select options={ selectedFormattedComponentsList } maxMenuHeight={180} onChange = {this.getSelectedComponentsInput}/>
+                                            <Select options={selectedFormattedComponentsList} maxMenuHeight={180} onChange = {this.getSelectedComponentsInput}/>
                                         </div>
                                     </div>
                                 </Grid>
@@ -187,9 +230,9 @@ class SetComponents extends React.Component {
                                 <Grid item xs={6}>
                                     <div>
                                         <ReactDataGrid
-                                            columns={this.state.componentsColumns}
-                                            rowGetter={i => this.state.componentsRows[i]}
-                                            rowsCount={this.state.componentsRows.length}
+                                            columns={this.state.componentsDataGridColumns}
+                                            rowGetter={i => this.state.componentsDataGridRows[i]}
+                                            rowsCount={this.state.componentsDataGridRows.length}
                                             onGridRowsUpdated={this.onGridRowsUpdated}
                                             enableCellSelect={true}
                                         />
@@ -203,7 +246,7 @@ class SetComponents extends React.Component {
                                     <div style={stylesCheckbox}>
                                         <h4>Decision Cards</h4>
                                         <CheckboxList
-                                            onChange={(values) => this.onChange('decision_cards', values)}
+                                            onChange={(values) => this.onCheckboxChange('decision_cards', values)}
                                             values={decisionCards}
                                         />
                                     </div>
@@ -225,9 +268,9 @@ class SetComponents extends React.Component {
                                 <Grid item xs={6}>
                                     <div>
                                         <ReactDataGrid
-                                            columns={this.state.dcColumns}
-                                            rowGetter={i => this.state.dcRows[i]}
-                                            rowsCount={this.state.dcRows.length}
+                                            columns={this.state.dcDataGridColumns}
+                                            rowGetter={i => this.state.dcDataGridRows[i]}
+                                            rowsCount={this.state.dcDataGridRows.length}
                                             onGridRowsUpdated={this.onGridRowsUpdated}
                                             enableCellSelect={true}
                                         />
