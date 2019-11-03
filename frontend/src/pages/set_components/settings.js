@@ -31,6 +31,9 @@ class Settings extends React.Component {
         super(props);
         //localStorage.clear()
 
+        if (localStorage.getItem('SelectedLayout')){}
+        else {localStorage.setItem('SelectedLayout', JSON.stringify({lg: {}}))}
+
 
         let visComponents;
         let decision_cards;
@@ -219,7 +222,6 @@ class Settings extends React.Component {
             localStorage.setItem("decisionCards", JSON.stringify(values));
             this.setState({checkedDc: checkedItems});
             if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemLower.label) < 0) {
-                //FIXME: add local storage
                 this.setState({selectedItemLower: []});
                 this.setState({dcDataGridRows: []});
                 this.setState({issueTypesDataGridDc: []});
@@ -346,19 +348,31 @@ class Settings extends React.Component {
 
     handleCheckboxChangeComponents = changeEvent => {
         const { name } = changeEvent.target;
-        // const { value } = changeEvent.value;
-
-        /*this.setState(prevState => ({
-            vis_components: {
-                ...prevState.vis_components,
-                [name]: !prevState.vis_components[name]
-            }
-        }));*/
 
         let dict = {};
-        Object.keys(this.state.vis_components).map((v) => {
+        Object.keys(this.state.vis_components).map((v, i) => {
             if (v === name) {
-                dict[name] = (this.state.vis_components[v] === false)
+                let checked = this.state.vis_components[v] === false;
+                dict[name] = (checked);
+
+                if (checked) {
+                    //TODO: add component to layout dict in local storage
+                    let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
+                    layout[i] = {
+                        x: i + 2,
+                        y: i,
+                        w: 2,
+                        h: 6,
+                        i: i.toString(),
+                        static: false
+                    };
+                    localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+                }
+                else {
+                    let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
+                    layout.splice(i, 1);
+                    localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+                }
             }
             else {
                 dict[v] = this.state.vis_components[v]
@@ -373,7 +387,7 @@ class Settings extends React.Component {
         localStorage.setItem("checkedComponents", JSON.stringify(checkedItems));
 
         if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemUpper.label) < 0) {
-            //FIXME: add local storage
+            //FIXME: adapt to layout
             this.setState({selectedItemUpper: []});
             this.setState({componentsDataGridRows: []});
             this.setState({issueTypesDataGridComponents: []});
@@ -386,19 +400,15 @@ class Settings extends React.Component {
             localStorage.setItem("selectedComponents", JSON.stringify([]));
             localStorage.setItem("componentsDataGridColumns", JSON.stringify([]));
             localStorage.setItem("descriptionComponents", JSON.stringify(""));
+
+            if(checkedItems.length === 0) {localStorage.setItem("SelectedLayout", JSON.stringify({lg: {}}))};
+
         }
 
     };
 
     handleCheckboxChangeDc = changeEvent => {
         const { name } = changeEvent.target;
-
-        /*this.setState(prevState => ({
-            decision_cards: {
-                ...prevState.decision_cards,
-                [name]: !prevState.decision_cards[name]
-            }
-        }));*/
 
         let dict = {};
         Object.keys(this.state.decision_cards).map((v) => {
@@ -437,16 +447,6 @@ class Settings extends React.Component {
     };
 
     createCheckboxComponents = option => {
-        {/*if (localStorage.getItem("visualComponents")) {
-            return (
-                <Checkbox
-                    label={option}
-                    isSelected={JSON.parse(localStorage.getItem("visualComponents"))[option]}
-                    onCheckboxChange={this.handleCheckboxChangeComponents}
-                    key={option}
-                />);
-        }
-        else {*/}
             return (
             <Checkbox
                 label={option}
@@ -455,19 +455,9 @@ class Settings extends React.Component {
                 key={option}
             />
             );
-        {/*}*/}
     };
+
     createCheckboxDc = option => {
-        {/*if (localStorage.getItem("decisionCards")) {
-            return (
-                <Checkbox
-                    label={option}
-                    isSelected={JSON.parse(localStorage.getItem("decisionCards"))[option]}
-                    onCheckboxChange={this.handleCheckboxChangeDc}
-                    key={option}
-                />);
-        }
-        else {*/}
             return (
                 <Checkbox
                     label={option}
@@ -476,7 +466,6 @@ class Settings extends React.Component {
                     key={option}
                 />
             );
-        {/*}*/}
     };
 
     render() {

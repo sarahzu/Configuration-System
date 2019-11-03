@@ -25,7 +25,7 @@ class VisualComponentsLayout extends React.Component {
         let toolbox;
         // localStorage.clear();
         if (localStorage.getItem('SelectedLayout')){layout = JSON.parse(localStorage.getItem('SelectedLayout'));}
-        else {layout = {lg: generateLayout()};}
+        else {layout = {lg: {}};}
         if (localStorage.getItem('toolbox')){toolbox = JSON.parse(localStorage.getItem('toolbox'));}
         else {toolbox = {lg: []}}
 
@@ -79,7 +79,7 @@ class VisualComponentsLayout extends React.Component {
                         (
                             <span className="box">{
                                 <div>
-                                    <h1>Arrange Components</h1>
+                                    <h1>Component {l.i}</h1>
                                     <Container fluid style={{ lineHeight: '32px' }}>
                                         <Row >
                                             <Col >1 of 2</Col>
