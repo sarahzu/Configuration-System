@@ -32,7 +32,7 @@ class Settings extends React.Component {
         //localStorage.clear()
 
         if (localStorage.getItem('SelectedLayout')){}
-        else {localStorage.setItem('SelectedLayout', JSON.stringify({lg: {}}))}
+        else {localStorage.setItem('SelectedLayout', JSON.stringify({lg: []}));}
 
 
         let visComponents;
@@ -191,7 +191,7 @@ class Settings extends React.Component {
         localStorage.setItem("descriptionDc", JSON.stringify(this.state.descriptionDc));
     }
 
-    onCheckboxChange(name, values) {
+    /*onCheckboxChange(name, values) {
         this.setState({[name]: values});
 
         // Check if a item was deselected which is selected by another component
@@ -201,7 +201,6 @@ class Settings extends React.Component {
             localStorage.setItem("visualComponents", JSON.stringify(values));
             this.setState({checkedComponents: checkedItems});
             if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemUpper.label) < 0) {
-                //FIXME: add local storage
                 this.setState({selectedItemUpper: []});
                 this.setState({componentsDataGridRows: []});
                 this.setState({issueTypesDataGridComponents: []});
@@ -237,7 +236,7 @@ class Settings extends React.Component {
             }
             localStorage.setItem("checkedDecisionCards", JSON.stringify(checkedItems));
         }
-    }
+    }*/
 
     getComponentNames() {
         axios.get(process.env.REACT_APP_COMPONENT_NAMES)
@@ -358,20 +357,32 @@ class Settings extends React.Component {
                 if (checked) {
                     //TODO: add component to layout dict in local storage
                     let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
-                    layout[i] = {
-                        x: i + 2,
-                        y: i,
-                        w: 2,
-                        h: 6,
-                        i: i.toString(),
-                        static: false
-                    };
-                    localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+                    if (layout !== null) {
+                        //fill empty slots in layout array
+                        let j;
+                        for (j = 0; j < i; j++) {
+                            if (!layout[j]) {
+                                layout[j] = {};
+                            }
+                        }
+                        layout[i] = {
+                            x: i + i,
+                            y: 0,
+                            w: 2,
+                            h: 6,
+                            i: i.toString(),
+                            static: false
+                        };
+                        localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+                    }
                 }
                 else {
                     let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
-                    layout.splice(i, 1);
-                    localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+                    //Fixme: check if layout is in toolbox
+                    if (layout !== null) {
+                        layout[i] = {};
+                        localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+                    }
                 }
             }
             else {
@@ -401,7 +412,7 @@ class Settings extends React.Component {
             localStorage.setItem("componentsDataGridColumns", JSON.stringify([]));
             localStorage.setItem("descriptionComponents", JSON.stringify(""));
 
-            if(checkedItems.length === 0) {localStorage.setItem("SelectedLayout", JSON.stringify({lg: {}}))};
+            if(checkedItems.length === 0) {localStorage.setItem("SelectedLayout", JSON.stringify({lg: []}))};
 
         }
 

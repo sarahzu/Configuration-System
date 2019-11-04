@@ -25,7 +25,7 @@ class VisualComponentsLayout extends React.Component {
         let toolbox;
         // localStorage.clear();
         if (localStorage.getItem('SelectedLayout')){layout = JSON.parse(localStorage.getItem('SelectedLayout'));}
-        else {layout = {lg: {}};}
+        else {layout = {lg: []};}
         if (localStorage.getItem('toolbox')){toolbox = JSON.parse(localStorage.getItem('toolbox'));}
         else {toolbox = {lg: []}}
 
@@ -62,41 +62,47 @@ class VisualComponentsLayout extends React.Component {
     }
 
     generateDOM() {
+        /*let i;
+        for (i = 0; i < this.state.layouts[this.state.currentBreakpoint].length; i++) {
+            if (this.state.layouts[this.state.currentBreakpoint][i].length === 0) {
+                this.state.layouts[this.state.currentBreakpoint].splice(i, 1);
+            }
+        }*/
         return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
-            return (
-                <div key={l.i} className={l.static ? "static" : "not-static"}>
-                    <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
-                        &times;
-                    </div>
-                    {l.static ? (
-                        <span
-                            className="text"
-                            title="This item is static and cannot be removed or resized."
-                        >
-                            Static - {l.i}
-                        </span>
-                    ) :
-                        (
-                            <span className="box">{
-                                <div>
-                                    <h1>Component {l.i}</h1>
-                                    <Container fluid style={{ lineHeight: '32px' }}>
-                                        <Row >
-                                            <Col >1 of 2</Col>
-                                            <Col >2 of 2</Col>
-                                        </Row>
-                                        <br />
-                                        <Row >
-                                            <Col >1 of 3</Col>
-                                            <Col >2 of 3</Col>
-                                            <Col >3 of 3</Col>
-                                        </Row>
-                                    </Container>
-                                </div>}
+                return (
+                    <div key={l.i} className={l.static ? "static" : "not-static"}>
+                        <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
+                            &times;
+                        </div>
+                        {l.static ? (
+                            <span
+                                className="text"
+                                title="This item is static and cannot be removed or resized."
+                            >
+                                Static - {l.i}
                             </span>
-                        )}
-                </div>
-            );
+                        ) :
+                            (
+                                <span className="box">{
+                                    <div>
+                                        <h1>Component {l.i}</h1>
+                                        <Container fluid style={{ lineHeight: '32px' }}>
+                                            <Row >
+                                                <Col >1 of 2</Col>
+                                                <Col >2 of 2</Col>
+                                            </Row>
+                                            <br />
+                                            <Row >
+                                                <Col >1 of 3</Col>
+                                                <Col >2 of 3</Col>
+                                                <Col >3 of 3</Col>
+                                            </Row>
+                                        </Container>
+                                    </div>}
+                                </span>
+                            )}
+                    </div>
+                );
         });
     }
 
@@ -119,7 +125,15 @@ class VisualComponentsLayout extends React.Component {
     };
 
     onTakeItem = item => {
-        this.setState(prevState => ({
+        let toolbox = {...this.state.toolbox,
+            [this.state.currentBreakpoint]:
+                this.state.toolbox[this.state.currentBreakpoint].filter(({ i }) => i !== item.i)};
+        let layouts = {...this.state.layouts,
+            [this.state.currentBreakpoint]: [...this.state.layouts[this.state.currentBreakpoint], item]};
+
+        this.setState({toolbox: toolbox, layouts: layouts});
+
+        /*this.setState(prevState => ({
             toolbox: {
                 ...prevState.toolbox,
                 [prevState.currentBreakpoint]: prevState.toolbox[
@@ -136,11 +150,30 @@ class VisualComponentsLayout extends React.Component {
         }));
 
         localStorage.setItem("toolbox", JSON.stringify(this.state.toolbox));
-        localStorage.setItem("SelectedLayout", JSON.stringify(this.state.layouts));
+        localStorage.setItem("SelectedLayout", JSON.stringify(this.state.layouts));*/
+        localStorage.setItem("toolbox", JSON.stringify(toolbox));
+        localStorage.setItem("SelectedLayout", JSON.stringify(layouts));
     };
 
     onPutItem = item => {
-        this.setState(prevState => {
+        let toolbox = {
+            ...this.state.toolbox,
+            [this.state.currentBreakpoint]: [
+                ...(this.state.toolbox[this.state.currentBreakpoint] || []),
+                item
+            ]};
+        let layouts = {
+            ...this.state.layouts,
+            [this.state.currentBreakpoint]: this.state.layouts[
+                this.state.currentBreakpoint
+                ].filter(({ i }) => i !== item.i)
+        };
+
+        this.setState({toolbox: toolbox, layouts: layouts});
+        localStorage.setItem("toolbox", JSON.stringify(toolbox));
+        localStorage.setItem("SelectedLayout", JSON.stringify(layouts));
+
+        /*this.setState(prevState => {
             return {
                 toolbox: {
                     ...prevState.toolbox,
@@ -159,7 +192,7 @@ class VisualComponentsLayout extends React.Component {
         });
 
         localStorage.setItem("toolbox", JSON.stringify(this.state.toolbox));
-        localStorage.setItem("SelectedLayout", JSON.stringify(this.state.layouts));
+        localStorage.setItem("SelectedLayout", JSON.stringify(this.state.layouts));*/
     };
 
     onCompactTypeChange() {
