@@ -17,8 +17,8 @@ import { Editors } from "react-data-grid-addons";
 import {Buffer, input} from "./input";
 import {withRouter} from "react-router";
 
-
 const ListItem = require("react-list-select");
+
 const components = input.components;
 const  decisionCards = input.decisionCards;
 
@@ -30,6 +30,9 @@ class Settings extends React.Component {
     constructor(props) {
         super(props);
         //localStorage.clear()
+
+        this.getSettingsInfo();
+
 
         if (localStorage.getItem('SelectedLayout')){}
         else {localStorage.setItem('SelectedLayout', JSON.stringify({lg: []}));}
@@ -125,6 +128,10 @@ class Settings extends React.Component {
 
 
         this.state = {
+            info: {},
+            comp: {},
+            dc: {},
+
             vis_components: visComponents,
             decision_cards: decision_cards,
             checkedComponents: checkedComponents,
@@ -172,15 +179,6 @@ class Settings extends React.Component {
         if (localStorage.getItem("dcDataGridColumns")) {this.setState({dcDataGridColumns: JSON.parse(localStorage.getItem("dcDataGridColumns"))});}
         if (localStorage.getItem("descriptionComponents")) {this.setState({descriptionComponents: JSON.parse(localStorage.getItem("descriptionComponents"))});}
         if (localStorage.getItem("descriptionDc")) {this.setState({descriptionDc: JSON.parse(localStorage.getItem("descriptionDc"))});}
-    }
-
-
-    getComponentNames() {
-        axios.get(process.env.REACT_APP_COMPONENT_NAMES)
-            .then(response => {
-                // returning the data here allows the caller to get it through another .then(...)
-                return response.data
-            });
     }
 
     /**

@@ -265,7 +265,7 @@ class VisualComponentsLayout extends React.Component {
                         items={this.state.toolbox[this.state.currentBreakpoint] || []}
                         onTakeItem={this.onTakeItem}
                     />
-                    
+
                     <ResponsiveReactGridLayout
                         {...this.props}
                         layouts={this.state.layouts}

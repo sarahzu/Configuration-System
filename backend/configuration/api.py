@@ -8,7 +8,7 @@ api = Api(app)
 CORS(app)
 
 
-class ConfigurationAPI(Resource):
+class Test(Resource):
 
     def post(self):
         json_data = request.get_json()
@@ -16,15 +16,17 @@ class ConfigurationAPI(Resource):
         reports = controller.get_components()
         return {'reports': reports}
 
-class ConfigurationAPI_2(Resource):
 
-    def get_comp_names(self):
+class ConfigurationSettingInput(Resource):
+
+    def get(self):
         controller = Controller()
-        return controller.get_visual_components_name_list()
+        settings_info = controller.get_configuration_settings_input()
+        return settings_info
 
 
-api.add_resource(ConfigurationAPI, '/config_api')
-api.add_resource(ConfigurationAPI, '/config_api/comp_names')
+api.add_resource(Test, '/config_api')
+api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 
 if __name__ == '__main__':
     app.run(debug=False)
