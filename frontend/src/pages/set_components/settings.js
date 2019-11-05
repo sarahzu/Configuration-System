@@ -125,7 +125,6 @@ class Settings extends React.Component {
 
 
         this.state = {
-
             vis_components: visComponents,
             decision_cards: decision_cards,
             checkedComponents: checkedComponents,
@@ -175,71 +174,6 @@ class Settings extends React.Component {
         if (localStorage.getItem("descriptionDc")) {this.setState({descriptionDc: JSON.parse(localStorage.getItem("descriptionDc"))});}
     }
 
-    updateLocalStorage() {
-        localStorage.setItem("visualComponents", JSON.stringify(this.state.vis_components));
-        localStorage.setItem("decisionCards", JSON.stringify(this.state.decision_cards));
-        localStorage.setItem("checkedComponents", JSON.stringify(this.state.checkedComponents));
-        localStorage.setItem("checkedDecisionCards", JSON.stringify(this.state.checkedDc));
-        localStorage.setItem("componentsDataGridRows", JSON.stringify(this.state.componentsDataGridRows));
-        localStorage.setItem("issueTypesDataGridComponents", JSON.stringify(this.state.issueTypesDataGridComponents));
-        localStorage.setItem("issueTypesDataGridDC", JSON.stringify(this.state.issueTypesDataGridDc));
-        localStorage.setItem("selectedComponents", JSON.stringify(this.state.selectedItemUpper));
-        localStorage.setItem("selectedDc", JSON.stringify(this.state.selectedItemLower));
-        //localStorage.setItem("issueTypeEditorDataGridComponents", JSON.stringify(this.state.issueTypeEditorDataGridComponents));
-        //localStorage.setItem("issueTypeEditorDataGridDc", JSON.stringify(this.state.issueTypeEditorDataGridDc));
-        localStorage.setItem("componentsDataGridColumns", JSON.stringify(this.state.componentsDataGridColumns));
-        localStorage.setItem("dcDataGridColumns", JSON.stringify(this.state.dcDataGridColumns));
-        localStorage.setItem("dcDataGridRows", JSON.stringify(this.state.dcDataGridRows));
-        localStorage.setItem("descriptionComponents", JSON.stringify(this.state.descriptionComponents));
-        localStorage.setItem("descriptionDc", JSON.stringify(this.state.descriptionDc));
-    }
-
-    /*onCheckboxChange(name, values) {
-        this.setState({[name]: values});
-
-        // Check if a item was deselected which is selected by another component
-        // if so, deselect it on the other components as well
-        let checkedItems = Object.keys(values).filter(k => values[k]);
-        if (name === 'vis_components') {
-            localStorage.setItem("visualComponents", JSON.stringify(values));
-            this.setState({checkedComponents: checkedItems});
-            if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemUpper.label) < 0) {
-                this.setState({selectedItemUpper: []});
-                this.setState({componentsDataGridRows: []});
-                this.setState({issueTypesDataGridComponents: []});
-                this.setState({descriptionComponents: ""});
-                //this.setState({issueTypeEditorDataGridComponents: null});
-                this.setState({componentsDataGridColumns: []});
-
-                localStorage.setItem("componentsDataGridRows", JSON.stringify([]));
-                localStorage.setItem("issueTypesDataGridComponents", JSON.stringify([]));
-                localStorage.setItem("selectedComponents", JSON.stringify([]));
-                localStorage.setItem("componentsDataGridColumns", JSON.stringify([]));
-                localStorage.setItem("descriptionComponents", JSON.stringify(""));
-            }
-            localStorage.setItem("checkedComponents", JSON.stringify(checkedItems));
-
-        }
-        else if (name === 'decision_cards') {
-            localStorage.setItem("decisionCards", JSON.stringify(values));
-            this.setState({checkedDc: checkedItems});
-            if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemLower.label) < 0) {
-                this.setState({selectedItemLower: []});
-                this.setState({dcDataGridRows: []});
-                this.setState({issueTypesDataGridDc: []});
-                this.setState({descriptionDc: ""});
-                //this.setState({issueTypeEditorDataGridDc: null});
-                this.setState({dcDataGridColumns: []});
-
-                localStorage.setItem("issueTypesDataGridDC", JSON.stringify([]));
-                localStorage.setItem("selectedDc", JSON.stringify([]));
-                localStorage.setItem("dcDataGridColumns", JSON.stringify([]));
-                localStorage.setItem("dcDataGridRows", JSON.stringify([]));
-                localStorage.setItem("descriptionDc", JSON.stringify(""));
-            }
-            localStorage.setItem("checkedDecisionCards", JSON.stringify(checkedItems));
-        }
-    }*/
 
     getComponentNames() {
         axios.get(process.env.REACT_APP_COMPONENT_NAMES)
@@ -249,8 +183,13 @@ class Settings extends React.Component {
             });
     }
 
-    // setValues = selectValues => this.setState({ selectValues });
-
+    /**
+     * update data grid rows when selection is made. Store new value in local storage and state.
+     *
+     * @param fromRow
+     * @param toRow
+     * @param updated
+     */
     onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
         let gridRows = this.getGridRows(fromRow, toRow, updated);
         this.setState({componentsDataGridRows: gridRows});
@@ -258,6 +197,14 @@ class Settings extends React.Component {
 
     };
 
+    /**
+     * get data grid rows
+     *
+     * @param fromRow
+     * @param toRow
+     * @param updated
+     * @returns {T[]}
+     */
     getGridRows(fromRow, toRow, updated) {
         const rows = this.state.componentsDataGridRows.slice();
         for (let i = fromRow; i <= toRow; i++) {
@@ -267,7 +214,7 @@ class Settings extends React.Component {
     }
 
     /**
-     * Find the dictionary in the given list, which contains for the name value the given  key
+     * Find the dictionary in the given list, which contains the given name as value for the key "name"
      *
      * @param name {String}  name representing the searched key of the "name" value in the dictionary list
      * @param list  list in the form [ {name: "", ...}, {name: "", ...}, ...]
@@ -284,7 +231,8 @@ class Settings extends React.Component {
     }
 
     /**
-     * Action happening after item is selected in the upper selection bar. All states are updated according to selection.
+     * Action happening after item is selected in the upper selection bar.
+     * All states and local storage entries are updated according to selection.
      *
      * @param selectedItemUpper selected item in the selection. In the form {label:"name", value: -1}
      */
@@ -315,7 +263,8 @@ class Settings extends React.Component {
     };
 
     /**
-     * Action happening after item is selected in the lower selection bar. All states are updated according to selection.
+     * Action happening after item is selected in the lower selection bar.
+     * All states and local storage entries are updated according to selection.
      *
      * @param selectedItemLower selected item in the selection. In the form {label:"name", value: -1}
      */
@@ -348,16 +297,29 @@ class Settings extends React.Component {
         let test = subRowOptions;
     };
 
+    /**
+     * Check if a given component (identified with an id) is in one of the dictionaries contained in the given list.
+     *
+     * @param compId {int} id of the component in the list
+     * @param list {array} list of the format [{..., i: compId, ...}, {...}]
+     * @return {boolean} true if component is in one of the dictionaries in list, false otherwise
+     */
     isComponentInList(compId, list) {
         let j;
         for (j = 0; j < list.length; j++) {
             if(list[j].i === compId.toString()) {
                 return true;
             }
-        };
+        }
         return false;
     }
 
+    /**
+     * remove a given component dictionary (identified with an id) in the given list.
+     *
+     * @param compId {int} id of the component in the list
+     * @param list {array} list of the format [{..., i: compId, ...}, {...}]
+     */
     removeComponentInList(compId, list) {
         let j;
         for (j = 0; j < list.length; j++) {
@@ -367,6 +329,15 @@ class Settings extends React.Component {
         }
     }
 
+
+    /**
+     * Triggers when components checkbox is checked or unchecked.
+     * Update local storage and state according to the selection, so that other page elements like the selection bar
+     * can get updated. Depending on checked or unchecked state, add/remove component from layouts or toolbox list
+     * so that the arrange component page can get updated as well.
+     *
+     * @param changeEvent
+     */
     handleCheckboxChangeComponents = changeEvent => {
         const { name } = changeEvent.target;
 
@@ -431,7 +402,6 @@ class Settings extends React.Component {
         localStorage.setItem("checkedComponents", JSON.stringify(checkedItems));
 
         if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemUpper.label) < 0) {
-            //FIXME: adapt to layout
             this.setState({selectedItemUpper: []});
             this.setState({componentsDataGridRows: []});
             this.setState({issueTypesDataGridComponents: []});
@@ -445,12 +415,18 @@ class Settings extends React.Component {
             localStorage.setItem("componentsDataGridColumns", JSON.stringify([]));
             localStorage.setItem("descriptionComponents", JSON.stringify(""));
 
-            if(checkedItems.length === 0) {localStorage.setItem("SelectedLayout", JSON.stringify({lg: []}))};
-
+            if(checkedItems.length === 0) {localStorage.setItem("SelectedLayout", JSON.stringify({lg: []}))}
         }
 
     };
 
+    /**
+     * Triggers when decision cards checkbox is checked or unchecked.
+     * Update local storage and state according to the selection, so that other page elements like the selection bar
+     * can get updated.
+     *
+     * @param changeEvent
+     */
     handleCheckboxChangeDc = changeEvent => {
         const { name } = changeEvent.target;
 
@@ -490,6 +466,11 @@ class Settings extends React.Component {
 
     };
 
+    /**
+     * create single checkbox component for the given option in the visual component section.
+     *
+     * @param option checkbox label
+     */
     createCheckboxComponents = option => {
             return (
             <Checkbox
@@ -501,6 +482,11 @@ class Settings extends React.Component {
             );
     };
 
+    /**
+     * create single checkbox component for the given option in the decision cards section.
+     *
+     * @param option checkbox label
+     */
     createCheckboxDc = option => {
             return (
                 <Checkbox
