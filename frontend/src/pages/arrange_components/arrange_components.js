@@ -5,6 +5,8 @@ import "../../../node_modules/react-resizable/css/styles.css";
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import VisualComponentsLayout from "../../layout/visual_components_layout";
 import styled from "styled-components";
+import axios from 'axios';
+require('dotenv').config();
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 

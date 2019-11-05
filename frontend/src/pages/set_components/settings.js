@@ -31,9 +31,6 @@ class Settings extends React.Component {
         super(props);
         //localStorage.clear()
 
-        this.getSettingsInfo();
-
-
         if (localStorage.getItem('SelectedLayout')){}
         else {localStorage.setItem('SelectedLayout', JSON.stringify({lg: []}));}
 
