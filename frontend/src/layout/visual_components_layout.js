@@ -23,7 +23,7 @@ class VisualComponentsLayout extends React.Component {
 
         let layout;
         let toolbox;
-        // localStorage.clear();
+
         if (localStorage.getItem('SelectedLayout')){
             layout = JSON.parse(localStorage.getItem('SelectedLayout'));
             this.removeEmptyDictFromList(layout.lg)
@@ -66,6 +66,11 @@ class VisualComponentsLayout extends React.Component {
         }
     }
 
+    /**
+     * remove all empty dictionaries form the given list.
+     *
+     * @param list {array} in the form [{...}, {}, {...}]
+     */
     removeEmptyDictFromList(list) {
         let i;
         for (i = 0; i < list.length; i++) {
@@ -75,13 +80,12 @@ class VisualComponentsLayout extends React.Component {
         }
     }
 
+    /**
+     * generate HTML code used in render function. Generates all visual components boxes.
+     *
+     * @returns {*} HTML code
+     */
     generateDOM() {
-        /*let i;
-        for (i = 0; i < this.state.layouts[this.state.currentBreakpoint].length; i++) {
-            if (this.state.layouts[this.state.currentBreakpoint][i].length === 0) {
-                this.state.layouts[this.state.currentBreakpoint].splice(i, 1);
-            }
-        }*/
         return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
             return (
                 <div key={l.i} className={l.static ? "static" : "not-static"}>
@@ -120,11 +124,6 @@ class VisualComponentsLayout extends React.Component {
         });
     }
 
-    /*onBreakpointChange(breakpoint) {
-        this.setState({
-            currentBreakpoint: breakpoint
-        });
-    }*/
     onBreakpointChange = breakpoint => {
         this.setState(prevState => ({
             currentBreakpoint: breakpoint,
@@ -138,6 +137,12 @@ class VisualComponentsLayout extends React.Component {
         }));
     };
 
+    /**
+     * Triggered if an item from visual component arrangement section is taken to the toolbox.
+     * Update local storage entries of layouts and toolbox and the corresponding states.
+     *
+     * @param item item which has been selected
+     */
     onTakeItem = item => {
         let toolbox = {...this.state.toolbox,
             [this.state.currentBreakpoint]:
@@ -147,28 +152,16 @@ class VisualComponentsLayout extends React.Component {
 
         this.setState({toolbox: toolbox, layouts: layouts});
 
-        /*this.setState(prevState => ({
-            toolbox: {
-                ...prevState.toolbox,
-                [prevState.currentBreakpoint]: prevState.toolbox[
-                    prevState.currentBreakpoint
-                    ].filter(({ i }) => i !== item.i)
-            },
-            layouts: {
-                ...prevState.layouts,
-                [prevState.currentBreakpoint]: [
-                    ...prevState.layouts[prevState.currentBreakpoint],
-                    item
-                ]
-            }
-        }));
-
-        localStorage.setItem("toolbox", JSON.stringify(this.state.toolbox));
-        localStorage.setItem("SelectedLayout", JSON.stringify(this.state.layouts));*/
         localStorage.setItem("toolbox", JSON.stringify(toolbox));
         localStorage.setItem("SelectedLayout", JSON.stringify(layouts));
     };
 
+    /**
+     * Triggered if an item from the toolbox is taken to the visual component arrangement section.
+     * Update local storage entries of layouts and toolbox and the corresponding states.
+     *
+     * @param item item which has been selected
+     */
     onPutItem = item => {
         let toolbox = {
             ...this.state.toolbox,
@@ -187,26 +180,6 @@ class VisualComponentsLayout extends React.Component {
         localStorage.setItem("toolbox", JSON.stringify(toolbox));
         localStorage.setItem("SelectedLayout", JSON.stringify(layouts));
 
-        /*this.setState(prevState => {
-            return {
-                toolbox: {
-                    ...prevState.toolbox,
-                    [prevState.currentBreakpoint]: [
-                        ...(prevState.toolbox[prevState.currentBreakpoint] || []),
-                        item
-                    ]
-                },
-                layouts: {
-                    ...prevState.layouts,
-                    [prevState.currentBreakpoint]: prevState.layouts[
-                        prevState.currentBreakpoint
-                        ].filter(({ i }) => i !== item.i)
-                }
-            };
-        });
-
-        localStorage.setItem("toolbox", JSON.stringify(this.state.toolbox));
-        localStorage.setItem("SelectedLayout", JSON.stringify(this.state.layouts));*/
     };
 
     onCompactTypeChange() {
@@ -220,6 +193,14 @@ class VisualComponentsLayout extends React.Component {
         this.setState({ compactType });
     }
 
+    /**
+     * triggered when layout of visual components have been changed.
+     * Update all according states and local storage entries.
+     *
+     * @param layout Used for recursive call.
+     * @param layouts dictionary containing all visual components layouts
+     *
+     */
     onLayoutChange(layout, layouts) {
         this.props.onLayoutChange(layout, layouts);
         let jsonString = JSON.stringify(layouts);
@@ -262,14 +243,6 @@ class VisualComponentsLayout extends React.Component {
                     >
                         {this.generateDOM()}
                     </ResponsiveReactGridLayout>
-
-                    {/*<Button color="primary" className="px-4"
-                         onClick={this.goBack}>
-                    <FontAwesomeIcon
-                        size={100}
-                        icon={faCompressArrowsAlt}
-                    />
-                </Button>*/}
                 </div>
             );
         } else {
@@ -285,18 +258,14 @@ class VisualComponentsLayout extends React.Component {
                         Compaction type:{" "}
                         {_.capitalize(this.state.compactType) || "No Compaction"}
                     </div>*/}
-                    <button onClick={this.onNewLayout}>Generate New Layout</button>
+                    {/*<button onClick={this.onNewLayout}>Generate New Layout</button>*/}
                     <button className="button" onClick={this.loadPreview}><FontAwesomeIcon icon={faExpandArrowsAlt}/></button>
 
                     <ToolBox
                         items={this.state.toolbox[this.state.currentBreakpoint] || []}
                         onTakeItem={this.onTakeItem}
                     />
-
-                    {/*<button onClick={this.onCompactTypeChange}>
-                        Change Compaction Type
-                    </button>*/}
-
+                    
                     <ResponsiveReactGridLayout
                         {...this.props}
                         layouts={this.state.layouts}
