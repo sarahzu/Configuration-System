@@ -34,6 +34,9 @@ class Settings extends React.Component {
         if (localStorage.getItem('SelectedLayout')){}
         else {localStorage.setItem('SelectedLayout', JSON.stringify({lg: []}));}
 
+        if (localStorage.getItem('toolbox')){}
+        else {localStorage.setItem('toolbox', JSON.stringify({lg: []}));}
+
 
         let visComponents;
         let decision_cards;
@@ -345,6 +348,25 @@ class Settings extends React.Component {
         let test = subRowOptions;
     };
 
+    isComponentInList(compId, list) {
+        let j;
+        for (j = 0; j < list.length; j++) {
+            if(list[j].i === compId.toString()) {
+                return true;
+            }
+        };
+        return false;
+    }
+
+    removeComponentInList(compId, list) {
+        let j;
+        for (j = 0; j < list.length; j++) {
+            if(list[j].i === compId.toString()) {
+                list[j] = {};
+            }
+        }
+    }
+
     handleCheckboxChangeComponents = changeEvent => {
         const { name } = changeEvent.target;
 
@@ -354,34 +376,45 @@ class Settings extends React.Component {
                 let checked = this.state.vis_components[v] === false;
                 dict[name] = (checked);
 
-                if (checked) {
-                    //TODO: add component to layout dict in local storage
-                    let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
-                    if (layout !== null) {
-                        //fill empty slots in layout array
-                        let j;
-                        for (j = 0; j < i; j++) {
-                            if (!layout[j]) {
-                                layout[j] = {};
-                            }
+                let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
+                let toolbox = JSON.parse(localStorage.getItem("toolbox")).lg;
+
+                if (checked && layout) {
+                    //fill empty slots in layout array
+                    let j;
+                    for (j = 0; j < i; j++) {
+                        if (!layout[j]) {
+                            layout[j] = {};
                         }
-                        layout[i] = {
-                            x: i + i,
-                            y: 0,
-                            w: 2,
-                            h: 6,
-                            i: i.toString(),
-                            static: false
-                        };
-                        localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
                     }
+                    layout[i] = {
+                        x: i + i,
+                        y: 0,
+                        w: 2,
+                        h: 6,
+                        i: i.toString(),
+                        static: false
+                    };
+                    localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
                 }
                 else {
-                    let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
-                    //Fixme: check if layout is in toolbox
-                    if (layout !== null) {
-                        layout[i] = {};
-                        localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+                    let usedList;
+                    let usedLocalStorageString;
+                    if (this.isComponentInList(i, layout)) {
+                        usedList = layout;
+                        usedLocalStorageString = "SelectedLayout";
+                    }
+                    else if (this.isComponentInList(i, toolbox)) {
+                        usedList = toolbox;
+                        usedLocalStorageString = "toolbox";
+                    }
+
+                    if (usedList) {
+                        this.removeComponentInList(i, usedList);
+                        localStorage.setItem(usedLocalStorageString, JSON.stringify({lg: usedList}));
+                    }
+                    else {
+                        console.log("element not found")
                     }
                 }
             }

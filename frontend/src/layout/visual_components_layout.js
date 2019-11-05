@@ -24,7 +24,10 @@ class VisualComponentsLayout extends React.Component {
         let layout;
         let toolbox;
         // localStorage.clear();
-        if (localStorage.getItem('SelectedLayout')){layout = JSON.parse(localStorage.getItem('SelectedLayout'));}
+        if (localStorage.getItem('SelectedLayout')){
+            layout = JSON.parse(localStorage.getItem('SelectedLayout'));
+            this.removeEmptyDictFromList(layout.lg)
+        }
         else {layout = {lg: []};}
         if (localStorage.getItem('toolbox')){toolbox = JSON.parse(localStorage.getItem('toolbox'));}
         else {toolbox = {lg: []}}
@@ -47,17 +50,28 @@ class VisualComponentsLayout extends React.Component {
         this.componentDidMount = this.componentDidMount(this);
         this.loadPreview = this.loadPreview.bind(this);
         this.backToArranging = this.backToArranging.bind(this);
+        this.removeEmptyDictFromList = this.removeEmptyDictFromList.bind(this);
     }
 
     componentDidMount() {
         this.setState({mounted: true});
         if (localStorage.getItem("SelectedLayout")) {
             let storedObject = {lg: JSON.parse(localStorage.getItem("SelectedLayout"))};
+            this.removeEmptyDictFromList(storedObject.lg)
             this.setState({layouts: storedObject});
         }
         if (localStorage.getItem("toolbox")) {
             let toolboxObject = JSON.parse(localStorage.getItem("toolbox"));
             this.setState({toolbox: toolboxObject});
+        }
+    }
+
+    removeEmptyDictFromList(list) {
+        let i;
+        for (i = 0; i < list.length; i++) {
+            if (Object.keys(list[i]).length === 0) {
+                list.splice(i, 1);
+            }
         }
     }
 
@@ -69,40 +83,40 @@ class VisualComponentsLayout extends React.Component {
             }
         }*/
         return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
-                return (
-                    <div key={l.i} className={l.static ? "static" : "not-static"}>
-                        <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
-                            &times;
-                        </div>
-                        {l.static ? (
-                            <span
-                                className="text"
-                                title="This item is static and cannot be removed or resized."
-                            >
-                                Static - {l.i}
-                            </span>
-                        ) :
-                            (
-                                <span className="box">{
-                                    <div>
-                                        <h1>Component {l.i}</h1>
-                                        <Container fluid style={{ lineHeight: '32px' }}>
-                                            <Row >
-                                                <Col >1 of 2</Col>
-                                                <Col >2 of 2</Col>
-                                            </Row>
-                                            <br />
-                                            <Row >
-                                                <Col >1 of 3</Col>
-                                                <Col >2 of 3</Col>
-                                                <Col >3 of 3</Col>
-                                            </Row>
-                                        </Container>
-                                    </div>}
-                                </span>
-                            )}
+            return (
+                <div key={l.i} className={l.static ? "static" : "not-static"}>
+                    <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
+                        &times;
                     </div>
-                );
+                    {l.static ? (
+                        <span
+                            className="text"
+                            title="This item is static and cannot be removed or resized."
+                        >
+                            Static - {l.i}
+                        </span>
+                        ) :
+                        (
+                            <span className="box">{
+                                <div>
+                                    <h1>Component {l.i}</h1>
+                                    <Container fluid style={{ lineHeight: '32px' }}>
+                                        <Row >
+                                            <Col >1 of 2</Col>
+                                            <Col >2 of 2</Col>
+                                        </Row>
+                                        <br />
+                                        <Row >
+                                            <Col >1 of 3</Col>
+                                            <Col >2 of 3</Col>
+                                            <Col >3 of 3</Col>
+                                        </Row>
+                                    </Container>
+                                </div>}
+                            </span>
+                        )}
+                </div>
+            );
         });
     }
 
