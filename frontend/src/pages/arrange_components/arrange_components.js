@@ -5,8 +5,7 @@ import "../../../node_modules/react-resizable/css/styles.css";
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import VisualComponentsLayout from "../../layout/visual_components_layout";
 import styled from "styled-components";
-import axios from 'axios';
-require('dotenv').config();
+
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -39,17 +38,6 @@ class ArrangeComponents extends React.Component {
                 </div>
             );
         });
-    }
-
-    /**
-     * get all information needed, to build the settings page
-     *
-     * @returns {Promise<void>} Json object with all needed info
-     */
-    async getSettingsInfo() {
-        const response = await axios.get(process.env.REACT_APP_SETTINGS_INFO);
-        const json_response = JSON.parse(response.data);
-        this.setState({info: json_response, comp: json_response.components, dc: json_response.decisionCards});
     }
 
     render() {

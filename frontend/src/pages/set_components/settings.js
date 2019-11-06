@@ -3,8 +3,6 @@ import React from 'react'
 import CheckboxList from "./checkbox_list"
 import Checkbox from "./checkbox"
 
-import axios from "axios";
-import List from 'react-list-select'
 import {SelectableGroup, DeselectAll, SelectAll, TSelectableItemProps, createSelectable} from 'react-selectable-fast'
 //import Select from "react-dropdown-select";
 import Select from 'react-select';
@@ -14,16 +12,20 @@ import Grid from "@material-ui/core/Grid";
 import ReactDataGrid from "react-data-grid";
 import { Editors } from "react-data-grid-addons";
 
-import {Buffer, input} from "./input";
+//import {Buffer, input} from "./input";
 import {withRouter} from "react-router";
+import PropTypes from "prop-types";
+import ReactDOM from 'react-dom';
+
+import axios from 'axios';
+require('dotenv').config();
 
 const ListItem = require("react-list-select");
 
-const components = input.components;
-const  decisionCards = input.decisionCards;
+//const components = input.components;
+//const  decisionCards = input.decisionCards;
 
 const { DropDownEditor } = Editors;
-
 
 class Settings extends React.Component {
 
@@ -55,9 +57,11 @@ class Settings extends React.Component {
         let descriptionComponents;
         let descriptionDc;
 
+        //let settingsInfo = JSON.parse(this.props.settingsInfo);
+
         if (localStorage.getItem("visualComponents")) {visComponents =  JSON.parse(localStorage.getItem("visualComponents"));}
         else {
-            visComponents = components.reduce(
+            visComponents = this.props.settingsInfo.components.reduce(
                 (options, option) => ({
                     ...options,
                     [option]: false
@@ -68,12 +72,12 @@ class Settings extends React.Component {
 
         if (localStorage.getItem("decisionCards")) {decision_cards = JSON.parse(localStorage.getItem("decisionCards"));}
         else {
-                decision_cards = decisionCards.reduce(
-                    (options, option) => ({
-                        ...options,
-                        [option]: false
-                    }),
-                    {}
+            decision_cards = this.props.settingsInfo.decisionCards.reduce(
+                (options, option) => ({
+                    ...options,
+                    [option]: false
+                }),
+                {}
                 )
             }
 
@@ -115,11 +119,11 @@ class Settings extends React.Component {
         let checkboxComponents = {};
         let checkboxDecisionCards = {};
 
-        components.map((v, i) => {
+        this.props.settingsInfo.components.map((v, i) => {
             checkboxComponents[v] = false
         });
 
-        decisionCards.map((v, i) => {
+        this.props.settingsInfo.decisionCards.map((v, i) => {
             checkboxDecisionCards[v] = false
         });
 
@@ -157,6 +161,7 @@ class Settings extends React.Component {
     }
 
     componentDidMount() {
+
         if (localStorage.getItem("visualComponents")) {
             let visComps = JSON.parse(localStorage.getItem("visualComponents"));
             this.setState({vis_components: visComps});
@@ -177,6 +182,8 @@ class Settings extends React.Component {
         if (localStorage.getItem("descriptionComponents")) {this.setState({descriptionComponents: JSON.parse(localStorage.getItem("descriptionComponents"))});}
         if (localStorage.getItem("descriptionDc")) {this.setState({descriptionDc: JSON.parse(localStorage.getItem("descriptionDc"))});}
     }
+
+
 
     /**
      * update data grid rows when selection is made. Store new value in local storage and state.
@@ -233,7 +240,7 @@ class Settings extends React.Component {
      */
     getSelectedComponentsInput = selectedItemUpper => {
         this.setState({selectedItemUpper: selectedItemUpper});
-        let selectedComponent = this.findSelected(selectedItemUpper.label, input.componentsParameters);
+        let selectedComponent = this.findSelected(selectedItemUpper.label, this.props.settingsInfo.componentsParameters);
         this.setState({componentsDataGridRows: selectedComponent.rows});
         this.setState({issueTypesDataGridComponents: selectedComponent.issueTypes});
         this.setState({descriptionComponents: selectedComponent.description});
@@ -265,7 +272,7 @@ class Settings extends React.Component {
      */
     getSelectedDcInput = selectedItemLower => {
         this.setState({selectedItemLower: selectedItemLower});
-        let selectedDc = this.findSelected(selectedItemLower.label, input.decisionCardsParameters);
+        let selectedDc = this.findSelected(selectedItemLower.label, this.props.settingsInfo.decisionCardsParameters);
         this.setState({dcDataGridRows: selectedDc.rows});
         this.setState({issueTypesDataGridDc: selectedDc.issueTypes});
         this.setState({descriptionDc: selectedDc.description});
@@ -559,7 +566,7 @@ class Settings extends React.Component {
                                         values={components}
                                         input={"comp"}
                                     />*/}
-                                    {components.map(this.createCheckboxComponents)}
+                                    {this.props.settingsInfo.components.map(this.createCheckboxComponents)}
                                 </div>
                             </Grid>
                             <Grid item xs={2}>
@@ -603,7 +610,7 @@ class Settings extends React.Component {
                                         values={decisionCards}
                                         input={"dc"}
                                     />*/}
-                                    {decisionCards.map(this.createCheckboxDc)}
+                                    {this.props.settingsInfo.decisionCards.map(this.createCheckboxDc)}
                                 </div>
                             </Grid>
                             <Grid item xs={2}>
@@ -676,5 +683,31 @@ class Settings extends React.Component {
         );
     }
 }
+
+const descriptionNameRowShape = PropTypes.shape({
+    description: PropTypes.string.isRequired,
+    name:PropTypes.string.isRequired,
+    rows: PropTypes.arrayOf(PropTypes.shape({
+        issueTypes: PropTypes.arrayOf(PropTypes.arrayOf({
+            id: PropTypes.string.isRequired,
+            value: PropTypes.string.isRequired
+        }).isRequired).isRequired,
+        parameter: PropTypes.string.isRequired,
+        value: PropTypes.string.isRequired
+    }).isRequired).isRequired
+});
+
+Settings.propTypes = {
+    settingsInfo: PropTypes.shape({
+        components: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+        componentsParameters: PropTypes.arrayOf(descriptionNameRowShape.isRequired).isRequired,
+        decisionCards: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+        decisionCardsParameter: PropTypes.arrayOf(descriptionNameRowShape.isRequired).isRequired
+    }).isRequired
+};
+
+/*Settings.propTypes = {
+    settingsInfo: PropTypes.object.isRequired
+};*/
 
 export default withRouter(Settings)

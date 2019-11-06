@@ -285,7 +285,7 @@ class VisualComponentsLayout extends React.Component {
 }
 
 VisualComponentsLayout.propTypes = {
-    onLayoutChange: PropTypes.func.isRequired
+    onLayoutChange: PropTypes.func.isRequired,
 };
 
 

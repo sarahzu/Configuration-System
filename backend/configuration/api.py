@@ -22,7 +22,7 @@ class ConfigurationSettingInput(Resource):
     def get(self):
         controller = Controller()
         settings_info = controller.get_configuration_settings_input()
-        return settings_info
+        return {'input': settings_info}
 
 
 api.add_resource(Test, '/config_api')
