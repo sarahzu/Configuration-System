@@ -1,5 +1,10 @@
-import requests, os, json
-from datetime import datetime, timedelta
+import os, json
+
+# from configuration import model
+
+from model import GitRepo, findJsFiles, getDC
+
+# sys.path.append('/configuration')
 
 
 class Controller:
@@ -29,6 +34,30 @@ class Controller:
         return a json object with all information needed, to build the configuration frontend page
         :return: {json} input file
         """
+
+        local_repo_path = os.getcwd() + os.getenv("REPO_NAME")
+        clone_url = os.getenv("REPO_PATH")
+        git_repo = GitRepo(local_repo_path, clone_url)
+
+        path = os.getcwd() + "/configuration/testParser"
+        test_repo_path = path
+        components_list = findJsFiles(test_repo_path)
+        components_names_list = []
+        parameter_list = []
+        for comp in components_list:
+            comp_name = comp.get("name")
+            components_names_list.append(comp_name)
+            parameter_list.append({"name": comp_name, "rows": [], "description": "bla"})
+
+        description_cards_info = getDC()
+
+        json_test = {
+            "components": components_names_list,
+            "componentsParameters": parameter_list,
+            "decisionCards": description_cards_info.get("decisionCards"),
+            "decisionCardsParameters": description_cards_info.get("decisionCardsParameters")
+
+        }
 
         json_input = {
             "components": [
@@ -431,4 +460,10 @@ class Controller:
                 }
             ]
         }
-        return json_input
+        # return json_input
+        return json_test
+
+
+if __name__ == '__main__':
+    controller = Controller()
+    print(controller.get_configuration_settings_input())

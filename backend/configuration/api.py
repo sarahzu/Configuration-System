@@ -29,4 +29,4 @@ api.add_resource(Test, '/config_api')
 api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

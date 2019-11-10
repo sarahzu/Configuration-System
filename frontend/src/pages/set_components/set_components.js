@@ -10,7 +10,6 @@ class SetComponents extends React.Component {
 
     constructor(props) {
         super(props);
-        //FIXME: set this state to props of parent
         this.state = {info: []};
     }
 
@@ -26,6 +25,17 @@ class SetComponents extends React.Component {
     async getSettingsInfo() {
         await axios.get(process.env.REACT_APP_SETTINGS_INFO, {headers: {'Content-Type': 'application/json'}}).then(response => {
             this.setState({info: response.data.input});
+            if (localStorage.getItem("apiResponse")) {
+                const prevResponse = JSON.parse(localStorage.getItem("apiResponse"));
+                // check if api response differs from last response. If so, clear local storage, so that new
+                // settings an be made
+                if (JSON.stringify(prevResponse) !== JSON.stringify(response.data.input)) {
+                    localStorage.clear()
+                }
+            }
+            else {
+                localStorage.setItem("apiResponse", JSON.stringify(response.data.input))
+            }
         });
     }
 

@@ -58,7 +58,6 @@ export default class App extends React.Component {
         return this.state.isOpen;
     };
 
-
     showSettings (event) {
         event.preventDefault();
     }

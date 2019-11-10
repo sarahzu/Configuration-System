@@ -21,3 +21,4 @@ build/
 
 run-API.command
 run-backend.command
+testParser/
