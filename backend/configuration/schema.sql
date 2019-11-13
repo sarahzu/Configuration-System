@@ -38,3 +38,9 @@ CREATE TABLE decision_card (
   enabled INTEGER NOT NULL,
   FOREIGN KEY (config_id) REFERENCES configuration (config_id)
 );
+
+CREATE TABLE general_settings (
+    git_repo_address STRING,
+    config_id INTEGER NOT NULL,
+  FOREIGN KEY (config_id) REFERENCES configuration (config_id)
+)

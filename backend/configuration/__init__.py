@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 
-from configuration.controller import Controller
+# from configuration.controller import Controller
 
 
 def create_app(test_config=None):

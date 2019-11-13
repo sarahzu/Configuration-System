@@ -16,10 +16,11 @@ import Menu from 'react-burger-menu/lib/menus/slide'
 import {FaHome, FaCog, FaToolbox, FaTh} from "react-icons/fa";
 import { IconContext } from "react-icons";
 import {icon, text} from "@fortawesome/fontawesome-svg-core";
-import {faCog, faEnvelopeOpenText, faHome, faTh, faToolbox} from "@fortawesome/free-solid-svg-icons";
+import {faClone, faCog, faEnvelopeOpenText, faHome, faTh, faToolbox} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Logo from "./images/logo_nfp73_en.png";
 import history from './history';
+import GeneralSettings from "./pages/settings/general_settings";
 
 const Main = styled.main`
     position: relative;
@@ -63,9 +64,6 @@ export default class App extends React.Component {
     }
 
     render () {
-        let iconColor = "white";
-        let iconSize = 30;
-        let layout = this.state.layout;
 
         return (
             <Router>
@@ -85,7 +83,7 @@ export default class App extends React.Component {
                         <Link to="/set" className="menu-item" style={{ textDecoration: 'none' }}>
                             <IconContext.Provider value={{className: "global-class-name" }}>
                                 <div>
-                                    <FontAwesomeIcon icon={faCog}/><span>Set Components</span>
+                                    <FontAwesomeIcon icon={faClone}/><span>Set Components</span>
                                 </div>
                             </IconContext.Provider>
                         </Link>
@@ -108,6 +106,15 @@ export default class App extends React.Component {
                             </IconContext.Provider>
                         </Link>
                         </div>
+                        <div className="content-wrapper">
+                            <Link to="/settings" className="menu-item" style={{ textDecoration: 'none' }}>
+                                <IconContext.Provider value={{ className: "global-class-name" }}>
+                                    <div>
+                                        <FontAwesomeIcon icon={faCog}/><span>Settings</span>
+                                    </div>
+                                </IconContext.Provider>
+                            </Link>
+                        </div>
                     </Menu>
                     <Main>
                         <Switch>
@@ -118,6 +125,9 @@ export default class App extends React.Component {
                             <Route path="/create" exact component={props => <CreateDecisionCard/>}/>
                             <Route exact path="/arrange" render={props => (
                                 <ArrangeComponents {...props}/>
+                            )}/>
+                            <Route exact path="/settings" render={props => (
+                                <GeneralSettings {...props}/>
                             )}/>
                         </Switch>
                     </Main>

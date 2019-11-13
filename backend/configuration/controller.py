@@ -9,6 +9,12 @@ from model import GitRepo, findJsFiles, getDC
 
 class Controller:
 
+    def __init__(self, gitRepoAddress):
+        self.gitRepoAddress = gitRepoAddress
+        self.local_repo_path = os.getcwd() + os.getenv("REPO_NAME")
+        # clone_url = os.getenv("REPO_PATH")
+        self.git_repo = GitRepo(self.local_repo_path, gitRepoAddress)
+
     def get_components(self):
         json_request = {
             "latitude": 0.0000,
@@ -35,13 +41,10 @@ class Controller:
         :return: {json} input file
         """
 
-        local_repo_path = os.getcwd() + os.getenv("REPO_NAME")
-        clone_url = os.getenv("REPO_PATH")
-        git_repo = GitRepo(local_repo_path, clone_url)
-
-        path = os.getcwd() + "/configuration/testParser"
-        test_repo_path = path
-        components_list = findJsFiles(test_repo_path)
+        # path = os.getcwd() + "/configuration/testParser"
+        # path = self.gitRepoAddress
+        # test_repo_path = path
+        components_list = findJsFiles(self.gitRepoAddress)
         components_names_list = []
         parameter_list = []
         for comp in components_list:
