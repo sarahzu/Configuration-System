@@ -5,13 +5,6 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 
 
-# configuration
-DATABASE = '/tmp/flaskr.db'
-DEBUG = True
-SECRET_KEY = 'development key'
-USERNAME = 'admin'
-PASSWORD = 'default'
-
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)

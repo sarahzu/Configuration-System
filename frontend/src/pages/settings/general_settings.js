@@ -1,6 +1,6 @@
 import React from 'react'
-import SetComponents from "../set_components/set_components";
 import axios from "axios";
+
 require('dotenv').config();
 
 class GeneralSettings extends React.Component {
@@ -9,13 +9,18 @@ class GeneralSettings extends React.Component {
         super(props);
 
         let gitRepoAddress;
-        if (localStorage.getItem("gitRepoAddress")) {gitRepoAddress = localStorage.getItem("gitRepoAddress")}
-        else {gitRepoAddress = ''}
+        // if (localStorage.getItem("gitRepoAddress")) {gitRepoAddress = localStorage.getItem("gitRepoAddress")}
+        // else {gitRepoAddress = ''}
 
-        this.state = {gitRepoAddress: gitRepoAddress};
+        this.state = {gitRepoAddress: ""};
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.getGitRepoAddress = this.getGitRepoAddress.bind(this);
+    }
+
+    componentDidMount(){
+        this.getGitRepoAddress()
     }
 
     handleChange(event) {
@@ -30,23 +35,19 @@ class GeneralSettings extends React.Component {
         await axios.post(process.env.REACT_APP_GENERAL_SETTINGS_POST, json_req, {headers: {'Content-Type': 'application/json'}})
             .then(response => {
                 if (response.data.success) {
-                    localStorage.setItem("gitRepoAddress", this.state.gitRepoAddress);
+                    //localStorage.setItem("gitRepoAddress", this.state.gitRepoAddress);
                 }
                 else {
-                    console.assert("git repo is not valid")
+                    console.alert("git repo is not valid")
                 }
             });
-        /*await axios.post(process.env.REACT_APP_GENERAL_SETTINGS_POST,
-            {gitRepoAddress: this.state.gitRepoAddress},
-            {headers: {'Content-Type': 'application/json'}})
-            .then(response => {
-                if (!response.success) {
-                    console.assert("git repo is not valid")
-                }
-                else {
-                    localStorage.setItem("gitRepoAddress", this.state.gitRepoAddress);
-                }
-            });*/
+    }
+
+    async getGitRepoAddress() {
+        await axios.get(process.env.REACT_APP_GET_GIT_REPO)
+            .then(resp => {
+                this.setState({gitRepoAddress: resp.data.repo});
+            });
     }
 
     render()
