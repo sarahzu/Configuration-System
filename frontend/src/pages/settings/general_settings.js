@@ -12,15 +12,23 @@ class GeneralSettings extends React.Component {
         // if (localStorage.getItem("gitRepoAddress")) {gitRepoAddress = localStorage.getItem("gitRepoAddress")}
         // else {gitRepoAddress = ''}
 
-        this.state = {gitRepoAddress: ""};
+        this.state = {
+            gitRepoAddress: "",
+            pull: false,
+            pullSuccess: false
+        };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getGitRepoAddress = this.getGitRepoAddress.bind(this);
+        this.isNewPullAvailable = this.isNewPullAvailable.bind(this);
+        this.onPullButtonPressed = this.onPullButtonPressed.bind(this);
     }
 
     componentDidMount(){
-        this.getGitRepoAddress()
+        this.getGitRepoAddress();
+        this.isNewPullAvailable();
+        this.setState({pullSuccess:false})
     }
 
     handleChange(event) {
@@ -50,6 +58,24 @@ class GeneralSettings extends React.Component {
             });
     }
 
+    async isNewPullAvailable() {
+        await axios.get(process.env.REACT_APP_PULL_AVAILABLE)
+            .then(resp => {
+                this.setState({pull: resp.data.pull});
+            });
+    }
+
+    async onPullButtonPressed() {
+        await axios.get(process.env.REACT_APP_PULL_FROM_REMOTE)
+            .then(resp => {
+                this.setState({pullSuccess: resp.data.success});
+                // if pull was successful, set pull state to false to disable pull button
+                if (resp.data.success) {
+                    this.setState({pull: false})
+                }
+            });
+    }
+
     render()
         {
             return (
@@ -61,6 +87,9 @@ class GeneralSettings extends React.Component {
                                onChange={this.handleChange}/>
                         <input type="submit" value="Submit"/>
                     </form>
+                    {"new pull available: " + this.state.pull}
+                    <button onClick={this.onPullButtonPressed} disabled={!this.state.pull} >Pull</button>
+                    {"pulled successfully" ? this.state.pullSuccess : ""}
                 </div>
             );
         }

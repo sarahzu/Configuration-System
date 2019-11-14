@@ -11,20 +11,38 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def isNewPullAvailable(repo):
+def is_new_pull_available(local_repo_path):
     """
     check if a new pull is available for a given git repo.
 
     :param repo: {Repo} git repo object
     :return: {boolean}
     """
-    count_modified_files = len(repo.index.diff(None))
-    count_staged_files = len(repo.index.diff("HEAD"))
+    g = git.cmd.Git(local_repo_path)
+    git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
+    regex = re.compile(r'master pushes to master \((.*)\)')
+    match = re.search(regex, git_remote_show_origin)
+    up_to_date_status = match.group(1)
 
-    if count_modified_files < 1 and count_staged_files < 1:
-        return False
-    else:
+    if up_to_date_status == 'local out of date':
         return True
+    else:
+        return False
+
+    # try:
+    #     count_modified_files = len(repo.index.diff(None))
+    #     count_staged_files = len(repo.index.diff("HEAD"))
+    #
+    #     head = repo.head.ref
+    #     tracking = head.tracking_branch()
+    #     test = tracking.commit.iter_items(repo, f'{head.path}..{tracking.path}')
+    #
+    #     if count_modified_files < 1 and count_staged_files < 1:
+    #         return False
+    #     else:
+    #         return True
+    # except AttributeError:
+    #     return False
 
 
 def cloneGitRepo(cloneUrl, localRepoPath):
@@ -67,19 +85,29 @@ class GitRepo:
                 regex = re.compile(r'Fetch\sURL\:\s(https.*.git)')
                 match = re.search(regex, git_remote_show_origin)
                 current_clone_url = match.group(1)
+                # if git repo in local repo path is not the same repo as given in the clone url
                 if not current_clone_url == cloneUrl:
-                    # remove all files form folder and clone new git repo
+                    # remove all files form folder and clone new git repo from given clone url
                     shutil.rmtree(self.localRepoPath)
                     cloneGitRepo(cloneUrl, self.localRepoPath)
-                else:
-                    repo = git.Repo(self.localRepoPath)
-                    if isNewPullAvailable(repo):
-                        repo.remotes.origin.pull()
+                # else:
+                #     repo = git.Repo(self.localRepoPath)
+                #     if isNewPullAvailable(repo):
+                #         repo.remotes.origin.pull()
             except git.exc.InvalidGitRepositoryError:
                 print("dir is full with non git related content")
 
     def get_visual_components_from_git(self):
         return findJsFiles(self.localRepoPath)
+
+
+def pull_from_remote(local_repo_path):
+    repo = git.Repo(local_repo_path)
+    if is_new_pull_available(local_repo_path):
+        repo.remotes.origin.pull()
+        return True
+    else:
+        return False
 
 
 def findJsFiles(dirPath):
@@ -267,7 +295,6 @@ def getDC():
                 "description": "blob blob blob"
             }
         ]}
-
 
 # if __name__ == '__main__':
 #     localRepoPath = os.getcwd() + os.getenv("REPO_NAME")

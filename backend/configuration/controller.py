@@ -1,8 +1,8 @@
 import os, json
 
 # from configuration import model
-
-from model import GitRepo, findJsFiles, getDC
+import git
+from model import GitRepo, is_new_pull_available, pull_from_remote, findJsFiles, getDC
 
 # sys.path.append('/configuration')
 
@@ -34,6 +34,13 @@ class Controller:
 
     def get_models(self):
         pass
+
+    def is_new_pull_request_available(self):
+        repo = git.Repo(self.local_repo_path)
+        return is_new_pull_available(self.local_repo_path)
+
+    def pull_from_remote_repo(self):
+        return pull_from_remote(self.local_repo_path)
 
     def get_configuration_settings_input(self):
         """

@@ -53,7 +53,6 @@ class ConfigurationSettingInput(Resource):
         if database.execute('SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone() is not None:
             git_repo_address = database.execute(
                 'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
-            # FIXME: change get_configuration_settings_input() to cloning git repo again
             controller = Controller(git_repo_address)
             settings_info = controller.get_configuration_settings_input()
             return {'input': settings_info}
@@ -75,9 +74,39 @@ class ExtractGitRepoAddressFromDB(Resource):
             return {'repo': ""}
 
 
+class PullRomRemote(Resource):
+
+    def get(self):
+        database = get_db()
+        if database.execute('SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone() is not None:
+            git_repo_address = database.execute(
+                'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
+            controller = Controller(git_repo_address)
+            return {'success': controller.pull_from_remote_repo()}
+        else:
+            return {'success': False}
+
+
+class NewPullAvailable(Resource):
+
+    def get(self):
+        database = get_db()
+        if database.execute('SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone() is not None:
+            git_repo_address = database.execute(
+                'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
+            controller = Controller(git_repo_address)
+            return {'pull': controller.is_new_pull_request_available()}
+        else:
+            return {'pull': False}
+
+
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
 api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 api.add_resource(ExtractGitRepoAddressFromDB, '/config_api/get_git_repo_address')
+api.add_resource(NewPullAvailable, '/config_api/git_new_pull')
+api.add_resource(PullRomRemote, '/config_api/pull_from_remote')
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
