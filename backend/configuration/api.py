@@ -8,8 +8,8 @@ from configuration.db import get_db, init_app
 
 app = Flask(__name__)
 app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'configuration-system.sqlite'),
+    SECRET_KEY='dev',
+    DATABASE=os.path.join(app.instance_path, 'configuration-system.sqlite'),
 )
 api = Api(app)
 CORS(app)
@@ -30,7 +30,7 @@ class GeneralSettings(Resource):
             # check if database already has entry
             if database.execute('SELECT * FROM general_settings WHERE config_id =1').fetchone() is not None:
                 database.execute('UPDATE general_settings SET git_repo_address=(?) WHERE config_id=(?)',
-                                          (git_repo_address, 1))
+                                 (git_repo_address, 1))
                 database.commit()
             else:
                 database.execute(
@@ -78,7 +78,6 @@ class ExtractGitRepoAddressFromDB(Resource):
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
 api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 api.add_resource(ExtractGitRepoAddressFromDB, '/config_api/get_git_repo_address')
-
 
 if __name__ == '__main__':
     app.run(debug=True)

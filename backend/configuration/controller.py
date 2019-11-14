@@ -44,7 +44,7 @@ class Controller:
         # path = os.getcwd() + "/configuration/testParser"
         # path = self.gitRepoAddress
         # test_repo_path = path
-        components_list = findJsFiles(self.gitRepoAddress)
+        components_list = findJsFiles(self.local_repo_path)
         components_names_list = []
         parameter_list = []
         for comp in components_list:

@@ -1,5 +1,6 @@
 import mmap
 import re
+import shutil
 
 from git import Repo
 import os
@@ -61,10 +62,19 @@ class GitRepo:
         # if dir already exists and has content
         else:
             try:
-                self.repo = git.Repo(self.localRepoPath)
-
-                if isNewPullAvailable(self.repo):
-                    self.repo.remotes.origin.pull()
+                g = git.cmd.Git(self.localRepoPath)
+                git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
+                regex = re.compile(r'Fetch\sURL\:\s(https.*.git)')
+                match = re.search(regex, git_remote_show_origin)
+                current_clone_url = match.group(1)
+                if not current_clone_url == cloneUrl:
+                    # remove all files form folder and clone new git repo
+                    shutil.rmtree(self.localRepoPath)
+                    cloneGitRepo(cloneUrl, self.localRepoPath)
+                else:
+                    repo = git.Repo(self.localRepoPath)
+                    if isNewPullAvailable(repo):
+                        repo.remotes.origin.pull()
             except git.exc.InvalidGitRepositoryError:
                 print("dir is full with non git related content")
 
