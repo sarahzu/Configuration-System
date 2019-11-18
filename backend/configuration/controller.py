@@ -11,7 +11,7 @@ class Controller:
 
     def __init__(self, gitRepoAddress):
         self.gitRepoAddress = gitRepoAddress
-        self.local_repo_path = os.getcwd() + os.getenv("REPO_NAME")
+        self.local_repo_path = os.getenv("LOCAL_REPO_PATH")
         # clone_url = os.getenv("REPO_PATH")
         self.git_repo = GitRepo(self.local_repo_path, gitRepoAddress)
 
@@ -36,28 +36,55 @@ class Controller:
         pass
 
     def is_new_pull_request_available(self):
-        repo = git.Repo(self.local_repo_path)
+        """
+        Check if new pull request is available for this local git repo
+
+        :return: {Boolean} true if pull is available, false otherwise
+        """
         return is_new_pull_available(self.local_repo_path)
 
     def pull_from_remote_repo(self):
+        """
+        trigger pull command for this local git repo
+
+        :return: {Boolean} true if pull was successful, false otherwise
+        """
         return pull_from_remote(self.local_repo_path)
+
+    def get_file_names(self):
+        """
+        return a list with all file names from all components
+
+        :return: {list} list containing all filenames
+        """
+        components_list = findJsFiles(self.local_repo_path)
+        filenames_list = []
+        for comp in components_list:
+            filename = comp.get("filename")
+            filenames_list.append(filename)
+        return filenames_list
 
     def get_configuration_settings_input(self):
         """
         return a json object with all information needed, to build the configuration frontend page
         :return: {json} input file
         """
-
-        # path = os.getcwd() + "/configuration/testParser"
-        # path = self.gitRepoAddress
-        # test_repo_path = path
         components_list = findJsFiles(self.local_repo_path)
         components_names_list = []
         parameter_list = []
         for comp in components_list:
             comp_name = comp.get("name")
+            param_list = comp.get("parameters")
+
+            rows_content_list = []
+            for param_dict in param_list:
+                param_name = param_dict.get('name')
+                param_type = param_dict.get('type')
+                row_dict = {'parameter': param_name, 'type': param_type}
+                rows_content_list.append(row_dict)
+
             components_names_list.append(comp_name)
-            parameter_list.append({"name": comp_name, "rows": [], "description": "bla"})
+            parameter_list.append({"name": comp_name, "rows": rows_content_list, "description": "bla"})
 
         description_cards_info = getDC()
 

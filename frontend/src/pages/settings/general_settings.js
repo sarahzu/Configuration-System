@@ -76,6 +76,15 @@ class GeneralSettings extends React.Component {
             });
     }
 
+    returnStringAccordingToBooleanValue(isTrue, trueString, falseString) {
+        if (isTrue) {
+            return trueString
+        }
+        else {
+            return falseString
+        }
+    }
+
     render()
         {
             return (
@@ -87,9 +96,9 @@ class GeneralSettings extends React.Component {
                                onChange={this.handleChange}/>
                         <input type="submit" value="Submit"/>
                     </form>
-                    {"new pull available: " + this.state.pull}
+                    {this.returnStringAccordingToBooleanValue(this.state.pull, "new pull available", "no new pull available")}
                     <button onClick={this.onPullButtonPressed} disabled={!this.state.pull} >Pull</button>
-                    {"pulled successfully" ? this.state.pullSuccess : ""}
+                    {this.returnStringAccordingToBooleanValue(this.state.pullSuccess, "pulled successfully", "")}
                 </div>
             );
         }

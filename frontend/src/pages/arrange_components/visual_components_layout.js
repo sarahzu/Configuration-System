@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Suspense} from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
 import { Responsive, WidthProvider } from "react-grid-layout";
@@ -8,11 +8,18 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCompressArrowsAlt, faExpandArrowsAlt, faToolbox} from "@fortawesome/free-solid-svg-icons";
 import PreviewVisualComponents from "./preview_visual_components";
 import {Link, BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import Home from "../pages/home/home";
+import Home from "../home/home";
 import { withRouter } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import {IconContext} from "react-icons";
-import {ToolBox, ToolBoxItem} from "../pages/arrange_components/toolbox";
+import {ToolBox, ToolBoxItem} from "./toolbox";
+import axios from "axios";
+
+import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+import parse from 'html-react-parser';
+
+import { LazyLoadModule } from "./load_modules";
+
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -23,6 +30,7 @@ class VisualComponentsLayout extends React.Component {
 
         let layout;
         let toolbox;
+        let componentFilenameList;
 
         if (localStorage.getItem('SelectedLayout')){
             layout = JSON.parse(localStorage.getItem('SelectedLayout'));
@@ -31,6 +39,8 @@ class VisualComponentsLayout extends React.Component {
         else {layout = {lg: []};}
         if (localStorage.getItem('toolbox')){toolbox = JSON.parse(localStorage.getItem('toolbox'));}
         else {toolbox = {lg: []}}
+        if (localStorage.getItem("componentFilenameList")) {componentFilenameList = JSON.parse(localStorage.getItem("componentFilenameList"))}
+        else {componentFilenameList = []}
 
         this.state = {
             currentBreakpoint: "lg",
@@ -40,7 +50,9 @@ class VisualComponentsLayout extends React.Component {
             layouts: layout,
             preview: false,
             //toolbox: { lg: [] }
-            toolbox: toolbox
+            toolbox: toolbox,
+            localGitPath: "",
+            componentFilenameList: componentFilenameList
         };
 
         this.onBreakpointChange = this.onBreakpointChange.bind(this);
@@ -51,19 +63,35 @@ class VisualComponentsLayout extends React.Component {
         this.loadPreview = this.loadPreview.bind(this);
         this.backToArranging = this.backToArranging.bind(this);
         this.removeEmptyDictFromList = this.removeEmptyDictFromList.bind(this);
+        this.getLocalGitRepoPath = this.getLocalGitRepoPath.bind(this);
+        this.getComponentsFilenames = this.getComponentsFilenames.bind(this);
     }
 
     componentDidMount() {
         this.setState({mounted: true});
         if (localStorage.getItem("SelectedLayout")) {
             let storedObject = {lg: JSON.parse(localStorage.getItem("SelectedLayout"))};
-            this.removeEmptyDictFromList(storedObject.lg)
+            this.removeEmptyDictFromList(storedObject.lg);
             this.setState({layouts: storedObject});
         }
         if (localStorage.getItem("toolbox")) {
             let toolboxObject = JSON.parse(localStorage.getItem("toolbox"));
             this.setState({toolbox: toolboxObject});
         }
+        this.getLocalGitRepoPath();
+        this.getComponentsFilenames();
+    }
+
+    /**
+     * get the location of the local git repo
+     *
+     * @returns {Promise<void>}
+     */
+    async getLocalGitRepoPath() {
+        await axios.get(process.env.REACT_APP_LOCAL_GIT_REPO_PATH)
+            .then(response => {
+                this.setState({localGitPath: response.data});
+            })
     }
 
     /**
@@ -81,11 +109,77 @@ class VisualComponentsLayout extends React.Component {
     }
 
     /**
+     * return a list with all filenames of the available components
+     *
+     * @returns {Promise<void>}
+     */
+    async getComponentsFilenames() {
+        await axios.get(process.env.REACT_APP_FILENAMES)
+            .then(response => {
+                this.setState({componentFilenameList: response.data})
+                localStorage.setItem("componentFilenameList", JSON.stringify(response.data))
+            })
+    }
+
+    /**
+     * Generate HTML code used in render function. Generates all visual components boxes.
+     *
+     * @returns {*} HTML code
+     */
+    generateVisualComponents() {
+        var VisComponentName = "";
+        let components = {};
+        if (localStorage.getItem("checkedComponents")) {
+            const compList = JSON.parse(localStorage.getItem("checkedComponents"));
+            let i;
+            for (i = 0; i < compList.length; i++) {
+                components[i] = compList[i];
+            }
+        }
+
+        var componentFilenameList = this.state.componentFilenameList;
+
+        return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
+            let compIndex = parseInt(l.i, 10);
+            try {
+                const currentFileName = componentFilenameList[compIndex];
+                if (""+ currentFileName !== "undefined") {
+                    const CurrentComponent = React.lazy(() => import("../../gitclone/" + currentFileName));
+
+                    return (
+                        <div key={l.i} className={"components"}>
+                            <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
+                                &times;
+                            </div>
+                            <div>
+                                <h1>Component {l.i}</h1>
+                                <Suspense fallback={<div>Loading...</div>}>
+                                    <CurrentComponent/>
+                                    {" " + this.state.componentFilenameList}
+                                </Suspense>
+                            </div>
+                        </div>
+                    );
+                }
+                else {
+                    return (<div><h1>nothing</h1></div>)
+                }
+            }
+            catch (e) {
+                return (<div><h1>nothing too</h1></div>)
+            }
+
+        });
+    }
+    //                        <div>{ ReactHtmlParser(html)[0] }</div>
+    //                        <PieChart width={200} breakpoint={480} position={"bottom"}>Pie</PieChart>
+
+    /**
      * generate HTML code used in render function. Generates all visual components boxes.
      *
      * @returns {*} HTML code
      */
-    generateDOM() {
+    /*generateDOM() {
         return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
             return (
                 <div key={l.i} className={l.static ? "static" : "not-static"}>
@@ -122,7 +216,7 @@ class VisualComponentsLayout extends React.Component {
                 </div>
             );
         });
-    }
+    }*/
 
     onBreakpointChange = breakpoint => {
         this.setState(prevState => ({
@@ -241,7 +335,7 @@ class VisualComponentsLayout extends React.Component {
                         compactType={this.state.compactType}
                         preventCollision={!this.state.compactType}
                     >
-                        {this.generateDOM()}
+                        {this.generateVisualComponents()}
                     </ResponsiveReactGridLayout>
                 </div>
             );
@@ -276,7 +370,7 @@ class VisualComponentsLayout extends React.Component {
                         compactType={this.state.compactType}
                         preventCollision={!this.state.compactType}
                     >
-                        {this.generateDOM()}
+                        {this.generateVisualComponents()}
                     </ResponsiveReactGridLayout>
                 </div>
             );

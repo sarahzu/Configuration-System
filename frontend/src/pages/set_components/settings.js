@@ -249,7 +249,8 @@ class Settings extends React.Component {
         this.setState({
             componentsDataGridColumns: [
                 {key: "parameter", name: "Parameter"},
-                {key: "value", name: "Value", editor: null}]
+                {key: "type", name: "Type"},
+                {key: "value", name: "Value", editable: true}]
         });
 
         //Fixme: do not use this.state.whatever in the updateLocalStorage
@@ -260,7 +261,8 @@ class Settings extends React.Component {
         localStorage.setItem("selectedComponents", JSON.stringify(selectedItemUpper));
         localStorage.setItem("componentsDataGridColumns", JSON.stringify([
             {key: "parameter", name: "Parameter"},
-            {key: "value", name: "Value", editor: null}]));
+            {key: "type", name: "Type"},
+            {key: "value", name: "Value", editable: true}]));
         localStorage.setItem("descriptionComponents", JSON.stringify(selectedComponent.description));
     };
 
@@ -282,7 +284,8 @@ class Settings extends React.Component {
         this.setState({
             dcDataGridColumns: [
                 {key: "parameter", name: "Parameter"},
-                {key: "value", name: "Value", editor: null}]
+                {key: "type", name: "Type"},
+                {key: "value", name: "Value", editable: true}]
         });
 
 
@@ -290,7 +293,8 @@ class Settings extends React.Component {
         localStorage.setItem("selectedDc", JSON.stringify(selectedItemLower));
         localStorage.setItem("dcDataGridColumns", JSON.stringify([
             {key: "parameter", name: "Parameter"},
-            {key: "value", name: "Value", editor: null}]));
+            {key: "type", name: "Type"},
+            {key: "value", name: "Value", editable: true}]));
         localStorage.setItem("dcDataGridRows", JSON.stringify(selectedDc.rows));
         localStorage.setItem("descriptionDc", JSON.stringify(selectedDc.description));
     };

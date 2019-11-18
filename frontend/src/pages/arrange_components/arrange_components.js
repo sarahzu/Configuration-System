@@ -3,7 +3,7 @@ import React from 'react'
 import "react-grid-layout/css/styles.css";
 import "../../../node_modules/react-resizable/css/styles.css";
 import { Responsive, WidthProvider } from 'react-grid-layout';
-import VisualComponentsLayout from "../../layout/visual_components_layout";
+import VisualComponentsLayout from "./visual_components_layout";
 import styled from "styled-components";
 
 

@@ -48,11 +48,8 @@ class GeneralSettings(Resource):
 class ConfigurationSettingInput(Resource):
 
     def get(self):
-        database = get_db()
-        # TODO: change config_id to nonstatic one
-        if database.execute('SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone() is not None:
-            git_repo_address = database.execute(
-                'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
+        if not get_git_repo_address() == "":
+            git_repo_address = get_git_repo_address()
             controller = Controller(git_repo_address)
             settings_info = controller.get_configuration_settings_input()
             return {'input': settings_info}
@@ -63,24 +60,19 @@ class ConfigurationSettingInput(Resource):
 class ExtractGitRepoAddressFromDB(Resource):
 
     def get(self):
-        database = get_db()
-        # TODO: change config_id to nonstatic one
-        if database.execute('SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone() is not None:
-            git_repo_address = database.execute(
-                'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
+        if not get_git_repo_address() == "":
+            git_repo_address = get_git_repo_address()
 
             return {'repo': git_repo_address}
         else:
             return {'repo': ""}
 
 
-class PullRomRemote(Resource):
+class PullFromRemoteGit(Resource):
 
     def get(self):
-        database = get_db()
-        if database.execute('SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone() is not None:
-            git_repo_address = database.execute(
-                'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
+        if not get_git_repo_address() == "":
+            git_repo_address = get_git_repo_address()
             controller = Controller(git_repo_address)
             return {'success': controller.pull_from_remote_repo()}
         else:
@@ -90,21 +82,48 @@ class PullRomRemote(Resource):
 class NewPullAvailable(Resource):
 
     def get(self):
-        database = get_db()
-        if database.execute('SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone() is not None:
-            git_repo_address = database.execute(
-                'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
+        if not get_git_repo_address() == "":
+            git_repo_address = get_git_repo_address()
             controller = Controller(git_repo_address)
             return {'pull': controller.is_new_pull_request_available()}
         else:
             return {'pull': False}
 
 
+def get_git_repo_address():
+    database = get_db()
+    if database.execute('SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone() is not None:
+        return database.execute(
+            'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
+    else:
+        return ""
+
+
+class LocalGitRepoPath(Resource):
+
+    def get(self):
+        try:
+            return os.getenv("LOCAL_REPO_PATH")
+        except():
+            return ""
+
+
+class FileNames(Resource):
+
+    def get(self):
+        git_repo_address = get_git_repo_address()
+        controller = Controller(git_repo_address)
+        filenames = controller.get_file_names()
+        return filenames
+
+
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
 api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 api.add_resource(ExtractGitRepoAddressFromDB, '/config_api/get_git_repo_address')
 api.add_resource(NewPullAvailable, '/config_api/git_new_pull')
-api.add_resource(PullRomRemote, '/config_api/pull_from_remote')
+api.add_resource(PullFromRemoteGit, '/config_api/pull_from_remote')
+api.add_resource(LocalGitRepoPath, '/config_api/local_git_repo_path')
+api.add_resource(FileNames, '/config_api/filenames')
 
 
 

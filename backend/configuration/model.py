@@ -15,8 +15,8 @@ def is_new_pull_available(local_repo_path):
     """
     check if a new pull is available for a given git repo.
 
-    :param repo: {Repo} git repo object
-    :return: {boolean}
+    :param local_repo_path: path to the local git repo
+    :return: {boolean} true if pull is available, false otherwise
     """
     g = git.cmd.Git(local_repo_path)
     git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
@@ -102,6 +102,12 @@ class GitRepo:
 
 
 def pull_from_remote(local_repo_path):
+    """
+    trigger git pull request for the given git repo
+
+    :param local_repo_path: path to local git repo
+    :return: {Boolean} true if pull was successful, false otherwise
+    """
     repo = git.Repo(local_repo_path)
     if is_new_pull_available(local_repo_path):
         repo.remotes.origin.pull()
@@ -112,7 +118,7 @@ def pull_from_remote(local_repo_path):
 
 def findJsFiles(dirPath):
     """
-    go through given path and find all visual components in all js files
+    go through given path and find all visual components in all javascript files
 
     :param dirPath:     path to location which has to be searched for visual components
     :return: {list}     list of all components information in the form {'name': name, 'path': path}
@@ -150,7 +156,8 @@ def findJsFiles(dirPath):
                             match = re.search(regex, line)
                             component_name = match.group(1)
 
-                            component_info = {'name': component_name, 'path': file_path, 'parameters': parameter_list}
+                            component_info = {'name': component_name, 'filename': os.path.basename(f.name).strip('.js'),
+                                              'path': file_path, 'parameters': parameter_list}
                             vis_comp_name_list.append(component_info)
     return vis_comp_name_list
 
