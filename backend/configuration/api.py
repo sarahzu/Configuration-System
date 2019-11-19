@@ -117,6 +117,14 @@ class FileNames(Resource):
         return filenames
 
 
+class ComponentsInfoFromFrontend(Resource):
+
+    def post(self):
+        comp_info = request.get_json()
+        # TODO: write to database
+        return True
+
+
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
 api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 api.add_resource(ExtractGitRepoAddressFromDB, '/config_api/get_git_repo_address')
@@ -124,6 +132,8 @@ api.add_resource(NewPullAvailable, '/config_api/git_new_pull')
 api.add_resource(PullFromRemoteGit, '/config_api/pull_from_remote')
 api.add_resource(LocalGitRepoPath, '/config_api/local_git_repo_path')
 api.add_resource(FileNames, '/config_api/filenames')
+api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
+
 
 
 

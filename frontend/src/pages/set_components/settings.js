@@ -1,30 +1,18 @@
 import React from 'react'
 
-import CheckboxList from "./checkbox_list"
 import Checkbox from "./checkbox"
 
-import {SelectableGroup, DeselectAll, SelectAll, TSelectableItemProps, createSelectable} from 'react-selectable-fast'
-//import Select from "react-dropdown-select";
 import Select from 'react-select';
 import Grid from "@material-ui/core/Grid";
-//import 'bootstrap/dist/css/bootstrap.min.css';
-
 import ReactDataGrid from "react-data-grid";
 import { Editors } from "react-data-grid-addons";
-
-//import {Buffer, input} from "./input";
 import {withRouter} from "react-router";
 import PropTypes from "prop-types";
 import ReactDOM from 'react-dom';
-
 import axios from 'axios';
 require('dotenv').config();
 
 const ListItem = require("react-list-select");
-
-//const components = input.components;
-//const  decisionCards = input.decisionCards;
-
 const { DropDownEditor } = Editors;
 
 class Settings extends React.Component {
@@ -56,6 +44,26 @@ class Settings extends React.Component {
         let dcDataGridColumns;
         let descriptionComponents;
         let descriptionDc;
+        let finalComponentsInfo;
+        let currentStats;
+
+        if (localStorage.getItem("currentStats")) {currentStats = JSON.parse(localStorage.getItem("currentStats"))}
+        else {
+            currentStats = {
+                currComponentName: "",
+                currParameters: [],
+                currPosition: {},
+                currEnabled: false,
+                currToolbox: false
+            };
+            localStorage.setItem("currentStats", JSON.stringify(currentStats))
+        }
+
+        if (localStorage.getItem('fullComponentsInfo')){finalComponentsInfo = JSON.parse(localStorage.getItem('fullComponentsInfo'))}
+        else {
+            localStorage.setItem('fullComponentsInfo', JSON.stringify({configuration:{components:[], decisionCards:[]}}));
+            finalComponentsInfo = {}
+        }
 
         //let settingsInfo = JSON.parse(this.props.settingsInfo);
 
@@ -149,6 +157,13 @@ class Settings extends React.Component {
             dcDataGridColumns:dcDataGridColumns,
             descriptionComponents: descriptionComponents,
             descriptionDc: descriptionDc,
+            finalComponentsInfo: finalComponentsInfo,
+
+            currComponentName: currentStats.currComponentName,
+            currParameters: currentStats.currParameters,
+            currPosition: currentStats.currPosition,
+            currEnabled: currentStats.currEnabled,
+            currToolbox: currentStats.currToolbox,
         };
 
         this.componentDidMount = this.componentDidMount.bind(this);
@@ -156,8 +171,6 @@ class Settings extends React.Component {
         this.createCheckboxDc = this.createCheckboxDc.bind(this);
         this.handleCheckboxChangeComponents = this.handleCheckboxChangeComponents.bind(this);
         this.handleCheckboxChangeDc = this.handleCheckboxChangeDc.bind(this);
-
-
     }
 
     componentDidMount() {
@@ -181,6 +194,9 @@ class Settings extends React.Component {
         if (localStorage.getItem("dcDataGridColumns")) {this.setState({dcDataGridColumns: JSON.parse(localStorage.getItem("dcDataGridColumns"))});}
         if (localStorage.getItem("descriptionComponents")) {this.setState({descriptionComponents: JSON.parse(localStorage.getItem("descriptionComponents"))});}
         if (localStorage.getItem("descriptionDc")) {this.setState({descriptionDc: JSON.parse(localStorage.getItem("descriptionDc"))});}
+
+        if (localStorage.getItem("fullComponentsInfo")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("fullComponentsInfo"))});}
+        if (localStorage.getItem("currentStats")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("currentStats"))});}
     }
 
 
@@ -194,10 +210,52 @@ class Settings extends React.Component {
      */
     onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
         let gridRows = this.getGridRows(fromRow, toRow, updated);
+
+        // add chance to current stats
+        let currState = JSON.parse(localStorage.getItem("currentStats"));
+        currState.currParameters = gridRows;
+        localStorage.setItem("currentStats", JSON.stringify(currState));
+        const currCompName = currState.currComponentName;
+        const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        const finalOutputComps = finalOutput.configuration.components;
+        finalOutputComps.map(v => {
+            if (v.name === currCompName) {
+                v.parameter = gridRows
+            }
+        });
+        finalOutput.configuration.components = finalOutputComps;
+        localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
         this.setState({componentsDataGridRows: gridRows});
         localStorage.setItem("componentsDataGridRows", JSON.stringify(gridRows));
 
     };
+
+    /**
+     * collect all information of one component and add it to the final output
+     *
+     * @param componentName {string}    name of the component
+     * @param parameters    {array}     parameter of the component in the form [{"name":"param1", "type":"string","value":"param value"}, {...}, ...]
+     * @param position      {json}      position of the component on screen in the from {"width":360, "height":250, "x":65, "y":203}
+     * @param enabled       {boolean}   true if component is a checked component, false otherwise
+     * @param toolbox       {boolean}   true if component resides in toolbox, false otherwise
+     */
+    addParametersToFinalComponents(componentName, parameters, position, enabled, toolbox) {
+        // if final output is not yet in local storage, add it
+        if (!localStorage.getItem("fullComponentsInfo")) {localStorage.setItem('fullComponentsInfo', JSON.stringify({configuration:{components:[], decisionCards:[]}}));}
+
+        // add content to storage
+        const finalComponents = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        const compMeta = {
+            "name": componentName,
+            "parameter":parameters,
+            "position": position,
+            "enabled": enabled,
+            "toolbox": toolbox
+        };
+        finalComponents.components.put(compMeta);
+        localStorage.setItem("fullComponentsInfo", finalComponents);
+    }
 
     /**
      * get data grid rows
@@ -239,13 +297,54 @@ class Settings extends React.Component {
      * @param selectedItemUpper selected item in the selection. In the form {label:"name", value: -1}
      */
     getSelectedComponentsInput = selectedItemUpper => {
+
         this.setState({selectedItemUpper: selectedItemUpper});
         let selectedComponent = this.findSelected(selectedItemUpper.label, this.props.settingsInfo.componentsParameters);
+
+        // set current stats and store them in local storage
+        const currStats = {};
+        this.setState({
+            currComponentName: selectedItemUpper.label,
+            currParameters: selectedComponent.rows,
+        });
+        const localCurrStats = JSON.parse(localStorage.getItem("currentStats"));
+        localCurrStats.currComponentName = selectedItemUpper.label;
+        localCurrStats.currParameters = selectedComponent.rows;
+        localStorage.setItem("currentStats", JSON.stringify(localCurrStats));
+
         this.setState({componentsDataGridRows: selectedComponent.rows});
         this.setState({issueTypesDataGridComponents: selectedComponent.issueTypes});
         this.setState({descriptionComponents: selectedComponent.description});
-        // this.setState({issueTypeEditorDataGridComponents: <DropDownEditor options={this.state.issueTypesDataGridComponents}/>});
-        // let dropdown = <DropDownEditor options={selectedComponent.rows.issueTypes}/>
+
+        // this.setState({issueTypeEditorDataGridComponents: <DropDownEditor options={["test", "test2", "test3"]}/>});
+        // let dropdown = <DropDownEditor options={["test", "test2", "test3"]}/>
+
+        // const parameter = selectedComponent.rows;
+        // let gridContent = [];
+        // let i;
+        // let dropDownFound = false;
+        // for (i = 0; i < parameter.length; i++) {
+        //     let currParam = parameter[i];
+        //     if (currParam.type === "dynamic") {
+        //         this.setState({
+        //             componentsDataGridColumns: [
+        //                 {key: "parameter", name: "Parameter"},
+        //                 {key: "type", name: "Type"},
+        //                 {key: "value", name: "Value", editable: true}]
+        //         });
+        //         dropDownFound = true;
+        //         return
+        //     }
+        // }
+        // if (!dropDownFound) {
+        //     this.setState({
+        //         componentsDataGridColumns: [
+        //             {key: "parameter", name: "Parameter"},
+        //             {key: "type", name: "Type"},
+        //             {key: "value", name: "Value", editable: true}]
+        //     });
+        // }
+
         this.setState({
             componentsDataGridColumns: [
                 {key: "parameter", name: "Parameter"},
@@ -351,6 +450,18 @@ class Settings extends React.Component {
         Object.keys(this.state.vis_components).map((v, i) => {
             if (v === name) {
                 let checked = this.state.vis_components[v] === false;
+
+                // set in final output the checked state of the component
+                const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+                const finalOutputComps = finalOutput.configuration.components;
+                finalOutputComps.map(v => {
+                    if (v.name === name) {
+                        v.enabled = checked
+                    }
+                });
+                finalOutput.configuration.components = finalOutputComps;
+                localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
                 dict[name] = (checked);
 
                 let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;

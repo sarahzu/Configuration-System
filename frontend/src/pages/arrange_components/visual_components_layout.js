@@ -18,8 +18,6 @@ import axios from "axios";
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 import parse from 'html-react-parser';
 
-import { LazyLoadModule } from "./load_modules";
-
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -155,7 +153,6 @@ class VisualComponentsLayout extends React.Component {
                                 <h1>Component {l.i}</h1>
                                 <Suspense fallback={<div>Loading...</div>}>
                                     <CurrentComponent/>
-                                    {" " + this.state.componentFilenameList}
                                 </Suspense>
                             </div>
                         </div>
@@ -316,6 +313,52 @@ class VisualComponentsLayout extends React.Component {
         this.setState({preview: false});
     }
 
+    /**
+     * send all settings and component infos back to backend
+     */
+    async onFinishClicked() {
+        var i;
+        for (i = 0; i < this.state.checkedComponents.length; i++) {
+            let comp_dict = {
+                "name": this.state.checkedComponents[i],
+                "description":"blabla",
+                "parameter":[
+                    {
+                        "name":"param1",
+                        "type":"string",
+                        "value":"param value",
+                    },
+                    {
+                        "name":"param2",
+                        "type":"boolean",
+                        "value":true,
+                    },
+                    {
+                        "name":"param3",
+                        "type":"integer",
+                        "value":3,
+                    }
+                ],
+                "position": {
+                    "width":360,
+                    "hight":250,
+                    "x":65,
+                    "y":203,
+                },
+                "output":"return value",
+                "enabled":true}
+        }
+
+        const json_input = {};
+
+        await axios.post(process.env.REACT_APP_SET_COMPONENTS,
+            json_input,
+            {headers: {'Content-Type': 'application/json'}})
+            .then(response => {
+
+            });
+    }
+
     render() {
         if (this.state.preview) {
                 return (
@@ -354,7 +397,7 @@ class VisualComponentsLayout extends React.Component {
                     </div>*/}
                     {/*<button onClick={this.onNewLayout}>Generate New Layout</button>*/}
                     <button className="button" onClick={this.loadPreview}><FontAwesomeIcon icon={faExpandArrowsAlt}/></button>
-
+                    <button className="button" onClick={this.onFinishClicked}>Finish</button>
                     <ToolBox
                         items={this.state.toolbox[this.state.currentBreakpoint] || []}
                         onTakeItem={this.onTakeItem}

@@ -39,6 +39,13 @@ export default class App extends React.Component {
         };
     }
 
+    componentDidMount() {
+        // create a local storage for the final output if none already exists
+        if (!localStorage.getItem("fullComponentsInfo")) {
+            localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}}))
+        }
+    }
+
     handleStateChange (state) {
         this.setState({menuOpen: state.isOpen})
     }

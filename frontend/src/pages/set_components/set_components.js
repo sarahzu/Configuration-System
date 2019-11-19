@@ -28,15 +28,53 @@ class SetComponents extends React.Component {
             if (localStorage.getItem("apiResponse")) {
                 const prevResponse = JSON.parse(localStorage.getItem("apiResponse"));
                 // check if api response differs from last response. If so, clear local storage, so that new
-                // settings an be made
+                // settings can be made
                 if (JSON.stringify(prevResponse) !== JSON.stringify(response.data.input)) {
-                    localStorage.clear()
+                    localStorage.clear();
+                    // make a new entry for the final output after erasing everything
+                    localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}}))
                 }
             }
             else {
                 localStorage.setItem("apiResponse", JSON.stringify(response.data.input))
             }
+
+            // fill final output with infos
+            const components = response.data.input.components;
+            let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+            components.map(v => {
+                let currComp = {
+                    "name": v,
+                    "parameter":[],
+                    "position": {},
+                    "enabled": false,
+                    "toolbox": false
+                };
+                // only add component if it is not included yet
+                //FIXME: always true
+                if (!this.isJsonInArray(finalOutput.configuration.components, currComp))
+                {
+                    finalOutput.configuration.components.push(currComp)
+                }
+            });
+            localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
         });
+    }
+
+    /**
+     * check if given json is contained in array
+     *
+     * @param array
+     * @param json
+     * @returns {boolean}
+     */
+    isJsonInArray(array, json) {
+        array.map(v => {
+            if (JSON.stringify(v) === JSON.stringify(json)) {
+                return true
+            }
+        });
+        return false;
     }
 
     render () {
