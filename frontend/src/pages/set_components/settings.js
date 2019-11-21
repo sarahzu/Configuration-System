@@ -68,7 +68,7 @@ class Settings extends React.Component {
         //let settingsInfo = JSON.parse(this.props.settingsInfo);
 
         if (localStorage.getItem("visualComponents")) {visComponents =  JSON.parse(localStorage.getItem("visualComponents"));}
-        else {
+        else if (this.props.settingsInfo.components) {
             visComponents = this.props.settingsInfo.components.reduce(
                 (options, option) => ({
                     ...options,
@@ -77,9 +77,12 @@ class Settings extends React.Component {
                 {}
             )
         }
+        else {
+            visComponents = []
+        }
 
         if (localStorage.getItem("decisionCards")) {decision_cards = JSON.parse(localStorage.getItem("decisionCards"));}
-        else {
+        else if (this.props.settingsInfo.decisionCards) {
             decision_cards = this.props.settingsInfo.decisionCards.reduce(
                 (options, option) => ({
                     ...options,
@@ -88,6 +91,9 @@ class Settings extends React.Component {
                 {}
                 )
             }
+        else {
+            decision_cards = []
+        }
 
         if (localStorage.getItem("checkedComponents")) {checkedComponents = JSON.parse(localStorage.getItem("checkedComponents"))}
         else {checkedComponents = []}
@@ -127,13 +133,16 @@ class Settings extends React.Component {
         let checkboxComponents = {};
         let checkboxDecisionCards = {};
 
-        this.props.settingsInfo.components.map((v, i) => {
-            checkboxComponents[v] = false
-        });
-
-        this.props.settingsInfo.decisionCards.map((v, i) => {
-            checkboxDecisionCards[v] = false
-        });
+        if (props.settingsInfo.components) {
+            this.props.settingsInfo.components.map((v, i) => {
+                checkboxComponents[v] = false
+            });
+        }
+        if (props.settingsInfo.decisionCards) {
+            this.props.settingsInfo.decisionCards.map((v, i) => {
+                checkboxDecisionCards[v] = false
+            });
+        }
 
 
         this.state = {
@@ -653,6 +662,15 @@ class Settings extends React.Component {
             selectedFormattedDcList.push({label: checkedDc[i], value: i-1})
         }
 
+        let propsComponents = "";
+        if (this.props.settingsInfo.components) {
+            propsComponents = this.props.settingsInfo.components.map(this.createCheckboxComponents);
+        }
+        let propsDecisionCards = "";
+        if (this.props.settingsInfo.decisionCards) {
+            propsDecisionCards = this.props.settingsInfo.decisionCards.map(this.createCheckboxDc);
+        }
+
         return (
             <div className="container">
                 <div className="row">
@@ -681,7 +699,7 @@ class Settings extends React.Component {
                                         values={components}
                                         input={"comp"}
                                     />*/}
-                                    {this.props.settingsInfo.components.map(this.createCheckboxComponents)}
+                                    {propsComponents}
                                 </div>
                             </Grid>
                             <Grid item xs={2}>
@@ -723,7 +741,7 @@ class Settings extends React.Component {
                                         values={decisionCards}
                                         input={"dc"}
                                     />*/}
-                                    {this.props.settingsInfo.decisionCards.map(this.createCheckboxDc)}
+                                    {propsDecisionCards}
                                 </div>
                             </Grid>
                             <Grid item xs={2}>

@@ -40,9 +40,15 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        // create a local storage for the final output if none already exists
+        // create a local storage for the final output, layout and toolbox if none already exists
         if (!localStorage.getItem("fullComponentsInfo")) {
             localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}}))
+        }
+        if (!localStorage.getItem("SelectedLayout")) {
+            localStorage.setItem("SelectedLayout", JSON.stringify({lg: []}));
+        }
+        if (!localStorage.getItem("toolbox")) {
+            localStorage.setItem("toolbox", JSON.stringify({lg: []}));
         }
     }
 

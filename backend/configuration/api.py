@@ -120,9 +120,106 @@ class FileNames(Resource):
 class ComponentsInfoFromFrontend(Resource):
 
     def post(self):
-        comp_info = request.get_json()
-        # TODO: write to database
+        frontend_request = request.get_json()
+        configuration = frontend_request.get("configuration")
+        components = configuration.get("components")
+        # TODO: handle decision cards
+        decision_cards = configuration.get("decisionCards")
+
+        database = get_db()
+        for component in components:
+            # if component is already included in database
+            if is_component_in_database(component.get("name")):
+                # update component table
+                database.execute('UPDATE OR IGNORE component '
+                                 'SET description = (?), width = (?), height = (?), x = (?), y = (?), '
+                                 'enabled = (?), toolbox = (?) WHERE component_name = (?)',
+                                 (component.get("description"),
+                                  component.get("position").get("width"), component.get("position").get("height"),
+                                  component.get("position").get("x"), component.get("position").get("y"),
+                                  component.get("enabled"), component.get("toolbox"), component.get("name")))
+                comp_name = component.get("name")
+                component_id = database.execute('SELECT component_id FROM component WHERE component_name = (?)'
+                                                , (comp_name, )).fetchone()[0]
+                parameters = component.get("parameter")
+                # also add parameters to database
+                for parameter in parameters:
+                    value = ""
+                    # extract value if it is given
+                    if parameter.get("value"):
+                        value = parameter.get("value")
+                    # check if parameter is already included in database
+                    if is_component_parameter_in_database(component_id, parameter.get("parameter")):
+                        # update parameter table
+                        database.execute('UPDATE OR IGNORE parameter SET parameter_name = (?), parameter_type = (?), '
+                                         'parameter_value = (?) WHERE component_id = (?)', (parameter.get("parameter"),
+                                                                                            parameter.get("type"),
+                                                                                            value, component_id))
+                    else:
+                        # insert the new parameter in the parameter table
+                        database.execute('INSERT OR IGNORE INTO parameter (component_id, parameter_name, '
+                                         'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+                                         (component_id, parameter.get("parameter"), parameter.get("type"), value))
+            # component is not already included in component table
+            else:
+                # insert new component in component table
+                database.execute('INSERT INTO component (config_id, component_name, description, '
+                                 'width, height, x, y, enabled, toolbox) '
+                                 'VALUES ((?), (?), (?), (?), (?), (?), (?), (?), (?))', (1, component.get("name"),
+                                                                                          component.get("description"),
+                                                                                          component.get("position").get(
+                                                                                              "width"),
+                                                                                          component.get("position").get(
+                                                                                              "height"),
+                                                                                          component.get("position").get(
+                                                                                              "x"),
+                                                                                          component.get("position").get(
+                                                                                              "y"),
+                                                                                          component.get("enabled"),
+                                                                                          component.get("toolbox")))
+                comp_name = component.get("name")
+                component_id = database.execute('SELECT component_id FROM component WHERE component_name = ?'
+                                                , (comp_name,)).fetchone()[0]
+                parameters = component.get("parameter")
+                # also add all parameters to database
+                for parameter in parameters:
+                    value = ""
+                    # extract value if given
+                    if parameter.get("value"):
+                        value = parameter.get("value")
+                    # check if parameter is already included parameter table
+                    if is_component_parameter_in_database(component_id, parameter.get("parameter")):
+                        # update parameter in parameter table
+                        database.execute('UPDATE parameter SET parameter_name = (?), parameter_type = (?), '
+                                         'parameter_value = (?) WHERE component_id = (?)', (parameter.get("parameter"),
+                                                                                            parameter.get("type"),
+                                                                                            value, component_id))
+                    else:
+                        # insert new parameter in parameter table
+                        database.execute('INSERT INTO parameter (component_id, parameter_name, '
+                                         'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+                                         (component_id, parameter.get("parameter"), parameter.get("type"), value))
+        # commit all gathered database commands
+        database.commit()
         return True
+
+
+def is_component_in_database(component_name):
+    database = get_db()
+    if database.execute('SELECT * FROM component WHERE config_id = (?) AND component_name = (?)',
+                        (1, component_name)).fetchone() is not None:
+        return True
+    else:
+        return False
+
+
+def is_component_parameter_in_database(component_id, parameter_name):
+    database = get_db()
+    if database.execute('SELECT component_id FROM parameter WHERE component_id = (?) and parameter_name = (?)',
+                        (component_id, parameter_name)).fetchone() is not None:
+        return True
+    else:
+        return False
 
 
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
@@ -133,9 +230,6 @@ api.add_resource(PullFromRemoteGit, '/config_api/pull_from_remote')
 api.add_resource(LocalGitRepoPath, '/config_api/local_git_repo_path')
 api.add_resource(FileNames, '/config_api/filenames')
 api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
