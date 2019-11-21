@@ -33,31 +33,40 @@ class SetComponents extends React.Component {
                     localStorage.clear();
                     // make a new entry for the final output after erasing everything
                     localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}}))
+
+                    // fill final output with infos
+                    const components = response.data.input.components;
+                    let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+                    components.map(v => {
+                        let currComp = {
+                            "name": v,
+                            "parameter":[],
+                            "position": {},
+                            "enabled": false,
+                            "toolbox": false
+                        };
+                        finalOutput.configuration.components.push(currComp);
+                    });
+                    localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
                 }
             }
             else {
                 localStorage.setItem("apiResponse", JSON.stringify(response.data.input))
+                // fill final output with infos
+                const components = response.data.input.components;
+                let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+                components.map(v => {
+                    let currComp = {
+                        "name": v,
+                        "parameter":[],
+                        "position": {},
+                        "enabled": false,
+                        "toolbox": false
+                    };
+                    finalOutput.configuration.components.push(currComp);
+                });
+                localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
             }
-
-            // fill final output with infos
-            const components = response.data.input.components;
-            let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-            components.map(v => {
-                let currComp = {
-                    "name": v,
-                    "parameter":[],
-                    "position": {},
-                    "enabled": false,
-                    "toolbox": false
-                };
-                // only add component if it is not included yet
-                //FIXME: always true
-                if (!this.isJsonInArray(finalOutput.configuration.components, currComp))
-                {
-                    finalOutput.configuration.components.push(currComp)
-                }
-            });
-            localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
         });
     }
 
@@ -69,12 +78,13 @@ class SetComponents extends React.Component {
      * @returns {boolean}
      */
     isJsonInArray(array, json) {
+        let result = false;
         array.map(v => {
             if (JSON.stringify(v) === JSON.stringify(json)) {
-                return true
+                result = true;
             }
         });
-        return false;
+        return result;
     }
 
     render () {

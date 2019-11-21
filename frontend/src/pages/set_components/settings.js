@@ -707,8 +707,6 @@ class Settings extends React.Component {
                                         onGridRowsUpdated={this.onGridRowsUpdated}
                                         enableCellSelect={true}
                                     />
-                                    {/*onCellExpand={this.onDataGridCellExpand}*/}
-                                    {/*<PageGuide />*/}
                                 </div>
                             </Grid>
                         </Grid>
@@ -751,47 +749,9 @@ class Settings extends React.Component {
                                         onGridRowsUpdated={this.onGridRowsUpdated}
                                         enableCellSelect={true}
                                     />
-                                    {/*<PageGuide />*/}
                                 </div>
                             </Grid>
                         </Grid>
-
-
-
-
-                        {/*<div className="list-group col-xs-6">
-                            <h4>Can Read</h4>
-                            <CheckboxList
-                                onChange={(values) => this.onChange('read', values)}
-                                values={languages}
-                            />
-                        </div>
-
-                        <div className="list-group col-xs-6">
-                            <h4>Can Write</h4>
-                            <CheckboxList
-                                onChange={(values) => this.onChange('write', values)}
-                                values={languages}
-                            />
-                        </div>
-
-                        <div className="list-group col-xs-6">
-                            <h4>Can Understand</h4>
-                            <CheckboxList
-                                onChange={(values) => this.onChange('understand', values)}
-                                values={languages}
-                            />
-                        </div>*/}
-
-                        {/*<button
-                            className="btn btn-primary"
-                            onClick={(e) => {
-                                console.log(this.state);
-                                e.preventDefault();
-                            }}
-                        >
-                            Save
-                        </button>*/}
                     </form>
                 </div>
             </div>
@@ -799,6 +759,9 @@ class Settings extends React.Component {
     }
 }
 
+/**
+ * props description of parameters
+ */
 const descriptionNameRowShape = PropTypes.shape({
     description: PropTypes.string.isRequired,
     name:PropTypes.string.isRequired,

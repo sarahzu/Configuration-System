@@ -114,7 +114,7 @@ class VisualComponentsLayout extends React.Component {
     async getComponentsFilenames() {
         await axios.get(process.env.REACT_APP_FILENAMES)
             .then(response => {
-                this.setState({componentFilenameList: response.data})
+                this.setState({componentFilenameList: response.data});
                 localStorage.setItem("componentFilenameList", JSON.stringify(response.data))
             })
     }
@@ -139,8 +139,26 @@ class VisualComponentsLayout extends React.Component {
 
         return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
             let compIndex = parseInt(l.i, 10);
+
             try {
                 const currentFileName = componentFilenameList[compIndex];
+
+                // fill final output with layout information
+                const visCompName = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[compIndex].name;
+                let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+                const finalOutputComps = finalOutput.configuration.components;
+                finalOutputComps.map(v => {
+                    if (v.name === visCompName) {
+                        v.position = {
+                            width: parseInt(l.w, 10), height: parseInt(l.h, 10),
+                            x: parseInt(l.x, 10), y: parseInt(l.y, 10)
+                        }
+                    }
+                });
+                finalOutput.configuration.components = finalOutputComps;
+                localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+
                 if (""+ currentFileName !== "undefined") {
                     const CurrentComponent = React.lazy(() => import("../../gitclone/" + currentFileName));
 
@@ -229,7 +247,7 @@ class VisualComponentsLayout extends React.Component {
     };
 
     /**
-     * Triggered if an item from visual component arrangement section is taken to the toolbox.
+     * Triggered if an item from toolbox is taken to the visual component arrangement section.
      * Update local storage entries of layouts and toolbox and the corresponding states.
      *
      * @param item item which has been selected
@@ -245,10 +263,22 @@ class VisualComponentsLayout extends React.Component {
 
         localStorage.setItem("toolbox", JSON.stringify(toolbox));
         localStorage.setItem("SelectedLayout", JSON.stringify(layouts));
+
+        // fill final output with layout information
+        const visCompName = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[parseInt(item.i, 10)].name;
+        let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        const finalOutputComps = finalOutput.configuration.components;
+        finalOutputComps.map(v => {
+            if (v.name === visCompName) {
+                v.toolbox = false;
+            }
+        });
+        finalOutput.configuration.components = finalOutputComps;
+        localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
     };
 
     /**
-     * Triggered if an item from the toolbox is taken to the visual component arrangement section.
+     * Triggered if an item from the visual component arrangement section is taken to the toolbox.
      * Update local storage entries of layouts and toolbox and the corresponding states.
      *
      * @param item item which has been selected
@@ -270,6 +300,18 @@ class VisualComponentsLayout extends React.Component {
         this.setState({toolbox: toolbox, layouts: layouts});
         localStorage.setItem("toolbox", JSON.stringify(toolbox));
         localStorage.setItem("SelectedLayout", JSON.stringify(layouts));
+
+        // fill final output with layout information
+        const visCompName = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[parseInt(item.i, 10)].name;
+        let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        const finalOutputComps = finalOutput.configuration.components;
+        finalOutputComps.map(v => {
+            if (v.name === visCompName) {
+                v.toolbox = true;
+            }
+        });
+        finalOutput.configuration.components = finalOutputComps;
+        localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
     };
 
@@ -317,45 +359,15 @@ class VisualComponentsLayout extends React.Component {
      * send all settings and component infos back to backend
      */
     async onFinishClicked() {
-        var i;
-        for (i = 0; i < this.state.checkedComponents.length; i++) {
-            let comp_dict = {
-                "name": this.state.checkedComponents[i],
-                "description":"blabla",
-                "parameter":[
-                    {
-                        "name":"param1",
-                        "type":"string",
-                        "value":"param value",
-                    },
-                    {
-                        "name":"param2",
-                        "type":"boolean",
-                        "value":true,
-                    },
-                    {
-                        "name":"param3",
-                        "type":"integer",
-                        "value":3,
-                    }
-                ],
-                "position": {
-                    "width":360,
-                    "hight":250,
-                    "x":65,
-                    "y":203,
-                },
-                "output":"return value",
-                "enabled":true}
-        }
 
-        const json_input = {};
+        const json_input = JSON.parse(localStorage.getItem("fullComponentsInfo"));
 
         await axios.post(process.env.REACT_APP_SET_COMPONENTS,
             json_input,
             {headers: {'Content-Type': 'application/json'}})
             .then(response => {
-
+                console.log(response.data);
+                alert('Settings have been saved!')
             });
     }
 
