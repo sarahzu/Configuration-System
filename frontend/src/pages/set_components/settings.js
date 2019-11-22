@@ -46,6 +46,10 @@ class Settings extends React.Component {
         let descriptionDc;
         let finalComponentsInfo;
         let currentStats;
+        let parametersUpper;
+
+        if (localStorage.getItem("parametersUpper")) {parametersUpper = JSON.parse(localStorage.getItem("parametersUpper"))}
+        else {parametersUpper = {}}
 
         if (localStorage.getItem("currentStats")) {currentStats = JSON.parse(localStorage.getItem("currentStats"))}
         else {
@@ -160,6 +164,7 @@ class Settings extends React.Component {
             issueTypesDataGridDc: [],
             selectedItemUpper: selectedItemUpper,
             selectedItemLower: selectedItemLower,
+            parametersUpper: parametersUpper,
             issueTypeEditorDataGridComponents: null,
             issueTypeEditorDataGridDc: null,
             componentsDataGridColumns: componentsDataGridColumns,
@@ -206,18 +211,20 @@ class Settings extends React.Component {
 
         if (localStorage.getItem("fullComponentsInfo")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("fullComponentsInfo"))});}
         if (localStorage.getItem("currentStats")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("currentStats"))});}
+        if (localStorage.getItem("parametersUpper")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("parametersUpper"))});}
+
     }
 
 
 
     /**
-     * update data grid rows when selection is made. Store new value in local storage and state.
+     * update data grid rows when selection on components is made. Store new value in local storage and state.
      *
-     * @param fromRow
-     * @param toRow
-     * @param updated
+     * @param fromRow   index of origin row
+     * @param toRow     index of new row
+     * @param updated   updated value
      */
-    onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+    onComponentGridRowsUpdated = ({ fromRow, toRow, updated }) => {
         let gridRows = this.getGridRows(fromRow, toRow, updated);
 
         // add chance to current stats
@@ -229,7 +236,13 @@ class Settings extends React.Component {
         const finalOutputComps = finalOutput.configuration.components;
         finalOutputComps.map(v => {
             if (v.name === currCompName) {
-                v.parameter = gridRows
+                v.parameter = gridRows;
+
+                // also update the overall parameters
+                let selectedParameters = this.state.parametersUpper;
+                selectedParameters[v.name] = gridRows;
+                this.setState({parametersUpper: selectedParameters})
+                localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters))
             }
         });
         finalOutput.configuration.components = finalOutputComps;
@@ -237,6 +250,41 @@ class Settings extends React.Component {
 
         this.setState({componentsDataGridRows: gridRows});
         localStorage.setItem("componentsDataGridRows", JSON.stringify(gridRows));
+
+    };
+
+    /**
+     * update data grid rows when selection on decision cards is made. Store new value in local storage and state.
+     *
+     * @param fromRow   index of origin row
+     * @param toRow     index of new row
+     * @param updated   updated value
+     */
+    onDecisionCardsGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+        let gridRows = this.getGridRows(fromRow, toRow, updated);
+
+        // add chance to current stats
+        // let currState = JSON.parse(localStorage.getItem("currentStats"));
+        // currState.currParameters = gridRows;
+        // localStorage.setItem("currentStats", JSON.stringify(currState));
+        // const currCompName = currState.currComponentName;
+        // const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        // const finalOutputComps = finalOutput.configuration.components;
+        // finalOutputComps.map(v => {
+        //     if (v.name === currCompName) {
+        //         v.parameter = gridRows;
+        //
+        //         // also update the overall parameters
+        //         let selectedParameters = localStorage.getItem("parametersUpper");
+        //         selectedParameters[v.name] = gridRows;
+        //         localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters))
+        //     }
+        // });
+        // finalOutput.configuration.components = finalOutputComps;
+        // localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+        this.setState({dcDataGridColumns: gridRows});
+        localStorage.setItem("dcDataGridColumns", JSON.stringify(gridRows));
 
     };
 
@@ -316,12 +364,27 @@ class Settings extends React.Component {
             currComponentName: selectedItemUpper.label,
             currParameters: selectedComponent.rows,
         });
+        // let parameters = JSON.parse(localStorage.getItem("parametersUpper"));
+        let parameters = this.state.parametersUpper;
         const localCurrStats = JSON.parse(localStorage.getItem("currentStats"));
         localCurrStats.currComponentName = selectedItemUpper.label;
-        localCurrStats.currParameters = selectedComponent.rows;
+        // localCurrStats.currParameters = selectedComponent.rows;
+        localCurrStats.currParameters = parameters[selectedItemUpper.label];
         localStorage.setItem("currentStats", JSON.stringify(localCurrStats));
 
-        this.setState({componentsDataGridRows: selectedComponent.rows});
+        // set data grid rows according to parameters of selected component
+        if (localCurrStats.currParameters) {
+            this.setState({componentsDataGridRows: localCurrStats.currParameters});
+            localStorage.setItem("componentsDataGridRows", JSON.stringify(localCurrStats.currParameters));
+
+        }
+        else {
+            this.setState({componentsDataGridRows: selectedComponent.rows});
+            localStorage.setItem("componentsDataGridRows", JSON.stringify(selectedComponent.rows));
+        }
+
+
+
         this.setState({issueTypesDataGridComponents: selectedComponent.issueTypes});
         this.setState({descriptionComponents: selectedComponent.description});
 
@@ -364,7 +427,6 @@ class Settings extends React.Component {
         //Fixme: do not use this.state.whatever in the updateLocalStorage
         // better define onle the values you need in the separate function with the original values!
 
-        localStorage.setItem("componentsDataGridRows", JSON.stringify(selectedComponent.rows));
         localStorage.setItem("issueTypesDataGridComponents", JSON.stringify(selectedComponent.issueTypes));
         localStorage.setItem("selectedComponents", JSON.stringify(selectedItemUpper));
         localStorage.setItem("componentsDataGridColumns", JSON.stringify([
@@ -722,7 +784,7 @@ class Settings extends React.Component {
                                         columns={this.state.componentsDataGridColumns}
                                         rowGetter={i => this.state.componentsDataGridRows[i]}
                                         rowsCount={this.state.componentsDataGridRows.length}
-                                        onGridRowsUpdated={this.onGridRowsUpdated}
+                                        onGridRowsUpdated={this.onComponentGridRowsUpdated}
                                         enableCellSelect={true}
                                     />
                                 </div>
@@ -764,7 +826,7 @@ class Settings extends React.Component {
                                         columns={this.state.dcDataGridColumns}
                                         rowGetter={i => this.state.dcDataGridRows[i]}
                                         rowsCount={this.state.dcDataGridRows.length}
-                                        onGridRowsUpdated={this.onGridRowsUpdated}
+                                        onGridRowsUpdated={this.onDecisionCardsGridRowsUpdated}
                                         enableCellSelect={true}
                                     />
                                 </div>
