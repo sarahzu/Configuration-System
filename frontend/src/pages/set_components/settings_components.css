@@ -1,0 +1,6 @@
+.noHeaderWrapper .react-grid-Header {
+    display: none !important;
+}
+.noHeaderWrapper  .react-grid-Viewport {
+    top: 0px !important;
+}
