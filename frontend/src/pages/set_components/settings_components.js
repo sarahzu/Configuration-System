@@ -27,14 +27,14 @@ class SettingsComponents extends React.Component {
 
         let dynamicColumns;
 
-        if (localStorage.getItem("dynamicDataGridColumns")) {dynamicColumns = JSON.parse(localStorage.getItem("dynamicDataGridColumns"))}
-        else {
-            dynamicColumns = [
-                {key: "parameter", name: "Parameter"},
-                {key: "type", name: "Type"},
-                {key: "value", name: "Value", editor: dropdown}];
-            localStorage.setItem("dynamicDataGridColumns", JSON.stringify(dynamicColumns))
-        }
+        // if (localStorage.getItem("dynamicDataGridColumns")) {dynamicColumns = JSON.parse(localStorage.getItem("dynamicDataGridColumns"))}
+        // else {
+        dynamicColumns = [
+            {key: "parameter", name: "Parameter"},
+            {key: "type", name: "Type"},
+            {key: "valueDynamic", name: "Value", editor: dropdown}];
+        //     localStorage.setItem("dynamicDataGridColumns", JSON.stringify(dynamicColumns))
+        // }
 
         if (localStorage.getItem("parametersUpper")) {parameters = JSON.parse(localStorage.getItem("parametersUpper"))}
         else {parameters = {}}
@@ -108,7 +108,7 @@ class SettingsComponents extends React.Component {
         if (localStorage.getItem("componentsDataGridColumns")) {this.setState({componentsDataGridColumns: JSON.parse(localStorage.getItem("componentsDataGridColumns"))});}
         if (localStorage.getItem("descriptionComponents")) {this.setState({descriptionComponents: JSON.parse(localStorage.getItem("descriptionComponents"))});}
         if (localStorage.getItem("parametersUpper")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("parametersUpper"))});}
-        if (localStorage.getItem("dynamicDataGridColumns")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("dynamicDataGridColumns"))});}
+        //if (localStorage.getItem("dynamicDataGridColumns")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("dynamicDataGridColumns"))});}
 
     }
 
