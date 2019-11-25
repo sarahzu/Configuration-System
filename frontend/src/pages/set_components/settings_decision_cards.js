@@ -158,20 +158,25 @@ class SettingsDecisionCards extends React.Component {
         this.setState({checkedDc: checkedItems});
         localStorage.setItem("checkedDecisionCards", JSON.stringify(checkedItems));
 
-        if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemLower.label) < 0) {
-            //FIXME: add local storage
-            this.setState({selectedItemLower: []});
-            this.setState({dcDataGridRows: []});
-            this.setState({issueTypesDataGridDc: []});
-            this.setState({descriptionDc: ""});
-            //this.setState({issueTypeEditorDataGridDc: null});
-            this.setState({dcDataGridColumns: []});
+        try {
+            if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemLower.label) < 0) {
+                //FIXME: add local storage
+                this.setState({selectedItemLower: []});
+                this.setState({dcDataGridRows: []});
+                this.setState({issueTypesDataGridDc: []});
+                this.setState({descriptionDc: ""});
+                //this.setState({issueTypeEditorDataGridDc: null});
+                this.setState({dcDataGridColumns: []});
 
-            localStorage.setItem("issueTypesDataGridDC", JSON.stringify([]));
-            localStorage.setItem("selectedDc", JSON.stringify([]));
-            localStorage.setItem("dcDataGridColumns", JSON.stringify([]));
-            localStorage.setItem("dcDataGridRows", JSON.stringify([]));
-            localStorage.setItem("descriptionDc", JSON.stringify(""));
+                localStorage.setItem("issueTypesDataGridDC", JSON.stringify([]));
+                localStorage.setItem("selectedDc", JSON.stringify([]));
+                localStorage.setItem("dcDataGridColumns", JSON.stringify([]));
+                localStorage.setItem("dcDataGridRows", JSON.stringify([]));
+                localStorage.setItem("descriptionDc", JSON.stringify(""));
+            }
+        }
+        catch (e) {
+
         }
 
     };

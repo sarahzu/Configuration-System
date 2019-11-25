@@ -17,22 +17,22 @@ class SettingsComponents extends React.Component {
         let issueTypesDataGridComponents;
         let selectedItem;
         let issueTypeEditorDataGridComponents;
-        let componentsDataGridColumns;
+        let componentsDataGridColumns = [
+            {key: "parameter", name: "Parameter"},
+            {key: "type", name: "Type"},
+            {key: "value", name: "Value", editable: true}];
         let descriptionComponents;
         let parameters;
         let dropdown = <DropDownEditor options={[
             { id: "model1", value: "aum.mfa.co2" },
             { id: "model2", value: "aum.mfa.carbon" },
             { id: "model3", value: "aum.mfa.water" }]}/>;
-
-        let dynamicColumns;
-
         // if (localStorage.getItem("dynamicDataGridColumns")) {dynamicColumns = JSON.parse(localStorage.getItem("dynamicDataGridColumns"))}
         // else {
-        dynamicColumns = [
+        let dynamicColumns = [
             {key: "parameter", name: "Parameter"},
             {key: "type", name: "Type"},
-            {key: "valueDynamic", name: "Value", editor: dropdown}];
+            {key: "value", name: "Value", editor: dropdown}];
         //     localStorage.setItem("dynamicDataGridColumns", JSON.stringify(dynamicColumns))
         // }
 
@@ -62,8 +62,8 @@ class SettingsComponents extends React.Component {
         if (localStorage.getItem("selectedComponents")) {selectedItem = JSON.parse(localStorage.getItem("selectedComponents"))}
         else {selectedItem = []}
 
-        if (localStorage.getItem("componentsDataGridColumns")) {componentsDataGridColumns = JSON.parse(localStorage.getItem("componentsDataGridColumns"))}
-        else {componentsDataGridColumns = []}
+        // if (localStorage.getItem("componentsDataGridColumns")) {componentsDataGridColumns = JSON.parse(localStorage.getItem("componentsDataGridColumns"))}
+        // else {componentsDataGridColumns = []}
 
         if (localStorage.getItem("descriptionComponents")) {descriptionComponents = JSON.parse(localStorage.getItem("descriptionComponents"))}
         else {descriptionComponents = ""}
@@ -121,6 +121,45 @@ class SettingsComponents extends React.Component {
      */
     onComponentGridRowsUpdated = ({ fromRow, toRow, updated }) => {
         let gridRows = this.getGridRows(fromRow, toRow, updated);
+
+        // add chance to current stats
+        let currState = JSON.parse(localStorage.getItem("currentStats"));
+        currState.currParameters = gridRows;
+        localStorage.setItem("currentStats", JSON.stringify(currState));
+        const currCompName = currState.currComponentName;
+        const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        const finalOutputComps = finalOutput.configuration.components;
+        finalOutputComps.map(v => {
+            if (v.name === currCompName) {
+                v.parameter = gridRows;
+
+                // also update the overall parameters
+                let selectedParameters = this.state.parametersUpper;
+                selectedParameters[v.name] = gridRows;
+                this.setState({parametersUpper: selectedParameters});
+                localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters))
+            }
+        });
+        finalOutput.configuration.components = finalOutputComps;
+        localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+        this.setState({componentsDataGridRows: gridRows});
+        localStorage.setItem("componentsDataGridRows", JSON.stringify(gridRows));
+
+    };
+
+    /**
+     * update data grid rows when selection on components is made. Store new value in local storage and state.
+     *
+     * @param fromRow   index of origin row
+     * @param toRow     index of new row
+     * @param updated   updated value
+     */
+    onDynamicComponentGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+        const dynamicFromRow = fromRow + this.state.componentsDataGridRows.length -1;
+        const dynamicToRow = toRow + this.state.componentsDataGridRows.length -1;
+
+        let gridRows = this.getGridRows(dynamicFromRow , dynamicToRow, updated);
 
         // add chance to current stats
         let currState = JSON.parse(localStorage.getItem("currentStats"));
@@ -251,22 +290,22 @@ class SettingsComponents extends React.Component {
         //     });
         // }
 
-        this.setState({
-            componentsDataGridColumns: [
-                {key: "parameter", name: "Parameter"},
-                {key: "type", name: "Type"},
-                {key: "value", name: "Value", editable: true}]
-        });
+        // this.setState({
+        //     componentsDataGridColumns: [
+        //         {key: "parameter", name: "Parameter"},
+        //         {key: "type", name: "Type"},
+        //         {key: "value", name: "Value", editable: true}]
+        // });
 
         //Fixme: do not use this.state.whatever in the updateLocalStorage
         // better define onle the values you need in the separate function with the original values!
 
         localStorage.setItem("issueTypesDataGridComponents", JSON.stringify(selectedComponent.issueTypes));
         localStorage.setItem("selectedComponents", JSON.stringify(selectedItemUpper));
-        localStorage.setItem("componentsDataGridColumns", JSON.stringify([
-            {key: "parameter", name: "Parameter"},
-            {key: "type", name: "Type"},
-            {key: "value", name: "Value", editable: true}]));
+        // localStorage.setItem("componentsDataGridColumns", JSON.stringify([
+        //     {key: "parameter", name: "Parameter"},
+        //     {key: "type", name: "Type"},
+        //     {key: "value", name: "Value", editable: true}]));
         localStorage.setItem("descriptionComponents", JSON.stringify(selectedComponent.description));
     };
 
@@ -395,12 +434,12 @@ class SettingsComponents extends React.Component {
             this.setState({issueTypesDataGridComponents: []});
             this.setState({descriptionComponents: ""});
             //this.setState({issueTypeEditorDataGridComponents: null});
-            this.setState({componentsDataGridColumns: []});
+            // this.setState({componentsDataGridColumns: []});
 
             localStorage.setItem("componentsDataGridRows", JSON.stringify([]));
             localStorage.setItem("issueTypesDataGridComponents", JSON.stringify([]));
             localStorage.setItem("selectedComponents", JSON.stringify([]));
-            localStorage.setItem("componentsDataGridColumns", JSON.stringify([]));
+            //localStorage.setItem("componentsDataGridColumns", JSON.stringify([]));
             localStorage.setItem("descriptionComponents", JSON.stringify(""));
 
             if(checkedItems.length === 0) {localStorage.setItem("SelectedLayout", JSON.stringify({lg: []}))}
@@ -523,16 +562,16 @@ class SettingsComponents extends React.Component {
                             enableCellSelect={true}
                             minHeight={200}
                         />
-                        <div className={"noHeaderWrapper"}>
-                            <ReactDataGrid
-                                columns={this.state.dynamicColumns}
-                                rowGetter={i => this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows)[i]}
-                                rowsCount={this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length}
-                                onGridRowsUpdated={this.onComponentGridRowsUpdated}
-                                enableCellSelect={true}
-                                minHeight={200}
-                            />
-                        </div>
+                    </div>
+                    <div className={"noHeaderWrapper"}>
+                        <ReactDataGrid
+                            columns={this.state.dynamicColumns}
+                            rowGetter={i => this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows)[i]}
+                            rowsCount={this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length}
+                            onGridRowsUpdated={this.onDynamicComponentGridRowsUpdated}
+                            enableCellSelect={true}
+                            minHeight={200}
+                        />
                     </div>
                 </Grid>
             </Grid>
