@@ -149,7 +149,7 @@ class SettingsComponents extends React.Component {
     };
 
     /**
-     * update data grid rows when selection on components is made. Store new value in local storage and state.
+     * update dynamic data grid rows when selection on components is made. Store new value in local storage and state.
      *
      * @param fromRow   index of origin row
      * @param toRow     index of new row

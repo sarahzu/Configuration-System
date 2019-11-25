@@ -68,7 +68,7 @@ class VisualComponentsLayout extends React.Component {
     componentDidMount() {
         this.setState({mounted: true});
         if (localStorage.getItem("SelectedLayout")) {
-            let storedObject = {lg: JSON.parse(localStorage.getItem("SelectedLayout"))};
+            let storedObject = JSON.parse(localStorage.getItem("SelectedLayout"));
             this.removeEmptyDictFromList(storedObject.lg);
             this.setState({layouts: storedObject});
         }
