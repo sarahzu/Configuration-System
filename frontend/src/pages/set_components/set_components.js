@@ -58,6 +58,7 @@ class SetComponents extends React.Component {
                 // settings can be made
                 if (JSON.stringify(prevResponse) !== JSON.stringify(response.data.input)) {
                     localStorage.clear();
+                    localStorage.setItem("apiResponse", JSON.stringify(response.data.input));
                     // make a new entry for the final output after erasing everything
                     localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}}))
 

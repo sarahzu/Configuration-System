@@ -44,6 +44,7 @@ CREATE TABLE decision_card (
 CREATE TABLE general_settings (
     git_repo_address STRING,
     config_id INTEGER NOT NULL,
+    is_active BOOLEAN NOT NULL,
     FOREIGN KEY (config_id) REFERENCES configuration (config_id)
 );
 

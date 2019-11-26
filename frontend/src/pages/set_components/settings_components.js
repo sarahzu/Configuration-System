@@ -228,7 +228,15 @@ class SettingsComponents extends React.Component {
         });
         // let parameters = JSON.parse(localStorage.getItem("parametersUpper"));
         let parameters = this.state.parametersUpper;
-        const localCurrStats = JSON.parse(localStorage.getItem("currentStats"));
+
+        let localCurrStats;
+        if (JSON.parse(localStorage.getItem("currentStats"))) {
+            localCurrStats = JSON.parse(localStorage.getItem("currentStats"));
+        }
+        else {
+            localCurrStats = {}
+        }
+
         localCurrStats.currComponentName = selectedItemUpper.label;
         // localCurrStats.currParameters = selectedComponent.rows;
         localCurrStats.currParameters = parameters[selectedItemUpper.label];
@@ -363,8 +371,17 @@ class SettingsComponents extends React.Component {
 
                 dict[name] = (checked);
 
-                let layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
-                let toolbox = JSON.parse(localStorage.getItem("toolbox")).lg;
+                let layout;
+                let toolbox;
+                if (JSON.parse(localStorage.getItem("SelectedLayout")) && JSON.parse(localStorage.getItem("toolbox"))) {
+                    layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
+                    toolbox = JSON.parse(localStorage.getItem("toolbox")).lg;
+                }
+                else {
+                    layout = [];
+                    toolbox = [];
+                }
+
 
                 if (checked && layout) {
                     //fill empty slots in layout array

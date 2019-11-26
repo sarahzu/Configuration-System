@@ -437,7 +437,6 @@ VisualComponentsLayout.propTypes = {
     onLayoutChange: PropTypes.func.isRequired,
 };
 
-
 VisualComponentsLayout.defaultProps = {
     className: "layout",
     rowHeight: 30,

@@ -31,11 +31,14 @@ class GeneralSettings(Resource):
             if database.execute('SELECT * FROM general_settings WHERE config_id =1').fetchone() is not None:
                 database.execute('UPDATE general_settings SET git_repo_address=(?) WHERE config_id=(?)',
                                  (git_repo_address, 1))
+                database.execute('DELETE FROM parameter')
+                database.execute('DELETE FROM component')
+
                 database.commit()
             else:
                 database.execute(
-                    'INSERT INTO general_settings (git_repo_address, config_id) VALUES (?, ?)',
-                    (git_repo_address, 1)
+                    'INSERT INTO general_settings (git_repo_address, config_id, is_active) VALUES (?, ?, ?)',
+                    (git_repo_address, 1, True)
                 )
                 database.commit()
 
