@@ -5,6 +5,7 @@ import {withRouter} from "react-router";
 import PropTypes from "prop-types";
 import SettingsDecisionCards from "./settings_decision_cards";
 import SettingsComponents from "./settings_components";
+import axios from "axios";
 
 require('dotenv').config();
 
@@ -41,6 +42,9 @@ class Settings extends React.Component {
             finalComponentsInfo = {}
         }
 
+        let models;
+
+
         //let settingsInfo = JSON.parse(this.props.settingsInfo);
         //if (localStorage.getItem("issueTypesDataGridComponents")) {this.setState({issueTypesDataGridComponents: JSON.parse(localStorage.getItem("issueTypesDataGridComponents"))});}
         // if (localStorage.getItem("issueTypesDataGridDC")) {this.setState({issueTypesDataGridDc: JSON.parse(localStorage.getItem("issueTypesDataGridDC"))});}
@@ -55,6 +59,8 @@ class Settings extends React.Component {
             currPosition: currentStats.currPosition,
             currEnabled: currentStats.currEnabled,
             currToolbox: currentStats.currToolbox,
+
+            models: [],
         };
 
         this.componentDidMount = this.componentDidMount.bind(this);
@@ -64,6 +70,7 @@ class Settings extends React.Component {
         if (localStorage.getItem("fullComponentsInfo")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("fullComponentsInfo"))});}
         if (localStorage.getItem("currentStats")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("currentStats"))});}
     }
+
 
     // /**
     //  * collect all information of one component and add it to the final output
@@ -119,7 +126,7 @@ class Settings extends React.Component {
             <div className="container">
                 <div className="row">
                     <form className="form">
-                        <SettingsComponents stylesGridUpper={stylesGridUpper} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
+                        <SettingsComponents dynamicColumnsComponents ={this.props.dynamicColumnsComponents} stylesGridUpper={stylesGridUpper} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
 
                         <SettingsDecisionCards stylesGridLower={stylesGridLower} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
                     </form>

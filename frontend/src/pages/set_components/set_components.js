@@ -4,17 +4,44 @@ import Settings from "./settings"
 
 import axios from 'axios';
 import Async from "react-select/async/dist/react-select.browser.esm";
+import {Editors} from "react-data-grid-addons";
 require('dotenv').config();
+const { DropDownEditor } = Editors;
+
 
 class SetComponents extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {info: []};
+        this.state = {
+            info: [],
+            dynamicColumnsComponents: []
+        };
     }
 
     componentDidMount() {
         this.getSettingsInfo();
+        this.getModelsAndCreateDynamicDataGridColumns()
+    }
+
+    async getModelsAndCreateDynamicDataGridColumns() {
+        await axios.get(process.env.REACT_APP_GET_MODELS).then(response => {
+            this.setState({models: response.data});
+            let j = 1;
+            let models = [];
+            // map through all models in the response. put them in the form e.g. {id: "model1", value:"Energy"}
+            // and put them in a list [{id: "model1", value:"Energy"}, {...}, ...]
+            response.data.map(item => {
+                models.push({id: "model"+j, value: item})
+            });
+            // create dropdown editor for data grid
+            let dropdownEditor = <DropDownEditor options={models}/>;
+
+            this.setState({dynamicColumnsComponents: [
+                    {key: "parameter", name: "Parameter"},
+                    {key: "type", name: "Type"},
+                    {key: "value", name: "Value", editor: dropdownEditor}]});
+        });
     }
 
     /**
@@ -96,7 +123,7 @@ class SetComponents extends React.Component {
         return (
             <div>
                 <h1>Set Components</h1>
-                <Settings settingsInfo={this.state.info}/>
+                <Settings settingsInfo={this.state.info} dynamicColumnsComponents={this.state.dynamicColumnsComponents}/>
             </div>);
     }
 

@@ -5,6 +5,9 @@ import ReactDataGrid from "react-data-grid";
 import Checkbox from "./checkbox";
 import "./settings_components.css"
 import {Editors} from "react-data-grid-addons";
+import axios from "axios";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faExpandArrowsAlt} from "@fortawesome/free-solid-svg-icons";
 const { DropDownEditor } = Editors;
 
 
@@ -23,18 +26,6 @@ class SettingsComponents extends React.Component {
             {key: "value", name: "Value", editable: true}];
         let descriptionComponents;
         let parameters;
-        let dropdown = <DropDownEditor options={[
-            { id: "model1", value: "aum.mfa.co2" },
-            { id: "model2", value: "aum.mfa.carbon" },
-            { id: "model3", value: "aum.mfa.water" }]}/>;
-        // if (localStorage.getItem("dynamicDataGridColumns")) {dynamicColumns = JSON.parse(localStorage.getItem("dynamicDataGridColumns"))}
-        // else {
-        let dynamicColumns = [
-            {key: "parameter", name: "Parameter"},
-            {key: "type", name: "Type"},
-            {key: "value", name: "Value", editor: dropdown}];
-        //     localStorage.setItem("dynamicDataGridColumns", JSON.stringify(dynamicColumns))
-        // }
 
         if (localStorage.getItem("parametersUpper")) {parameters = JSON.parse(localStorage.getItem("parametersUpper"))}
         else {parameters = {}}
@@ -86,7 +77,6 @@ class SettingsComponents extends React.Component {
             issueTypeEditorDataGridComponents: null,
             componentsDataGridColumns: componentsDataGridColumns,
             descriptionComponents: descriptionComponents,
-            dynamicColumns: dynamicColumns
         };
 
         this.createCheckboxComponents = this.createCheckboxComponents.bind(this);
@@ -109,7 +99,6 @@ class SettingsComponents extends React.Component {
         if (localStorage.getItem("descriptionComponents")) {this.setState({descriptionComponents: JSON.parse(localStorage.getItem("descriptionComponents"))});}
         if (localStorage.getItem("parametersUpper")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("parametersUpper"))});}
         //if (localStorage.getItem("dynamicDataGridColumns")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("dynamicDataGridColumns"))});}
-
     }
 
     /**
@@ -504,7 +493,6 @@ class SettingsComponents extends React.Component {
             selectedFormattedComponentsList.push({label: checkedComponents[i], value: i-1})
         }
 
-
         let propsComponents = "";
         if (this.props.settingsInfo.components) {
             propsComponents = this.props.settingsInfo.components.map(this.createCheckboxComponents);
@@ -565,7 +553,7 @@ class SettingsComponents extends React.Component {
                     </div>
                     <div className={"noHeaderWrapper"}>
                         <ReactDataGrid
-                            columns={this.state.dynamicColumns}
+                            columns={this.props.dynamicColumnsComponents}
                             rowGetter={i => this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows)[i]}
                             rowsCount={this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length}
                             onGridRowsUpdated={this.onDynamicComponentGridRowsUpdated}

@@ -227,6 +227,18 @@ def is_component_parameter_in_database(component_id, parameter_name):
         return False
 
 
+class GetModels(Resource):
+
+    def get(self):
+        database = get_db()
+        if database.execute('SELECT model_name from model').fetchone() is not None:
+            models = database.execute('SELECT model_name from model')
+            result = [item[0] for item in models.fetchall()]
+            return result
+        else:
+            return []
+
+
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
 api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 api.add_resource(ExtractGitRepoAddressFromDB, '/config_api/get_git_repo_address')
@@ -235,6 +247,9 @@ api.add_resource(PullFromRemoteGit, '/config_api/pull_from_remote')
 api.add_resource(LocalGitRepoPath, '/config_api/local_git_repo_path')
 api.add_resource(FileNames, '/config_api/filenames')
 api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
+api.add_resource(GetModels, '/config_api/get_models')
+
 
 if __name__ == '__main__':
+
     app.run(debug=True)
