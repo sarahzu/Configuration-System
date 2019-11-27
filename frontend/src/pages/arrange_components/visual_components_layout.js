@@ -16,6 +16,9 @@ import {ToolBox, ToolBoxItem} from "./toolbox";
 import axios from "axios";
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 import parse from 'html-react-parser';
+import {confirmAlert} from "react-confirm-alert";
+import 'react-confirm-alert/src/react-confirm-alert.css';
+
 require('dotenv').config();
 
 
@@ -58,6 +61,8 @@ class VisualComponentsLayout extends React.Component {
         this.loadPreview = this.loadPreview.bind(this);
         this.backToArranging = this.backToArranging.bind(this);
         this.removeEmptyDictFromList = this.removeEmptyDictFromList.bind(this);
+        this.showMessage = this.showMessage.bind(this);
+        this.onFinishClicked = this.onFinishClicked.bind(this);
         //this.getLocalGitRepoPath = this.getLocalGitRepoPath.bind(this);
     }
 
@@ -336,6 +341,18 @@ class VisualComponentsLayout extends React.Component {
         this.setState({preview: false});
     }
 
+    showMessage = (title, message) => {
+        confirmAlert({
+            title: title,
+            message: message,
+            buttons: [
+                {
+                    label: 'Ok',
+                }
+            ]
+        });
+    };
+
     /**
      * send all settings and component infos back to backend
      */
@@ -347,8 +364,14 @@ class VisualComponentsLayout extends React.Component {
             json_input,
             {headers: {'Content-Type': 'application/json'}})
             .then(response => {
-                console.log(response.data);
-                alert('Settings have been saved!')
+                //console.log(response.data);
+                //alert('Settings have been saved!')
+                if (response.data) {
+                    this.showMessage("Success!", "All your settings have been saved!");
+                }
+                else {
+                    this.showMessage("Failed to store Settings!", "Something went wrong while trying to save your settings. Please try again...");
+                }
             });
     }
 

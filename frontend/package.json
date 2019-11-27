@@ -24,6 +24,7 @@
     "react-burger-menu": "^2.6.11",
     "react-buttons": "0.0.11",
     "react-click-outside": "github:tj/react-click-outside",
+    "react-confirm-alert": "^2.4.1",
     "react-datepicker": "^2.9.6",
     "react-dom": "^16.10.2",
     "react-grid-layout": "^0.16.6",

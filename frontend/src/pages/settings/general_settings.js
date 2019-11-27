@@ -1,5 +1,7 @@
 import React from 'react'
 import axios from "axios";
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 require('dotenv').config();
 
@@ -21,10 +23,12 @@ class GeneralSettings extends React.Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleGitRepoChange = this.handleGitRepoChange.bind(this);
         this.getGitRepoAddress = this.getGitRepoAddress.bind(this);
         this.isNewPullAvailable = this.isNewPullAvailable.bind(this);
         this.onPullButtonPressed = this.onPullButtonPressed.bind(this);
+        this.submitGitRepo = this.submitGitRepo.bind(this);
+        this.submitPull = this.submitPull.bind(this);
     }
 
     componentDidMount(){
@@ -37,8 +41,8 @@ class GeneralSettings extends React.Component {
         this.setState({gitRepoAddress: event.target.value});
     }
 
-    async handleSubmit(event) {
-        event.preventDefault();
+    async handleGitRepoChange() {
+        //event.preventDefault();
         let json_req = {
             gitRepoAddress: this.state.gitRepoAddress
         };
@@ -46,7 +50,8 @@ class GeneralSettings extends React.Component {
             .then(response => {
                 if (response.data.success) {
                     //localStorage.setItem("gitRepoAddress", this.state.gitRepoAddress);
-                    alert('Git Repo was successfully updated');
+                    //alert('Git Repo was successfully updated');
+                    this.message('Success!', 'Git Repo was successfully updated');
                     localStorage.clear();
                 }
                 else {
@@ -92,8 +97,56 @@ class GeneralSettings extends React.Component {
         }
     }
 
+    submitPull = () => {
+        confirmAlert({
+            title: 'Confirm before pull',
+            message: 'Are you sure you want to pull from the current remote Git Repository? If you proceed, all your unsaved settings are going to be deleted.',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => this.onPullButtonPressed()
+                },
+                {
+                    label: 'No',
+                }
+            ]
+        });
+    };
+
+    submitGitRepo = () => {
+        confirmAlert({
+            title: 'Confirm to submit',
+            message: 'Are you sure you want to change the Git Repository path? If you proceed, all your unsaved settings are going to be deleted.',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => this.handleGitRepoChange()
+                },
+                {
+                    label: 'No',
+                }
+            ]
+        });
+    };
+
+    message = (title, message) => {
+        confirmAlert({
+            title: title,
+            message: message,
+            buttons: [
+                {
+                    label: 'Ok',
+                }
+            ]
+        });
+    };
+
+
     render()
         {
+
+
+
             let content;
             if (this.state.onLoading && !this.state.pullPressed) {
                 content = <div>Loading...</div>;
@@ -101,20 +154,20 @@ class GeneralSettings extends React.Component {
             else if (!this.state.onLoading && !this.state.pullPressed) {
                 content = <div>
                     {this.returnStringAccordingToBooleanValue(this.state.pull, "new pull available", "no new pull available")}
-                    <button onClick={this.onPullButtonPressed} disabled={!this.state.pull} >Pull</button>
+                    <button onClick={this.submitPull} disabled={!this.state.pull} >Pull</button>
                 </div>;
             }
             else if (!this.state.onLoading && this.state.pullPressed && !this.state.pullSuccess) {
                 content = <div>
                     {"pulling..."}
-                    <button onClick={this.onPullButtonPressed} disabled={true} >Pull</button>
+                    <button onClick={this.submitPull} disabled={true} >Pull</button>
 
                 </div>;
             }
             else if (!this.state.onLoading && this.state.pullPressed && this.state.pullSuccess) {
                 content = <div>
                     {"pulled successfully"}
-                    <button onClick={this.onPullButtonPressed} disabled={!this.state.pull} >Pull</button>
+                    <button onClick={this.submitPull} disabled={!this.state.pull} >Pull</button>
 
                 </div>;
             }
@@ -122,12 +175,10 @@ class GeneralSettings extends React.Component {
             return (
                 <div>
                     <h1>Settings</h1>
-                    <form onSubmit={this.handleSubmit}>
                         Visual Components Git Repo:
                         <input type="text" value={this.state.gitRepoAddress} name="gitRepoAddress"
                                onChange={this.handleChange}/>
-                        <input type="submit" value="Submit"/>
-                    </form>
+                        <button onClick={this.submitGitRepo}>Save</button>
                     {content}
                 </div>
             );
