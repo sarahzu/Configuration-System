@@ -146,14 +146,14 @@ class VisualComponentsLayout extends React.Component {
                 let dynamicProps = {};
                 visCompParameters.map(parameter => {
                     let value = '';
-                    if (parameter.type === 'integer') {
-                        value = parseInt(parameter.value, 10)
-                    }
-                    else if (parameter.type === 'string') {
-                        value = parameter.value;
-                    }
-                    else if (parameter.type === 'boolean') {
-                        value = (parameter.value.toLowerCase() === 'true')
+                    if (parameter.value) {
+                        if (parameter.type === 'integer') {
+                            value = parseInt(parameter.value, 10)
+                        } else if (parameter.type === 'string') {
+                            value = parameter.value;
+                        } else if (parameter.type === 'boolean') {
+                            value = (parameter.value.toLowerCase() === 'true')
+                        }
                     }
                     dynamicProps[parameter.parameter] = value;
                 });
@@ -179,7 +179,6 @@ class VisualComponentsLayout extends React.Component {
                             <div key={l.i} className={"components"}>
                                 {toolboxButton}
                                 <div>
-                                    <h1>{visCompName}</h1>
                                     <Suspense fallback={<div>Loading...</div>}>
                                         <CurrentComponent {...dynamicProps}/>
                                     </Suspense>
@@ -194,7 +193,6 @@ class VisualComponentsLayout extends React.Component {
                                     &times;
                                 </div>
                                 <div>
-                                    <h1>{visCompName}</h1>
                                     <Suspense fallback={<div>Loading...</div>}>
                                         <CurrentComponent/>
                                     </Suspense>
