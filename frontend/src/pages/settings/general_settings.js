@@ -15,7 +15,9 @@ class GeneralSettings extends React.Component {
         this.state = {
             gitRepoAddress: "",
             pull: false,
-            pullSuccess: false
+            pullSuccess: false,
+            pullPressed: false,
+            onLoading: true,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -44,7 +46,7 @@ class GeneralSettings extends React.Component {
             .then(response => {
                 if (response.data.success) {
                     //localStorage.setItem("gitRepoAddress", this.state.gitRepoAddress);
-                    alert('Git Repo was successfully updated')
+                    alert('Git Repo was successfully updated');
                     localStorage.clear();
                 }
                 else {
@@ -64,10 +66,12 @@ class GeneralSettings extends React.Component {
         await axios.get(process.env.REACT_APP_PULL_AVAILABLE)
             .then(resp => {
                 this.setState({pull: resp.data.pull});
+                this.setState({onLoading: false})
             });
     }
 
     async onPullButtonPressed() {
+        this.setState({pullPressed:true});
         await axios.get(process.env.REACT_APP_PULL_FROM_REMOTE)
             .then(resp => {
                 this.setState({pullSuccess: resp.data.success});
@@ -89,6 +93,31 @@ class GeneralSettings extends React.Component {
 
     render()
         {
+            let content;
+            if (this.state.onLoading && !this.state.pullPressed) {
+                content = <div>Loading...</div>;
+            }
+            else if (!this.state.onLoading && !this.state.pullPressed) {
+                content = <div>
+                    {this.returnStringAccordingToBooleanValue(this.state.pull, "new pull available", "no new pull available")}
+                    <button onClick={this.onPullButtonPressed} disabled={!this.state.pull} >Pull</button>
+                </div>;
+            }
+            else if (!this.state.onLoading && this.state.pullPressed && !this.state.pullSuccess) {
+                content = <div>
+                    {"pulling..."}
+                    <button onClick={this.onPullButtonPressed} disabled={true} >Pull</button>
+
+                </div>;
+            }
+            else if (!this.state.onLoading && this.state.pullPressed && this.state.pullSuccess) {
+                content = <div>
+                    {"pulled successfully"}
+                    <button onClick={this.onPullButtonPressed} disabled={!this.state.pull} >Pull</button>
+
+                </div>;
+            }
+
             return (
                 <div>
                     <h1>Settings</h1>
@@ -98,9 +127,7 @@ class GeneralSettings extends React.Component {
                                onChange={this.handleChange}/>
                         <input type="submit" value="Submit"/>
                     </form>
-                    {this.returnStringAccordingToBooleanValue(this.state.pull, "new pull available", "no new pull available")}
-                    <button onClick={this.onPullButtonPressed} disabled={!this.state.pull} >Pull</button>
-                    {this.returnStringAccordingToBooleanValue(this.state.pullSuccess, "pulled successfully", "")}
+                    {content}
                 </div>
             );
         }
