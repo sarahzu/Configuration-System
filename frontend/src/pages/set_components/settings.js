@@ -108,7 +108,8 @@ class Settings extends React.Component {
         };
 
         const stylesGridUpper = {
-            background:"lightgray",
+            //background:"lightgray",
+            background: "lightblue",
             borderRadius: "10px",
             marginTop:"5px",
             marginBottom: "10px"
@@ -127,14 +128,17 @@ class Settings extends React.Component {
                 <div className="row">
                     <form className="form">
                         <SettingsComponents dynamicColumnsComponents ={this.props.dynamicColumnsComponents} stylesGridUpper={stylesGridUpper} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
-
-                        <SettingsDecisionCards stylesGridLower={stylesGridLower} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
                     </form>
                 </div>
             </div>
         );
     }
 }
+
+/*
+// dynamic component settings. Can be integrated in rendering return form next to the components settings
+<SettingsDecisionCards stylesGridLower={stylesGridLower} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
+ */
 
 /**
  * props description of parameters

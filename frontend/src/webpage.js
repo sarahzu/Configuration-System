@@ -103,15 +103,6 @@ export default class App extends React.Component {
                         </Link>
                         </div>
                         <div className="content-wrapper">
-                        <Link to="/create" className="menu-item" style={{ textDecoration: 'none' }}>
-                            <IconContext.Provider value={{className: "global-class-name" }}>
-                                <div>
-                                    <FontAwesomeIcon icon={faToolbox}/><span>Create Decision Cards</span>
-                                </div>
-                            </IconContext.Provider>
-                        </Link>
-                        </div>
-                        <div className="content-wrapper">
                         <Link to="/arrange" className="menu-item" style={{ textDecoration: 'none' }}>
                             <IconContext.Provider value={{ className: "global-class-name" }}>
                                 <div>
@@ -150,6 +141,18 @@ export default class App extends React.Component {
         );
     }
 }
+
+/*
+<div className="content-wrapper">
+                        <Link to="/create" className="menu-item" style={{ textDecoration: 'none' }}>
+                            <IconContext.Provider value={{className: "global-class-name" }}>
+                                <div>
+                                    <FontAwesomeIcon icon={faToolbox}/><span>Create Decision Cards</span>
+                                </div>
+                            </IconContext.Provider>
+                        </Link>
+                        </div>
+ */
 
 /*export default class App extends PureComponent {
     state = {

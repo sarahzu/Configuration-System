@@ -70,9 +70,7 @@ class ArrangeComponents extends React.Component {
         }
         return (
             <div>
-                <Main>
-                    <VisualComponentsLayout onLayoutChange={this.onLayoutChange} componentFilenameList={this.state.componentFilenameList} />
-                </Main>
+                <VisualComponentsLayout onLayoutChange={this.onLayoutChange} componentFilenameList={this.state.componentFilenameList} />
             </div>
         );
     }

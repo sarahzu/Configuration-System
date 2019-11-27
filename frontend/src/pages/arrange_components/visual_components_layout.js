@@ -164,11 +164,20 @@ class VisualComponentsLayout extends React.Component {
 
                     if (Object.keys(dynamicProps) !== 0) {
 
+                        let toolboxButton;
+                        if (this.state.preview) {
+                            // if the current state is preview, do not allow toolbox button
+                            toolboxButton = <div/>
+                        }
+                        else {
+                            toolboxButton = <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
+                                &times;
+                            </div>
+                        }
+
                         return (
                             <div key={l.i} className={"components"}>
-                                <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
-                                    &times;
-                                </div>
+                                {toolboxButton}
                                 <div>
                                     <h1>{visCompName}</h1>
                                     <Suspense fallback={<div>Loading...</div>}>
@@ -206,50 +215,6 @@ class VisualComponentsLayout extends React.Component {
     }
     //                        <div>{ ReactHtmlParser(html)[0] }</div>
     //                        <PieChart width={200} breakpoint={480} position={"bottom"}>Pie</PieChart>
-
-    /**
-     * generate HTML code used in render function. Generates all visual components boxes.
-     *
-     * @returns {*} HTML code
-     */
-    /*generateDOM() {
-        return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
-            return (
-                <div key={l.i} className={l.static ? "static" : "not-static"}>
-                    <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
-                        &times;
-                    </div>
-                    {l.static ? (
-                        <span
-                            className="text"
-                            title="This item is static and cannot be removed or resized."
-                        >
-                            Static - {l.i}
-                        </span>
-                        ) :
-                        (
-                            <span className="box">{
-                                <div>
-                                    <h1>Component {l.i}</h1>
-                                    <Container fluid style={{ lineHeight: '32px' }}>
-                                        <Row >
-                                            <Col >1 of 2</Col>
-                                            <Col >2 of 2</Col>
-                                        </Row>
-                                        <br />
-                                        <Row >
-                                            <Col >1 of 3</Col>
-                                            <Col >2 of 3</Col>
-                                            <Col >3 of 3</Col>
-                                        </Row>
-                                    </Container>
-                                </div>}
-                            </span>
-                        )}
-                </div>
-            );
-        });
-    }*/
 
     onBreakpointChange = breakpoint => {
         this.setState(prevState => ({
@@ -390,6 +355,19 @@ class VisualComponentsLayout extends React.Component {
     }
 
     render() {
+
+        const layoutStyle = {
+            backgroundColor: "#dcdcdc",
+            borderStyle: "dashed",
+            height: "auto",
+            width: "auto",
+        };
+
+        const previewStyle = {
+            height: "auto",
+            width: "auto",
+        };
+
         if (this.state.preview) {
                 return (
                 <div>
@@ -398,23 +376,23 @@ class VisualComponentsLayout extends React.Component {
                             <FontAwesomeIcon icon={faCompressArrowsAlt}/>
                         </div>
                     </button>
-                    <ResponsiveReactGridLayout
-                        {...this.props}
-                        layouts={this.state.layouts}
-                        onBreakpointChange={this.onBreakpointChange}
-                        onLayoutChange={this.onLayoutChange}
-                        // WidthProvider option
-                        measureBeforeMount={true}
-                        compactType={this.state.compactType}
-                        preventCollision={!this.state.compactType}
-                    >
-                        {this.generateVisualComponents()}
-                    </ResponsiveReactGridLayout>
+                    <div style={previewStyle}>
+                        <ResponsiveReactGridLayout className={"gridLayout"}
+                            {...this.props}
+                            layouts={this.state.layouts}
+                            onLayoutChange={this.onLayoutChange}
+                            isDraggable={false}
+                            isResizable={false}
+                        >
+                            {this.generateVisualComponents()}
+                        </ResponsiveReactGridLayout>
+                    </div>
                 </div>
             );
         } else {
             return (
                 <div>
+                    <h1>Arrange Components</h1>
                     {/*<div>
                         Current Breakpoint: {this.state.currentBreakpoint} ({
                         this.props.cols[this.state.currentBreakpoint]
@@ -432,19 +410,20 @@ class VisualComponentsLayout extends React.Component {
                         items={this.state.toolbox[this.state.currentBreakpoint] || []}
                         onTakeItem={this.onTakeItem}
                     />
-
-                    <ResponsiveReactGridLayout
-                        {...this.props}
-                        layouts={this.state.layouts}
-                        onBreakpointChange={this.onBreakpointChange}
-                        onLayoutChange={this.onLayoutChange}
-                        // WidthProvider option
-                        measureBeforeMount={true}
-                        compactType={this.state.compactType}
-                        preventCollision={!this.state.compactType}
-                    >
-                        {this.generateVisualComponents()}
-                    </ResponsiveReactGridLayout>
+                    <div style={layoutStyle}>
+                        <ResponsiveReactGridLayout
+                            {...this.props}
+                            layouts={this.state.layouts}
+                            onBreakpointChange={this.onBreakpointChange}
+                            onLayoutChange={this.onLayoutChange}
+                            // WidthProvider option
+                            measureBeforeMount={true}
+                            compactType={this.state.compactType}
+                            preventCollision={!this.state.compactType}
+                        >
+                            {this.generateVisualComponents()}
+                        </ResponsiveReactGridLayout>
+                    </div>
                 </div>
             );
         }
@@ -460,7 +439,7 @@ VisualComponentsLayout.defaultProps = {
     rowHeight: 30,
     onLayoutChange: function() {},
     cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
-    verticalCompact: false
+    verticalCompact: false,
 };
 
 function generateLayout() {
