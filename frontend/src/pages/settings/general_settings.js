@@ -45,7 +45,7 @@ class GeneralSettings extends React.Component {
                 if (response.data.success) {
                     //localStorage.setItem("gitRepoAddress", this.state.gitRepoAddress);
                     alert('Git Repo was successfully updated')
-                    //localStorage.clear();
+                    localStorage.clear();
                 }
                 else {
                     console.alert("git repo is not valid")

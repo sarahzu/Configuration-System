@@ -14,9 +14,9 @@ import { Button } from 'reactstrap';
 import {IconContext} from "react-icons";
 import {ToolBox, ToolBoxItem} from "./toolbox";
 import axios from "axios";
-
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 import parse from 'html-react-parser';
+require('dotenv').config();
 
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
@@ -37,8 +37,6 @@ class VisualComponentsLayout extends React.Component {
         else {layout = {lg: []};}
         if (localStorage.getItem('toolbox')){toolbox = JSON.parse(localStorage.getItem('toolbox'));}
         else {toolbox = {lg: []}}
-        if (localStorage.getItem("componentFilenameList")) {componentFilenameList = JSON.parse(localStorage.getItem("componentFilenameList"))}
-        else {componentFilenameList = []}
 
         this.state = {
             currentBreakpoint: "lg",
@@ -49,8 +47,7 @@ class VisualComponentsLayout extends React.Component {
             preview: false,
             //toolbox: { lg: [] }
             toolbox: toolbox,
-            localGitPath: "",
-            componentFilenameList: componentFilenameList
+            //localGitPath: "",
         };
 
         this.onBreakpointChange = this.onBreakpointChange.bind(this);
@@ -61,8 +58,7 @@ class VisualComponentsLayout extends React.Component {
         this.loadPreview = this.loadPreview.bind(this);
         this.backToArranging = this.backToArranging.bind(this);
         this.removeEmptyDictFromList = this.removeEmptyDictFromList.bind(this);
-        this.getLocalGitRepoPath = this.getLocalGitRepoPath.bind(this);
-        this.getComponentsFilenames = this.getComponentsFilenames.bind(this);
+        //this.getLocalGitRepoPath = this.getLocalGitRepoPath.bind(this);
     }
 
     componentDidMount() {
@@ -76,21 +72,20 @@ class VisualComponentsLayout extends React.Component {
             let toolboxObject = JSON.parse(localStorage.getItem("toolbox"));
             this.setState({toolbox: toolboxObject});
         }
-        this.getLocalGitRepoPath();
-        this.getComponentsFilenames();
+        //this.getLocalGitRepoPath();
     }
 
-    /**
-     * get the location of the local git repo
-     *
-     * @returns {Promise<void>}
-     */
-    async getLocalGitRepoPath() {
-        await axios.get(process.env.REACT_APP_LOCAL_GIT_REPO_PATH)
-            .then(response => {
-                this.setState({localGitPath: response.data});
-            })
-    }
+    // /**
+    //  * get the location of the local git repo
+    //  *
+    //  * @returns {Promise<void>}
+    //  */
+    // async getLocalGitRepoPath() {
+    //     await axios.get(process.env.REACT_APP_LOCAL_GIT_REPO_PATH)
+    //         .then(response => {
+    //             this.setState({localGitPath: response.data});
+    //         })
+    // }
 
     /**
      * remove all empty dictionaries form the given list.
@@ -104,19 +99,6 @@ class VisualComponentsLayout extends React.Component {
                 list.splice(i, 1);
             }
         }
-    }
-
-    /**
-     * return a list with all filenames of the available components
-     *
-     * @returns {Promise<void>}
-     */
-    async getComponentsFilenames() {
-        await axios.get(process.env.REACT_APP_FILENAMES)
-            .then(response => {
-                this.setState({componentFilenameList: response.data});
-                localStorage.setItem("componentFilenameList", JSON.stringify(response.data))
-            })
     }
 
     /**
@@ -135,7 +117,8 @@ class VisualComponentsLayout extends React.Component {
             }
         }
 
-        var componentFilenameList = this.state.componentFilenameList;
+        //var componentFilenameList = this.state.componentFilenameList;
+        var componentFilenameList = this.props.componentFilenameList;
 
         return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
             let compIndex = parseInt(l.i, 10);
@@ -168,6 +151,9 @@ class VisualComponentsLayout extends React.Component {
                     }
                     else if (parameter.type === 'string') {
                         value = parameter.value;
+                    }
+                    else if (parameter.type === 'boolean') {
+                        value = (parameter.value.toLowerCase() === 'true')
                     }
                     dynamicProps[parameter.parameter] = value;
                 });

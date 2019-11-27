@@ -5,7 +5,8 @@ import "../../../node_modules/react-resizable/css/styles.css";
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import VisualComponentsLayout from "./visual_components_layout";
 import styled from "styled-components";
-
+import axios from "axios";
+require('dotenv').config();
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -22,8 +23,16 @@ class ArrangeComponents extends React.Component {
 
     constructor(props, layouts) {
         super(props);
-        this.state = [{layout: []}];
+        this.state = {
+            layout: [],
+            componentFilenameList: [],
+        };
         this.onLayoutChange = this.onLayoutChange.bind(this);
+        this.getComponentsFilenames = this.getComponentsFilenames.bind(this);
+    }
+
+    componentDidMount() {
+        this.getComponentsFilenames();
     }
 
     onLayoutChange(layout) {
@@ -40,11 +49,29 @@ class ArrangeComponents extends React.Component {
         });
     }
 
+    /**
+     * return a list with all filenames of the available components
+     *
+     * @returns {Promise<void>}
+     */
+    async getComponentsFilenames() {
+        await axios.get(process.env.REACT_APP_FILENAMES)
+            .then(response => {
+                this.setState({componentFilenameList: response.data});
+                //localStorage.setItem("componentFilenameList", JSON.stringify(response.data))
+            })
+    }
+
     render() {
+        const compFilenameList = this.state.componentFilenameList;
+
+        if (compFilenameList.length === 0) {
+            return <span>Loading data...</span>
+        }
         return (
             <div>
                 <Main>
-                    <VisualComponentsLayout onLayoutChange={this.onLayoutChange} />
+                    <VisualComponentsLayout onLayoutChange={this.onLayoutChange} componentFilenameList={this.state.componentFilenameList} />
                 </Main>
             </div>
         );
