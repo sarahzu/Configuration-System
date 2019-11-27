@@ -31,8 +31,10 @@ class GeneralSettings(Resource):
             if database.execute('SELECT * FROM general_settings WHERE config_id =1').fetchone() is not None:
                 database.execute('UPDATE general_settings SET git_repo_address=(?) WHERE config_id=(?)',
                                  (git_repo_address, 1))
+                # if git repo changes, erase previous settings form database
                 database.execute('DELETE FROM parameter')
                 database.execute('DELETE FROM component')
+                database.execute('DELETE FROM decision_card')
 
                 database.commit()
             else:

@@ -158,23 +158,55 @@ class VisualComponentsLayout extends React.Component {
                 finalOutput.configuration.components = finalOutputComps;
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
+                // create dynamic props from parameters
+                const visCompParameters = finalOutput.configuration.components[compIndex].parameter;
+                let dynamicProps = {};
+                visCompParameters.map(parameter => {
+                    let value = '';
+                    if (parameter.type === 'integer') {
+                        value = parseInt(parameter.value, 10)
+                    }
+                    else if (parameter.type === 'string') {
+                        value = parameter.value;
+                    }
+                    dynamicProps[parameter.parameter] = value;
+                });
+                //let dynamicProps = {"width":1000, "breakpoint":5000, position:'bottom'};
 
                 if (""+ currentFileName !== "undefined") {
                     const CurrentComponent = React.lazy(() => import("../../gitclone/" + currentFileName));
 
-                    return (
-                        <div key={l.i} className={"components"}>
-                            <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
-                                &times;
+                    if (Object.keys(dynamicProps) !== 0) {
+
+                        return (
+                            <div key={l.i} className={"components"}>
+                                <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
+                                    &times;
+                                </div>
+                                <div>
+                                    <h1>{visCompName}</h1>
+                                    <Suspense fallback={<div>Loading...</div>}>
+                                        <CurrentComponent {...dynamicProps}/>
+                                    </Suspense>
+                                </div>
                             </div>
-                            <div>
-                                <h1>Component {l.i}</h1>
-                                <Suspense fallback={<div>Loading...</div>}>
-                                    <CurrentComponent/>
-                                </Suspense>
+                        );
+                    }
+                    else {
+                        return (
+                            <div key={l.i} className={"components"}>
+                                <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
+                                    &times;
+                                </div>
+                                <div>
+                                    <h1>{visCompName}</h1>
+                                    <Suspense fallback={<div>Loading...</div>}>
+                                        <CurrentComponent/>
+                                    </Suspense>
+                                </div>
                             </div>
-                        </div>
-                    );
+                        );
+                    }
                 }
                 else {
                     return (<div><h1>nothing</h1></div>)
