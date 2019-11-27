@@ -77,7 +77,8 @@ class GeneralSettings extends React.Component {
                 this.setState({pullSuccess: resp.data.success});
                 // if pull was successful, set pull state to false to disable pull button
                 if (resp.data.success) {
-                    this.setState({pull: false})
+                    this.setState({pull: false});
+                    localStorage.clear()
                 }
             });
     }

@@ -30,7 +30,18 @@ class SettingsComponents extends React.Component {
         if (localStorage.getItem("parametersUpper")) {parameters = JSON.parse(localStorage.getItem("parametersUpper"))}
         else {parameters = {}}
 
-        if (localStorage.getItem("visualComponents")) {visComponents =  JSON.parse(localStorage.getItem("visualComponents"));}
+        if (localStorage.getItem("visualComponents")) {
+            visComponents =  JSON.parse(localStorage.getItem("visualComponents"));
+            if (Object.keys(visComponents).length < this.props.settingsInfo.components.length) {
+                visComponents = this.props.settingsInfo.components.reduce(
+                    (options, option) => ({
+                        ...options,
+                        [option]: false
+                    }),
+                    {}
+                )
+            }
+        }
         else if (this.props.settingsInfo.components) {
             visComponents = this.props.settingsInfo.components.reduce(
                 (options, option) => ({
@@ -86,6 +97,15 @@ class SettingsComponents extends React.Component {
     componentDidMount() {
         if (localStorage.getItem("visualComponents")) {
             let visComps = JSON.parse(localStorage.getItem("visualComponents"));
+            if (Object.keys(visComps).length < this.props.settingsInfo.components.length) {
+                visComps = this.props.settingsInfo.components.reduce(
+                    (options, option) => ({
+                        ...options,
+                        [option]: false
+                    }),
+                    {}
+                )
+            }
             this.setState({vis_components: visComps});
         }
         if (localStorage.getItem("checkedComponents")) {this.setState({checkedComponents: JSON.parse(localStorage.getItem("checkedComponents"))});}
