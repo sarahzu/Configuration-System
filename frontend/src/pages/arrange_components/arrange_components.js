@@ -62,6 +62,7 @@ class ArrangeComponents extends React.Component {
             })
     }
 
+
     render() {
         const compFilenameList = this.state.componentFilenameList;
 

@@ -61,8 +61,9 @@ class VisualComponentsLayout extends React.Component {
         this.loadPreview = this.loadPreview.bind(this);
         this.backToArranging = this.backToArranging.bind(this);
         this.removeEmptyDictFromList = this.removeEmptyDictFromList.bind(this);
-        this.showMessage = this.showMessage.bind(this);
         this.onFinishClicked = this.onFinishClicked.bind(this);
+        this.onPageChangeButtonClicked = this.onPageChangeButtonClicked.bind(this);
+
         //this.getLocalGitRepoPath = this.getLocalGitRepoPath.bind(this);
     }
 
@@ -375,6 +376,11 @@ class VisualComponentsLayout extends React.Component {
             });
     }
 
+    onPageChangeButtonClicked() {
+        let path = `/set`;
+        this.props.history.push(path);
+    }
+
     render() {
 
         const layoutStyle = {
@@ -414,6 +420,7 @@ class VisualComponentsLayout extends React.Component {
             return (
                 <div>
                     <h1>Arrange Components</h1>
+                    <button onClick={this.onPageChangeButtonClicked}>Go to 'Set Components' page</button>
                     {/*<div>
                         Current Breakpoint: {this.state.currentBreakpoint} ({
                         this.props.cols[this.state.currentBreakpoint]

@@ -64,6 +64,7 @@ class Settings extends React.Component {
         };
 
         this.componentDidMount = this.componentDidMount.bind(this);
+        this.onPageChangeButtonClicked = this.onPageChangeButtonClicked.bind(this);
     }
 
     componentDidMount() {
@@ -98,6 +99,11 @@ class Settings extends React.Component {
     //     localStorage.setItem("fullComponentsInfo", finalComponents);
     // }
 
+    onPageChangeButtonClicked() {
+        let path = `/arrange`;
+        this.props.history.push(path);
+    }
+
     render() {
 
         const stylesCheckbox = {
@@ -125,6 +131,7 @@ class Settings extends React.Component {
 
         return (
             <div className="container">
+                <button onClick={this.onPageChangeButtonClicked}>Go to 'Arrange Components' page</button>
                 <div className="row">
                     <form className="form">
                         <SettingsComponents dynamicColumnsComponents ={this.props.dynamicColumnsComponents} stylesGridUpper={stylesGridUpper} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
