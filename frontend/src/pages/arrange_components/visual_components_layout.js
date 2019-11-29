@@ -313,6 +313,12 @@ class VisualComponentsLayout extends React.Component {
         this.setState({ compactType });
     }
 
+    onNewLayout() {
+        this.setState({
+            layouts: { lg: generateLayout() }
+        });
+    }
+
     /**
      * triggered when layout of visual components have been changed.
      * Update all according states and local storage entries.
@@ -326,12 +332,6 @@ class VisualComponentsLayout extends React.Component {
         let jsonString = JSON.stringify(layouts);
         localStorage.setItem("SelectedLayout", jsonString);
         this.setState({layouts: layouts})
-    }
-
-    onNewLayout() {
-        this.setState({
-            layouts: { lg: generateLayout() }
-        });
     }
 
     loadPreview() {

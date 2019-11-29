@@ -38,25 +38,47 @@ class Home extends React.Component {
     render() {
         return (
             <div>
-                <h1>Home</h1>
-                <div className="comp">
-                    <button
-                        onClick={() => this.getComponentNames()}
-                        className="button"
-                    >
-                        Names
-                    </button>
-                    <button
-                        onClick={() => this.getResult()}
-                        className="button"
-                    >
-                        SUBMIT
-                    </button>
-                    <div>{"state: " + this.state.status}</div>
-                </div>
+                <h1>Welcome to the Configuration System of the Post fossil cities project!</h1>
+
             </div>
         );
     }
+
+    /*
+    <h3>
+                    On this website you can decide which visual components (such as e.g. charts or tables)
+                    should be visualized during the simulation game session of the post fossil cities project
+                    and what information these components should process.
+                </h3>
+                <h4>On the settings page, select a git repository, which contains all visual components.</h4>
+                <h4>On the set components page, select which components should be integrated and define it's parameters.</h4>
+                <h4>On the arrange components page, decide on the size and position of the selected visual components.</h4>
+                <h4>By clicking on the full screen button, you can get a preview of your current arrangement.</h4>
+                <h4>If you are satisfied with your overall settings, click on finish and all your settings are going to be saved.</h4>
+     */
+
+    // render() {
+    //     return (
+    //         <div>
+    //             <h1>Home</h1>
+    //             <div className="comp">
+    //                 <button
+    //                     onClick={() => this.getComponentNames()}
+    //                     className="button"
+    //                 >
+    //                     Names
+    //                 </button>
+    //                 <button
+    //                     onClick={() => this.getResult()}
+    //                     className="button"
+    //                 >
+    //                     SUBMIT
+    //                 </button>
+    //                 <div>{"state: " + this.state.status}</div>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
 }
 

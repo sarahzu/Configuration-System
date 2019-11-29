@@ -1,8 +1,12 @@
+import ast
+
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_cors import CORS
 from controller import Controller
 import os
+
+from pandas import json
 
 from configuration.db import get_db, init_app
 
@@ -29,8 +33,8 @@ class GeneralSettings(Resource):
 
             # check if database already has entry
             if database.execute('SELECT * FROM general_settings WHERE config_id =1').fetchone() is not None:
-                database.execute('UPDATE general_settings SET git_repo_address=(?) WHERE config_id=(?)',
-                                 (git_repo_address, 1))
+                database.execute('UPDATE general_settings SET git_repo_address=(?), output_json=(?) WHERE config_id=(?)',
+                                 (git_repo_address, None, 1))
                 # if git repo changes, erase previous settings form database
                 database.execute('DELETE FROM parameter')
                 database.execute('DELETE FROM component')
@@ -132,6 +136,12 @@ class ComponentsInfoFromFrontend(Resource):
         decision_cards = configuration.get("decisionCards")
 
         database = get_db()
+        # add request json to database
+        if database.execute('SELECT * from general_settings where config_id = 1').fetchone() is not None:
+            database.execute('UPDATE OR IGNORE general_settings SET output_json = (?) WHERE config_id = 1', (str(frontend_request),))
+        else:
+            database.execute('INSERT OR IGNORE INTO general_settings (config_id, is_active, output_json) '
+                             'VALUES ((?), (?), (?))' (1, True, str(frontend_request)))
         for component in components:
             # if component is already included in database
             if is_component_in_database(component.get("name")):
@@ -244,6 +254,17 @@ class GetModels(Resource):
             return []
 
 
+class GetOutputJson(Resource):
+
+    def get(self):
+        database = get_db()
+        if database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone() is not None:
+            output_string = database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone()[0]
+            return ast.literal_eval(output_string)
+        else:
+            return {}
+
+
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
 api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 api.add_resource(ExtractGitRepoAddressFromDB, '/config_api/get_git_repo_address')
@@ -253,6 +274,7 @@ api.add_resource(LocalGitRepoPath, '/config_api/local_git_repo_path')
 api.add_resource(FileNames, '/config_api/filenames')
 api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
 api.add_resource(GetModels, '/config_api/get_models')
+api.add_resource(GetOutputJson, '/config_api/get_output_json')
 
 
 if __name__ == '__main__':
