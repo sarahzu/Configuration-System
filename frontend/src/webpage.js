@@ -94,6 +94,15 @@ export default class App extends React.Component {
                         </Link>
                         </div>
                         <div className="content-wrapper">
+                            <Link to="/settings" className="menu-item" style={{ textDecoration: 'none' }}>
+                                <IconContext.Provider value={{ className: "global-class-name" }}>
+                                    <div>
+                                        <FontAwesomeIcon icon={faCog}/><span>Data Source Settings</span>
+                                    </div>
+                                </IconContext.Provider>
+                            </Link>
+                        </div>
+                        <div className="content-wrapper">
                         <Link to="/set" className="menu-item" style={{ textDecoration: 'none' }}>
                             <IconContext.Provider value={{className: "global-class-name" }}>
                                 <div>
@@ -110,15 +119,6 @@ export default class App extends React.Component {
                                 </div>
                             </IconContext.Provider>
                         </Link>
-                        </div>
-                        <div className="content-wrapper">
-                            <Link to="/settings" className="menu-item" style={{ textDecoration: 'none' }}>
-                                <IconContext.Provider value={{ className: "global-class-name" }}>
-                                    <div>
-                                        <FontAwesomeIcon icon={faCog}/><span>Settings</span>
-                                    </div>
-                                </IconContext.Provider>
-                            </Link>
                         </div>
                     </Menu>
                     <Main>

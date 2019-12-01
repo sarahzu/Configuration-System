@@ -1,6 +1,10 @@
 import React from 'react'
 import "./home.css"
 import axios from "axios";
+import Grid from "@material-ui/core/Grid";
+import {faClone, faCog, faTh} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {withRouter} from "react-router";
 
 require('dotenv').config();
 
@@ -11,7 +15,11 @@ class Home extends React.Component {
 
         this.state = {
             status: ""
-        }
+        };
+
+        this.onDataSourceSettingsPageClicked = this.onDataSourceSettingsPageClicked.bind(this);
+        this.onSetComponentsPageClicked = this.onSetComponentsPageClicked.bind(this);
+        this.onArrangeComponentsPageClicked = this.onArrangeComponentsPageClicked.bind(this);
     }
 
     async getComponentNames() {
@@ -35,10 +43,77 @@ class Home extends React.Component {
         });
     }
 
+    onDataSourceSettingsPageClicked() {
+        let path = `/settings`;
+        this.props.history.push(path);
+    }
+
+    onSetComponentsPageClicked() {
+        let path = `/set`;
+        this.props.history.push(path);
+    }
+
+    onArrangeComponentsPageClicked() {
+        let path = `/arrange`;
+        this.props.history.push(path);
+    }
+
     render() {
+        const textStyle = {
+            textAlign:"center",
+            marginTop:"20px",
+        };
+        const gridItemStyle = {
+            background:"lightblue",
+            height:"150px",
+            marginLeft:"auto",
+            justify:"center",
+            alignItems: "center",
+        };
+
         return (
-            <div>
-                <h1>Welcome to the Configuration System of the Post fossil cities project!</h1>
+            <div style={{textAlign:"center"}}>
+                <h1 style={{textAlign:"center"}}>Welcome to the Configuration System of the Post fossil cities project!</h1>
+                <h4 style={{marginTop:"50px", marginBottom:"50px"}}>This website enables you to make configuration to the visual components which are shown during the game session.
+                    Please follow the following guideline while configuring.
+                </h4>
+                <Grid container
+                      spacing={3}
+                      direction="row"
+                      alignItems="center"
+                      justify="center"
+                >
+                    <Grid item xs={4} style={gridItemStyle}>
+                        <Grid item xs={6}>
+                            <button onClick={this.onDataSourceSettingsPageClicked}><FontAwesomeIcon icon={faCog}/></button>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <div style={textStyle}>
+                                First set the location of the used visual vomponents in the 'Data Source Settings' page.
+                            </div>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={4} style={gridItemStyle}>
+                        <Grid item xs={6}>
+                            <button onClick={this.onSetComponentsPageClicked}><FontAwesomeIcon icon={faClone}/></button>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <div style={textStyle}>
+                                Then decide which components you want to use and modify their parameters in the 'Set Components' page.
+                            </div>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={4} style={gridItemStyle}>
+                        <Grid item xs={6}>
+                            <button onClick={this.onArrangeComponentsPageClicked}><FontAwesomeIcon icon={faTh}/></button>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <div style={textStyle}>
+                                Lastly in the 'Arrange Components' page, arrange the choosen components on the screen and save your settings.
+                            </div>
+                        </Grid>
+                    </Grid>
+                </Grid>
 
             </div>
         );
@@ -82,4 +157,4 @@ class Home extends React.Component {
 
 }
 
-export default Home;
+export default withRouter(Home);

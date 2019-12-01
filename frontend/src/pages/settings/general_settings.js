@@ -2,6 +2,8 @@ import React from 'react'
 import axios from "axios";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import {faCog, faQuestion} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 require('dotenv').config();
 
@@ -29,6 +31,9 @@ class GeneralSettings extends React.Component {
         this.onPullButtonPressed = this.onPullButtonPressed.bind(this);
         this.submitGitRepo = this.submitGitRepo.bind(this);
         this.submitPull = this.submitPull.bind(this);
+        this.showMessage = this.showMessage.bind(this);
+        this.onFirstInfoButtonClicked = this.onFirstInfoButtonClicked.bind(this);
+        this.onSecondInfoButtonClicked = this.onSecondInfoButtonClicked.bind(this);
     }
 
     componentDidMount(){
@@ -141,11 +146,39 @@ class GeneralSettings extends React.Component {
         });
     };
 
+    showMessage = (title, message) => {
+        confirmAlert({
+            title: title,
+            message: message,
+            buttons: [
+                {
+                    label: 'Ok',
+                }
+            ]
+        });
+    };
+
+    onFirstInfoButtonClicked() {
+        this.showMessage("Info Box",
+            "On this page you can decide the source of your visual components. " +
+            "Please store your visual components in a Github Repository and enter the path to it " +
+            "in the input field. Make sure to save your settings, so that you can start making your " +
+            "configuration. ");
+    }
+
+    onSecondInfoButtonClicked() {
+        this.showMessage("Info Box", "If a new pull is available from your already entered Github Repository, " +
+            "the pull button will become enabled. If you wish to update your already entered Git Repo " +
+            "to the newest version, click the pull button. However, your unsaved configurations so far will " +
+            "get deleted if you do so, so be careful.");
+    }
+
 
     render()
         {
 
-
+            let infoButton =
+                <button onClick={this.onSecondInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>;
 
             let content;
             if (this.state.onLoading && !this.state.pullPressed) {
@@ -155,31 +188,37 @@ class GeneralSettings extends React.Component {
                 content = <div>
                     {this.returnStringAccordingToBooleanValue(this.state.pull, "new pull available", "no new pull available")}
                     <button onClick={this.submitPull} disabled={!this.state.pull} >Pull</button>
+                    {infoButton}
                 </div>;
             }
             else if (!this.state.onLoading && this.state.pullPressed && !this.state.pullSuccess) {
                 content = <div>
                     {"pulling..."}
                     <button onClick={this.submitPull} disabled={true} >Pull</button>
-
+                    {infoButton}
                 </div>;
             }
             else if (!this.state.onLoading && this.state.pullPressed && this.state.pullSuccess) {
                 content = <div>
                     {"pulled successfully"}
                     <button onClick={this.submitPull} disabled={!this.state.pull} >Pull</button>
-
+                    {infoButton}
                 </div>;
             }
 
             return (
                 <div>
                     <h1>Settings</h1>
-                        Visual Components Git Repo:
-                        <input type="text" value={this.state.gitRepoAddress} name="gitRepoAddress"
-                               onChange={this.handleChange}/>
-                        <button onClick={this.submitGitRepo}>Save</button>
+                    Visual Components Git Repo:
+                    <input type="text" value={this.state.gitRepoAddress} name="gitRepoAddress"
+                           onChange={this.handleChange}
+                    />
+                    <button onClick={this.submitGitRepo}>Save</button>
+
+                    <button onClick={this.onFirstInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>
+
                     {content}
+
                 </div>
             );
         }

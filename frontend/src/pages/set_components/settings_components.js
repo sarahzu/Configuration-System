@@ -7,7 +7,8 @@ import "./settings_components.css"
 import {Editors} from "react-data-grid-addons";
 import axios from "axios";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faExpandArrowsAlt} from "@fortawesome/free-solid-svg-icons";
+import {faExpandArrowsAlt, faQuestion} from "@fortawesome/free-solid-svg-icons";
+import {confirmAlert} from "react-confirm-alert";
 const { DropDownEditor } = Editors;
 
 

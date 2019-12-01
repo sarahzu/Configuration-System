@@ -6,6 +6,9 @@ import { Responsive, WidthProvider } from 'react-grid-layout';
 import VisualComponentsLayout from "./visual_components_layout";
 import styled from "styled-components";
 import axios from "axios";
+import {confirmAlert} from "react-confirm-alert";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faQuestion} from "@fortawesome/free-solid-svg-icons";
 require('dotenv').config();
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -29,6 +32,8 @@ class ArrangeComponents extends React.Component {
         };
         this.onLayoutChange = this.onLayoutChange.bind(this);
         this.getComponentsFilenames = this.getComponentsFilenames.bind(this);
+        this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
+        this.showMessage = this.showMessage.bind(this);
     }
 
     componentDidMount() {
@@ -62,6 +67,30 @@ class ArrangeComponents extends React.Component {
             })
     }
 
+    showMessage = (title, message) => {
+        confirmAlert({
+            title: title,
+            message: message,
+            buttons: [
+                {
+                    label: 'Ok',
+                }
+            ]
+        });
+    };
+
+    onInfoButtonClicked() {
+        this.showMessage("Info Box",
+            "On this page, you can decide how you want to arrange your selected components. You can shift " +
+            "them around by drag and drop movements. If you do not want to include them in the screen for now, " +
+            "click on the cross on the upper left of the component or move it outside of the movement space " +
+            "(indicated with dotted lines). The component will get add to the toolbox which stores all unused " +
+            "components. You can include them on your screen again by clicking on them in the toolbox. " +
+            "If you would like to check how your arrangement looks on the final output screen, click the " +
+            "preview button on the upper right side of the screen. If you are satisfied with your arrangement, " +
+            "click on the finish button and all your configurations are going to be stored.");
+    }
+
 
     render() {
         const compFilenameList = this.state.componentFilenameList;
@@ -69,9 +98,17 @@ class ArrangeComponents extends React.Component {
         if (compFilenameList.length === 0) {
             return <span>Loading data...</span>
         }
+
+        const infoButton = <div style={{ display: "flex" }}>
+            <button onClick={this.onInfoButtonClicked} style={{ marginLeft: "auto" }}><FontAwesomeIcon icon={faQuestion}/></button>
+        </div>
         return (
             <div>
-                <VisualComponentsLayout onLayoutChange={this.onLayoutChange} componentFilenameList={this.state.componentFilenameList} />
+                <VisualComponentsLayout
+                    onLayoutChange={this.onLayoutChange}
+                    componentFilenameList={this.state.componentFilenameList}
+                    infoButton={infoButton}
+                />
             </div>
         );
     }

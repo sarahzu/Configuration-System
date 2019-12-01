@@ -398,11 +398,13 @@ class VisualComponentsLayout extends React.Component {
         if (this.state.preview) {
                 return (
                 <div>
-                    <button className="button" onClick={this.backToArranging}>
-                        <div className="font-awesome">
-                            <FontAwesomeIcon icon={faCompressArrowsAlt}/>
-                        </div>
-                    </button>
+                    <div style={{ display: "flex" }}>
+                        <button className="button" onClick={this.backToArranging} style={{ marginLeft: "auto"}}>
+                            <div className="font-awesome">
+                                <FontAwesomeIcon icon={faCompressArrowsAlt}/>
+                            </div>
+                        </button>
+                    </div>
                     <div style={previewStyle}>
                         <ResponsiveReactGridLayout className={"gridLayout"}
                             {...this.props}
@@ -420,20 +422,21 @@ class VisualComponentsLayout extends React.Component {
             return (
                 <div>
                     <h1>Arrange Components</h1>
+                    {this.props.infoButton}
                     <button onClick={this.onPageChangeButtonClicked}>Go to 'Set Components' page</button>
-                    {/*<div>
-                        Current Breakpoint: {this.state.currentBreakpoint} ({
-                        this.props.cols[this.state.currentBreakpoint]
-                    }{" "}
-                        columns)
+
+                    <div style={{ display: "flex" }}>
+                        <button
+                            className="button"
+                            onClick={this.loadPreview}
+                            style={{ marginLeft: "auto"}}>
+                            <FontAwesomeIcon icon={faExpandArrowsAlt}/>
+                        </button>
                     </div>
-                    <div>
-                        Compaction type:{" "}
-                        {_.capitalize(this.state.compactType) || "No Compaction"}
-                    </div>*/}
-                    {/*<button onClick={this.onNewLayout}>Generate New Layout</button>*/}
-                    <button className="button" onClick={this.loadPreview}><FontAwesomeIcon icon={faExpandArrowsAlt}/></button>
-                    <button className="button" onClick={this.onFinishClicked}>Finish</button>
+                    <div style={{ display: "flex" }}>
+                        <button className="button" onClick={this.onFinishClicked} style={{ marginLeft: "auto", marginTop:"20px" }}>Finish</button>
+                    </div>
+
                     <ToolBox
                         items={this.state.toolbox[this.state.currentBreakpoint] || []}
                         onTakeItem={this.onTakeItem}

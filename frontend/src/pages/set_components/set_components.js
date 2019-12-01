@@ -5,6 +5,9 @@ import Settings from "./settings"
 import axios from 'axios';
 import Async from "react-select/async/dist/react-select.browser.esm";
 import {Editors} from "react-data-grid-addons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faQuestion} from "@fortawesome/free-solid-svg-icons";
+import {confirmAlert} from "react-confirm-alert";
 require('dotenv').config();
 const { DropDownEditor } = Editors;
 
@@ -17,6 +20,9 @@ class SetComponents extends React.Component {
             info: [],
             dynamicColumnsComponents: []
         };
+
+        this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
+        this.showMessage = this.showMessage.bind(this);
     }
 
     componentDidMount() {
@@ -115,15 +121,43 @@ class SetComponents extends React.Component {
         return result;
     }
 
+    showMessage = (title, message) => {
+        confirmAlert({
+            title: title,
+            message: message,
+            buttons: [
+                {
+                    label: 'Ok',
+                }
+            ]
+        });
+    };
+
+    onInfoButtonClicked() {
+        this.showMessage("Info Box",
+            "On this page, you can decide which components you want to include in your configurations. " +
+            "On the 'Visual Components' section, you can tick the components you would like to use. Next, " +
+            "on the 'Selected' selection bar, you can decide which of your selected components you would " +
+            "like to modify. Last but not least, the data grid on your right hand side will show you all " +
+            "parameters of your selected component. The Type row indicates the input type of the parameter " +
+            "and by clicking on the Value row of each parameter, you can edit it's value.");
+    }
+
     render () {
         const info = this.state.info;
 
         if (info.length === 0) {
             return <span>Loading data...</span>
         }
+        const infoButtonStyle = {
+            marginLeft: "auto"
+        };
         return (
             <div>
                 <h1>Set Components</h1>
+                <div style={{ display: "flex" }}>
+                    <button onClick={this.onInfoButtonClicked} style={{ marginLeft: "auto" }}><FontAwesomeIcon icon={faQuestion}/></button>
+                </div>
                 <Settings settingsInfo={this.state.info} dynamicColumnsComponents={this.state.dynamicColumnsComponents}/>
             </div>);
     }
