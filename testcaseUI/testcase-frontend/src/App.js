@@ -15,13 +15,18 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      currentBreakpoint: "lg",
+      compactType: "vertical",
       componentFilenameList: [],
-      outputJson: {}
+      outputJson: {},
+      layouts: {lg:[]},
+      componentList: []
     };
 
     this.generateVisualComponents = this.generateVisualComponents.bind(this);
     this.getComponentsFilenames = this.getComponentsFilenames.bind(this);
     this.getOutputJson = this.getOutputJson.bind(this);
+    this.onLayoutChange = this.onLayoutChange.bind(this);
   }
 
   componentDidMount() {
@@ -42,7 +47,7 @@ class App extends React.Component {
    *
    * @returns {*} HTML code
    */
-  generateVisualComponents(componentsList, componentFilenameList, layouts, currentBreakPoint = "lg") {
+  generateVisualComponents(componentsList, componentFilenameList, layouts, currentBreakPoint = this.state.currentBreakpoint) {
 
     return _.map(layouts[currentBreakPoint], l => {
       let compIndex = parseInt(l.i, 10);
@@ -70,7 +75,7 @@ class App extends React.Component {
         if (""+ currentFileName !== "undefined") {
           const CurrentComponent = React.lazy(() => import("./components/" + currentFileName));
 
-          if (Object.keys(dynamicProps) !== 0) {
+          if (Object.keys(dynamicProps).length !== 0) {
             return (
                 <div key={l.i} className={"components"}>
                   <div>
@@ -84,9 +89,6 @@ class App extends React.Component {
           else {
             return (
                 <div key={l.i} className={"components"}>
-                  <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
-                    &times;
-                  </div>
                   <div>
                     <Suspense fallback={<div>Loading...</div>}>
                       <CurrentComponent/>
@@ -107,10 +109,27 @@ class App extends React.Component {
     });
   }
 
+  /**
+   * triggered when layout of visual components have been changed.
+   * Update all according states and local storage entries.
+   *
+   * @param layout Used for recursive call.
+   * @param layouts dictionary containing all visual components layouts
+   *
+   */
+  onLayoutChange(layout, layouts) {
+    //this.props.onLayoutChange(layout, layouts);
+    this.setState({layouts: layouts})
+  }
 
+  /**
+   * generate layout, which is used to generate the item position in the responsive grid, from the output json.
+   *
+   * @returns {{[p: string]: []}} the layout in the form: {lg: [{w: .., h: .., x: .., y: .., i: .., moved: .., static: ..}, ..]}
+   */
   getLayout() {
     try {
-      let layout = {"lg": []};
+      let layout = {[this.state.currentBreakpoint]: []};
       let components = this.state.outputJson.configuration.components;
       let compIndex = 0;
       components.map(component => {
@@ -123,15 +142,14 @@ class App extends React.Component {
         layoutJson.i = compIndex.toString();
         compIndex++;
         layoutJson.moved = false;
-        layoutJson.static = true;
-        layout.lg.push(layoutJson)
+        layoutJson.static = false;
+        layout[this.state.currentBreakpoint].push(layoutJson)
       })
       return layout
     }
     catch (e) {
-      return {"lg":[]}
+      return {[this.state.currentBreakpoint]:[]}
     }
-    //return {"lg":[{"w":4,"h":9,"x":0,"y":0,"i":"0","moved":false,"static":false},{"w":4,"h":10,"x":8,"y":0,"i":"1","moved":false,"static":false}]}
   }
 
   /**
@@ -150,6 +168,8 @@ class App extends React.Component {
     await axios.get(process.env.REACT_APP_OUTPUT_JSON)
         .then(response => {
           this.setState({outputJson: response.data});
+          this.setState({layouts: this.getLayout()});
+          this.setState({componentList: this.getComponentsList()})
         })
   }
 
@@ -170,14 +190,17 @@ class App extends React.Component {
       width: "auto",
     };
 
+    const layoutStyle = {
+      height: "auto",
+      width: "auto",
+    };
+
+
     const textStyle = {
       textAlign: "center"
     };
 
-    const layout = this.getLayout();
-    const componentsList = this.getComponentsList();
-
-    if (layout.lg.length === 0 || this.state.componentFilenameList.length === 0 || componentsList.length === 0) {
+    if (this.state.layouts[this.state.currentBreakpoint].length === 0 || this.state.componentFilenameList.length === 0 || this.state.componentList.length === 0) {
       return <span>Loading data...</span>
     }
     else {
@@ -187,19 +210,33 @@ class App extends React.Component {
               <div style={textStyle}>
                 <h1>Post fossil cities Simulation Game</h1>
               </div>
-              <ResponsiveReactGridLayout className={"gridLayout"}
-                                         {...this.props}
-                                         layouts={layout}
-                                         isDraggable={false}
-                                         isResizable={false}
-              >
-                {this.generateVisualComponents(componentsList, this.state.componentFilenameList, layout)}
-              </ResponsiveReactGridLayout>
+              <div style={layoutStyle}>
+                <ResponsiveReactGridLayout className={"gridLayout"}
+                                           {...this.props}
+                                           layouts={this.state.layouts}
+                                           onLayoutChange={this.onLayoutChange}
+                                           measureBeforeMount={true}
+                                           isDraggable={false}
+                                           isResizable={false}
+                                           compactType={this.state.compactType}
+                                           preventCollision={!this.state.compactType}
+                >
+                  {this.generateVisualComponents(this.state.componentList, this.state.componentFilenameList, this.state.layouts)}
+                </ResponsiveReactGridLayout>
+              </div>
             </div>
           </div>
       );
     }
   }
 }
+
+App.defaultProps = {
+  className: "layout",
+  rowHeight: 30,
+  onLayoutChange: function() {},
+  cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+  verticalCompact: false,
+};
 
 export default App;
