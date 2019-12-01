@@ -21,7 +21,8 @@ class App extends React.Component {
       outputJson: {},
       layouts: {lg:[]},
       componentList: [],
-      gitRepoAddress: ""
+      gitRepoAddress: "",
+      gitClonedSuccessfully: false,
     };
 
     this.generateVisualComponents = this.generateVisualComponents.bind(this);
@@ -185,7 +186,7 @@ class App extends React.Component {
   async cloneGitRepo() {
     await axios.get(process.env.REACT_APP_CLONE_GIT_REPO)
         .then(resp => {
-          //this.setState({gitRepoAddress: resp.data.repo});
+          this.setState({gitClonedSuccessfully: resp.data.success});
         });
   }
 
@@ -205,7 +206,8 @@ class App extends React.Component {
       textAlign: "center"
     };
 
-    if (this.state.layouts[this.state.currentBreakpoint].length === 0 || this.state.componentFilenameList.length === 0 || this.state.componentList.length === 0) {
+    if (this.state.layouts[this.state.currentBreakpoint].length === 0 || this.state.componentFilenameList.length === 0
+        || this.state.componentList.length === 0 || !this.state.gitClonedSuccessfully) {
       return <span>Loading data...</span>
     }
     else {

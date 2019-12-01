@@ -4,6 +4,8 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import {faCog, faQuestion} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import Grid from "@material-ui/core/Grid";
+import {withRouter} from "react-router";
 
 require('dotenv').config();
 
@@ -34,6 +36,7 @@ class GeneralSettings extends React.Component {
         this.showMessage = this.showMessage.bind(this);
         this.onFirstInfoButtonClicked = this.onFirstInfoButtonClicked.bind(this);
         this.onSecondInfoButtonClicked = this.onSecondInfoButtonClicked.bind(this);
+        this.onGoToSetComponentsButtonClicked = this.onGoToSetComponentsButtonClicked.bind(this);
     }
 
     componentDidMount(){
@@ -173,10 +176,14 @@ class GeneralSettings extends React.Component {
             "get deleted if you do so, so be careful.");
     }
 
+    onGoToSetComponentsButtonClicked() {
+        let path = `/set`;
+        this.props.history.push(path);
+    }
+
 
     render()
         {
-
             let infoButton =
                 <button onClick={this.onSecondInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>;
 
@@ -209,22 +216,28 @@ class GeneralSettings extends React.Component {
             return (
                 <div>
                     <h1>Settings</h1>
-                    Visual Components Git Repo:
-                    <input type="text" value={this.state.gitRepoAddress} name="gitRepoAddress"
-                           onChange={this.handleChange}
-                    />
-                    <button onClick={this.submitGitRepo}>Save</button>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <button onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Components' page</button>
+                        </Grid>
+                        <Grid item xs={12}>
+                            Visual Components Git Repo:
+                            <input type="text" value={this.state.gitRepoAddress} name="gitRepoAddress"
+                                   onChange={this.handleChange}
+                            />
+                            <button onClick={this.submitGitRepo}>Save</button>
 
-                    <button onClick={this.onFirstInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>
+                            <button onClick={this.onFirstInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>
 
-                    {content}
-
+                            {content}
+                        </Grid>
+                    </Grid>
                 </div>
             );
         }
     }
 
-export default GeneralSettings;
+export default withRouter(GeneralSettings);
 
 
 {/*action="http://localhost:5000/settings-result" method="get"*/}
