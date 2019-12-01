@@ -9,9 +9,9 @@ from model import GitRepo, is_new_pull_available, pull_from_remote, findJsFiles,
 
 class Controller:
 
-    def __init__(self, gitRepoAddress):
+    def __init__(self, gitRepoAddress, local_repo_path):
         self.gitRepoAddress = gitRepoAddress
-        self.local_repo_path = os.getenv("LOCAL_REPO_PATH")
+        self.local_repo_path = local_repo_path
         # clone_url = os.getenv("REPO_PATH")
         self.git_repo = GitRepo(self.local_repo_path, gitRepoAddress)
 

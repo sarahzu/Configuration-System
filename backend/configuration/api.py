@@ -54,12 +54,24 @@ class GeneralSettings(Resource):
             return {"success": False}
 
 
+class CloneGitRepoForTestcaseUI(Resource):
+
+    def get(self):
+        if not get_git_repo_address() == "":
+            git_repo_address = get_git_repo_address()
+            controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
+            return {'success': True}
+        else:
+            return {'success': False}
+
+
+
 class ConfigurationSettingInput(Resource):
 
     def get(self):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address)
+            controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH"))
             settings_info = controller.get_configuration_settings_input()
             return {'input': settings_info}
         else:
@@ -82,7 +94,7 @@ class PullFromRemoteGit(Resource):
     def get(self):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address)
+            controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH"))
             return {'success': controller.pull_from_remote_repo()}
         else:
             return {'success': False}
@@ -93,7 +105,7 @@ class NewPullAvailable(Resource):
     def get(self):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address)
+            controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH"))
             return {'pull': controller.is_new_pull_request_available()}
         else:
             return {'pull': False}
@@ -121,7 +133,7 @@ class FileNames(Resource):
 
     def get(self):
         git_repo_address = get_git_repo_address()
-        controller = Controller(git_repo_address)
+        controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH"))
         filenames = controller.get_file_names()
         return filenames
 
@@ -275,6 +287,7 @@ api.add_resource(FileNames, '/config_api/filenames')
 api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
 api.add_resource(GetModels, '/config_api/get_models')
 api.add_resource(GetOutputJson, '/config_api/get_output_json')
+api.add_resource(CloneGitRepoForTestcaseUI, '/config_api/clone_git_repo_for_testcaseUI')
 
 
 if __name__ == '__main__':

@@ -20,18 +20,22 @@ class App extends React.Component {
       componentFilenameList: [],
       outputJson: {},
       layouts: {lg:[]},
-      componentList: []
+      componentList: [],
+      gitRepoAddress: ""
     };
 
     this.generateVisualComponents = this.generateVisualComponents.bind(this);
     this.getComponentsFilenames = this.getComponentsFilenames.bind(this);
     this.getOutputJson = this.getOutputJson.bind(this);
-    this.onLayoutChange = this.onLayoutChange.bind(this);
+    this.getGitRepoAddress = this.getGitRepoAddress.bind(this);
+    this.cloneGitRepo = this.cloneGitRepo.bind(this);
   }
 
   componentDidMount() {
     this.getComponentsFilenames();
-    this.getOutputJson()
+    this.getOutputJson();
+    this.getGitRepoAddress();
+    this.cloneGitRepo()
   }
 
   /**
@@ -57,6 +61,7 @@ class App extends React.Component {
 
         // create dynamic props from parameters
         const visCompParameters = componentsList[compIndex].parameter;
+        const component = componentsList[compIndex];
         let dynamicProps = {};
         visCompParameters.map(parameter => {
           let value = '';
@@ -72,7 +77,7 @@ class App extends React.Component {
           dynamicProps[parameter.parameter] = value;
         });
 
-        if (""+ currentFileName !== "undefined") {
+        if (""+ currentFileName !== "undefined" && component.enabled && !component.toolbox) {
           const CurrentComponent = React.lazy(() => import("./components/" + currentFileName));
 
           if (Object.keys(dynamicProps).length !== 0) {
@@ -109,18 +114,6 @@ class App extends React.Component {
     });
   }
 
-  /**
-   * triggered when layout of visual components have been changed.
-   * Update all according states and local storage entries.
-   *
-   * @param layout Used for recursive call.
-   * @param layouts dictionary containing all visual components layouts
-   *
-   */
-  onLayoutChange(layout, layouts) {
-    //this.props.onLayoutChange(layout, layouts);
-    this.setState({layouts: layouts})
-  }
 
   /**
    * generate layout, which is used to generate the item position in the responsive grid, from the output json.
@@ -180,8 +173,20 @@ class App extends React.Component {
     catch (e) {
       return []
     }
-    //return [{"name":"PieChart","parameter":[{"parameter":"breakpoint","type":"integer","value":"100"},{"parameter":"width","type":"integer"},{"parameter":" position","type":"string"},{"parameter":"labels","type":"dynamic"}],"position":{"width":4,"height":9,"x":0,"y":0},"enabled":true,"toolbox":false},{"name":"DonutChart2","parameter":[],"position":{"width":4,"height":10,"x":6,"y":0},"enabled":true,"toolbox":false}]
+  }
 
+  async getGitRepoAddress() {
+    await axios.get(process.env.REACT_APP_GET_GIT_REPO)
+        .then(resp => {
+          this.setState({gitRepoAddress: resp.data.repo});
+        });
+  }
+
+  async cloneGitRepo() {
+    await axios.get(process.env.REACT_APP_CLONE_GIT_REPO)
+        .then(resp => {
+          //this.setState({gitRepoAddress: resp.data.repo});
+        });
   }
 
   render() {
@@ -214,12 +219,9 @@ class App extends React.Component {
                 <ResponsiveReactGridLayout className={"gridLayout"}
                                            {...this.props}
                                            layouts={this.state.layouts}
-                                           onLayoutChange={this.onLayoutChange}
                                            measureBeforeMount={true}
                                            isDraggable={false}
                                            isResizable={false}
-                                           compactType={this.state.compactType}
-                                           preventCollision={!this.state.compactType}
                 >
                   {this.generateVisualComponents(this.state.componentList, this.state.componentFilenameList, this.state.layouts)}
                 </ResponsiveReactGridLayout>
