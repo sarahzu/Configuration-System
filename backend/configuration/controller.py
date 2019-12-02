@@ -80,7 +80,8 @@ class Controller:
             for param_dict in param_list:
                 param_name = param_dict.get('name')
                 param_type = param_dict.get('type')
-                row_dict = {'parameter': param_name, 'type': param_type}
+                default_value = param_dict.get('defaultValue')
+                row_dict = {'parameter': param_name, 'type': param_type, 'value': default_value}
                 rows_content_list.append(row_dict)
 
             components_names_list.append(comp_name)
