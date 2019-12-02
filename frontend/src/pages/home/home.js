@@ -65,10 +65,21 @@ class Home extends React.Component {
         };
         const gridItemStyle = {
             background:"lightblue",
-            height:"150px",
-            marginLeft:"auto",
-            justify:"center",
-            alignItems: "center",
+            height:"auto",
+            width:"auto",
+            margin:"10px",
+        };
+        const buttonStyle = {
+            height: "50px",
+            width: "50px",
+            textAlign: "center"
+        };
+        const fontStyle = {
+            height: "100%",
+            width: "100%",
+            textAlign: "center",
+            display: "inline-block",
+            verticalAlign: "bottom",
         };
 
         return (
@@ -80,36 +91,35 @@ class Home extends React.Component {
                 <Grid container
                       spacing={3}
                       direction="row"
-                      alignItems="center"
                       justify="center"
                 >
-                    <Grid item xs={4} style={gridItemStyle}>
-                        <Grid item xs={6}>
-                            <button onClick={this.onDataSourceSettingsPageClicked}><FontAwesomeIcon icon={faCog}/></button>
+                    <Grid item xs={3} style={gridItemStyle}>
+                        <Grid item xs={12}>
+                            <button style={buttonStyle} onClick={this.onDataSourceSettingsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faCog}/></button>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
                             <div style={textStyle}>
-                                First set the location of the used visual vomponents in the 'Data Source Settings' page.
+                                First, set the location of the used visual components in the 'Data Source Settings' page.
                             </div>
                         </Grid>
                     </Grid>
-                    <Grid item xs={4} style={gridItemStyle}>
-                        <Grid item xs={6}>
-                            <button onClick={this.onSetComponentsPageClicked}><FontAwesomeIcon icon={faClone}/></button>
+                    <Grid item xs={3} style={gridItemStyle}>
+                        <Grid item xs={12}>
+                            <button style={buttonStyle} onClick={this.onSetComponentsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faClone}/></button>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
                             <div style={textStyle}>
                                 Then decide which components you want to use and modify their parameters in the 'Set Components' page.
                             </div>
                         </Grid>
                     </Grid>
-                    <Grid item xs={4} style={gridItemStyle}>
-                        <Grid item xs={6}>
-                            <button onClick={this.onArrangeComponentsPageClicked}><FontAwesomeIcon icon={faTh}/></button>
+                    <Grid item xs={3} style={gridItemStyle}>
+                        <Grid item xs={12}>
+                            <button style={buttonStyle} onClick={this.onArrangeComponentsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faTh}/></button>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
                             <div style={textStyle}>
-                                Lastly in the 'Arrange Components' page, arrange the choosen components on the screen and save your settings.
+                                Lastly, in the 'Arrange Components' page, arrange the chosen components on the screen and save your settings.
                             </div>
                         </Grid>
                     </Grid>
