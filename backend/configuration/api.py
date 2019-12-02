@@ -54,16 +54,15 @@ class GeneralSettings(Resource):
             return {"success": False}
 
 
-class CloneGitRepoForTestcaseUI(Resource):
-
-    def get(self):
-        if not get_git_repo_address() == "":
-            git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
-            return {'success': True}
-        else:
-            return {'success': False}
-
+# class CloneGitRepoForTestcaseUI(Resource):
+#
+#     def get(self):
+#         if not get_git_repo_address() == "":
+#             git_repo_address = get_git_repo_address()
+#             controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
+#             return {'success': True}
+#         else:
+#            return {'success': False}
 
 
 class ConfigurationSettingInput(Resource):
@@ -71,7 +70,7 @@ class ConfigurationSettingInput(Resource):
     def get(self):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH"))
+            controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
             settings_info = controller.get_configuration_settings_input()
             return {'input': settings_info}
         else:
@@ -92,9 +91,20 @@ class ExtractGitRepoAddressFromDB(Resource):
 class PullFromRemoteGit(Resource):
 
     def get(self):
+
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH"))
+            controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+
+            # erase previous settings form database
+            database = get_db()
+            # if git repo gets updated, erase previous settings form database
+            database.execute('UPDATE general_settings SET output_json = (?) WHERE config_id = 1', (None,))
+            database.execute('DELETE FROM parameter')
+            database.execute('DELETE FROM component')
+            database.execute('DELETE FROM decision_card')
+            database.commit()
+
             return {'success': controller.pull_from_remote_repo()}
         else:
             return {'success': False}
@@ -105,7 +115,7 @@ class NewPullAvailable(Resource):
     def get(self):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH"))
+            controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
             return {'pull': controller.is_new_pull_request_available()}
         else:
             return {'pull': False}
@@ -133,7 +143,7 @@ class FileNames(Resource):
 
     def get(self):
         git_repo_address = get_git_repo_address()
-        controller = Controller(git_repo_address, os.getenv("LOCAL_REPO_PATH"))
+        controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
         filenames = controller.get_file_names()
         return filenames
 
@@ -266,15 +276,15 @@ class GetModels(Resource):
             return []
 
 
-class GetOutputJson(Resource):
-
-    def get(self):
-        database = get_db()
-        if database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone() is not None:
-            output_string = database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone()[0]
-            return ast.literal_eval(output_string)
-        else:
-            return {}
+# class GetOutputJson(Resource):
+#
+#     def get(self):
+#         database = get_db()
+#         if database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone() is not None:
+#             output_string = database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone()[0]
+#             return ast.literal_eval(output_string)
+#         else:
+#             return {}
 
 
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
@@ -286,8 +296,8 @@ api.add_resource(LocalGitRepoPath, '/config_api/local_git_repo_path')
 api.add_resource(FileNames, '/config_api/filenames')
 api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
 api.add_resource(GetModels, '/config_api/get_models')
-api.add_resource(GetOutputJson, '/config_api/get_output_json')
-api.add_resource(CloneGitRepoForTestcaseUI, '/config_api/clone_git_repo_for_testcaseUI')
+# api.add_resource(GetOutputJson, '/config_api/get_output_json')
+# api.add_resource(CloneGitRepoForTestcaseUI, '/config_api/clone_git_repo_for_testcaseUI')
 
 
 if __name__ == '__main__':

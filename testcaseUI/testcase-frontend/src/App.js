@@ -161,9 +161,11 @@ class App extends React.Component {
   async getOutputJson() {
     await axios.get(process.env.REACT_APP_OUTPUT_JSON)
         .then(response => {
-          this.setState({outputJson: response.data});
-          this.setState({layouts: this.getLayout()});
-          this.setState({componentList: this.getComponentsList()})
+          if (response.data) {
+            this.setState({outputJson: response.data});
+            this.setState({layouts: this.getLayout()});
+            this.setState({componentList: this.getComponentsList()})
+          }
         })
   }
 

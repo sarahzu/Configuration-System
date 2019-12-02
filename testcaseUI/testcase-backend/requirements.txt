@@ -1,0 +1,7 @@
+Flask_Cors==3.0.8
+Werkzeug==0.16.0
+Click==7.0
+Flask_RESTful==0.3.7
+Flask==1.0.2
+GitPython==3.0.5
+python-dotenv==0.10.3
