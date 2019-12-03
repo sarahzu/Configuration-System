@@ -1,4 +1,4 @@
-from model import GitRepo, findJsFiles
+from model import GitRepo, findJsFiles, is_new_pull_available, pull_from_remote
 
 
 class Controller:
@@ -21,4 +21,20 @@ class Controller:
             filename = comp.get("filename")
             filenames_list.append(filename)
         return filenames_list
+
+    def is_new_pull_request_available(self):
+        """
+        Check if new pull request is available for this local git repo
+
+        :return: {Boolean} true if pull is available, false otherwise
+        """
+        return is_new_pull_available(self.local_repo_path)
+
+    def pull_from_remote_repo(self):
+        """
+        trigger pull command for this local git repo
+
+        :return: {Boolean} true if pull was successful, false otherwise
+        """
+        return pull_from_remote(self.local_repo_path)
 

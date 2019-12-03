@@ -28,6 +28,8 @@ class CloneGitRepoForTestcaseUI(Resource):
             if not get_git_repo_address() == "":
                 git_repo_address = get_git_repo_address()
                 controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
+                if controller.is_new_pull_request_available():
+                    controller.pull_from_remote_repo()
                 return {'success': True}
             else:
                 return {'success': False}

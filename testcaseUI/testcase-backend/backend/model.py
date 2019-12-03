@@ -22,6 +22,40 @@ def cloneGitRepo(cloneUrl, localRepoPath):
     Repo.clone_from(cloneUrl, localRepoPath)
 
 
+def is_new_pull_available(local_repo_path):
+    """
+    check if a new pull is available for a given git repo.
+
+    :param local_repo_path: path to the local git repo
+    :return: {boolean} true if pull is available, false otherwise
+    """
+    g = git.cmd.Git(local_repo_path)
+    git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
+    regex = re.compile(r'master pushes to master \((.*)\)')
+    match = re.search(regex, git_remote_show_origin)
+    up_to_date_status = match.group(1)
+
+    if up_to_date_status == 'local out of date':
+        return True
+    else:
+        return False
+
+
+def pull_from_remote(local_repo_path):
+    """
+    trigger git pull request for the given git repo
+
+    :param local_repo_path: path to local git repo
+    :return: {Boolean} true if pull was successful, false otherwise
+    """
+    repo = git.Repo(local_repo_path)
+    if is_new_pull_available(local_repo_path):
+        repo.remotes.origin.pull()
+        return True
+    else:
+        return False
+
+
 class GitRepo:
     """
     Creating and maintaining a given git Repo
