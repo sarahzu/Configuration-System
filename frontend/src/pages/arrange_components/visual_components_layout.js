@@ -160,6 +160,14 @@ class VisualComponentsLayout extends React.Component {
                         } else if (parameter.type === 'boolean') {
                             value = (parameter.value.toLowerCase() === 'true')
                         }
+                        else if (parameter.type === "dynamic") {
+                            if (parseInt(parameter.value, 10)) {
+                                value = parseInt(parameter.value, 10)
+                            }
+                            else {
+                                value = parameter.value
+                            }
+                        }
                     }
                     dynamicProps[parameter.parameter] = value;
                 });
@@ -172,7 +180,7 @@ class VisualComponentsLayout extends React.Component {
 
                         let toolboxButton;
                         if (this.state.preview) {
-                            // if the current state is preview, do not allow toolbox button
+                            // if the current state is preview, do not show toolbox button
                             toolboxButton = <div/>
                         }
                         else {

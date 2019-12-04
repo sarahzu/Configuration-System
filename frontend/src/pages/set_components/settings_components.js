@@ -166,8 +166,8 @@ class SettingsComponents extends React.Component {
      * @param updated   updated value
      */
     onDynamicComponentGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-        const dynamicFromRow = fromRow + this.state.componentsDataGridRows.length -1;
-        const dynamicToRow = toRow + this.state.componentsDataGridRows.length -1;
+        const dynamicFromRow = fromRow + this.getNonDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length;
+        const dynamicToRow = toRow + this.getNonDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length;
 
         let gridRows = this.getGridRows(dynamicFromRow , dynamicToRow, updated);
 

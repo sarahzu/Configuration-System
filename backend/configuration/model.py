@@ -141,7 +141,7 @@ def findJsFiles(dirPath):
                             # reset parameter list form previously found component
                             parameter_list = []
                         elif vis_comp_found and re.compile(r'\s\*\s@props.*').match(line):
-                            regex = re.compile(r'\s\*[\s|\t]@props[\s|\t]{(.*)\}[\s|\t](.*?)[\s|\t](\[(.*)\])?')
+                            regex = re.compile(r'\s\*[\s|\t]@props[\s|\t]{(.*)\}[\s|\t](.*?)[\s|\t]?(\[(.*)\])?[\s|\t](\((.*?)\))?')
                             match = re.search(regex, line)
                             props_type = match.group(1)
                             props_name = match.group(2)
@@ -150,6 +150,11 @@ def findJsFiles(dirPath):
                                 default_value = match.group(4)
                             except():
                                 default_value = ""
+
+                            try:
+                                value_origin = match.group(6)
+                            except():
+                                value_origin = ""
 
                             parameter_list.append({'name': props_name, 'type': props_type, 'defaultValue': default_value})
                         elif vis_comp_found and line.find(' */') != -1:

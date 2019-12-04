@@ -73,6 +73,13 @@ class App extends React.Component {
               value = parameter.value;
             } else if (parameter.type === 'boolean') {
               value = (parameter.value.toLowerCase() === 'true')
+            } else if (parameter.type === "dynamic") {
+              if (parseInt(parameter.value, 10)) {
+                value = parseInt(parameter.value, 10)
+              }
+              else {
+                value = parameter.value
+              }
             }
           }
           dynamicProps[parameter.parameter] = value;
