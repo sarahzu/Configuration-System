@@ -381,12 +381,22 @@ class SettingsComponents extends React.Component {
 
                 // set in final output the checked state of the component
                 const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+                let parameters;
+                if (JSON.parse(localStorage.getItem("apiResponse"))) {
+                     parameters = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[i].rows
+                }
+                else {
+                    parameters = []
+                }
                 const finalOutputComps = finalOutput.configuration.components;
                 finalOutputComps.map(v => {
                     if (v.name === name) {
-                        v.enabled = checked
+                        v.enabled = checked;
+                        v.parameter = parameters;
                     }
                 });
+                //TODO: add default parameters
+
                 finalOutput.configuration.components = finalOutputComps;
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 

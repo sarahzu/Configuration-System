@@ -77,6 +77,12 @@ class App extends React.Component {
               if (parseInt(parameter.value, 10)) {
                 value = parseInt(parameter.value, 10)
               }
+              else if (parameter.value.toLowerCase() === 'true') {
+                value = true
+              }
+              else if (parameter.value.toLowerCase() === 'false') {
+                value = false
+              }
               else {
                 value = parameter.value
               }
