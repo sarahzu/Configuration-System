@@ -1,10 +1,38 @@
 import os, json
 
 # from configuration import model
+import re
+
 import git
-from model import GitRepo, is_new_pull_available, pull_from_remote, findJsFiles, getDC
+from model import GitRepo, is_new_pull_available, pull_from_remote, findJsFiles, getDC, get_all_model_names, \
+    get_value_from_data, get_value_from_origin_name
 
 # sys.path.append('/configuration')
+
+
+def get_model_names():
+    """
+    extract all the modes in the demo data files
+
+    :return:
+    """
+    input_models = get_all_model_names(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_DEMO_DATA_PATH_IN"))
+    output_models = get_all_model_names(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_DEMO_DATA_PATH_OUT"))
+    all_models = input_models + output_models
+    return all_models
+
+
+def get_value_from_data_json(source_name, node_path_string):
+    """
+    extract a value from the given source
+
+    :param source_name:     name of the source e.g. aum.mfa.out.ResidentialBuildings
+    :return:                final value
+    """
+    try:
+        return get_value_from_origin_name(source_name, node_path_string)
+    except():
+        return ""
 
 
 class Controller:
@@ -78,9 +106,15 @@ class Controller:
 
             rows_content_list = []
             for param_dict in param_list:
-                param_name = param_dict.get('name')
                 param_type = param_dict.get('type')
+                if param_type == 'dependent':
+                    # if parameter is dependent, set name to the parameter it depends on
+                    param_name = param_dict.get('dependentOn')
+                else:
+                    # name of the parameter
+                    param_name = param_dict.get('name')
                 default_value = param_dict.get('defaultValue')
+
                 row_dict = {'parameter': param_name, 'type': param_type, 'value': default_value}
                 rows_content_list.append(row_dict)
 

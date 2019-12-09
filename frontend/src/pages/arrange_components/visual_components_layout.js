@@ -152,6 +152,7 @@ class VisualComponentsLayout extends React.Component {
                 let dynamicProps = {};
                 visCompParameters.map(parameter => {
                     let value = '';
+                    let dependent = false;
                     if (parameter.value) {
                         if (parameter.type === 'integer') {
                             value = parseInt(parameter.value, 10)
@@ -174,8 +175,28 @@ class VisualComponentsLayout extends React.Component {
                                 value = parameter.value
                             }
                         }
+                        else if (parameter.type === "dependent") {
+                            dependent = true;
+                            let match = parameter.parameter.match(/(.*?)--(.*?)--(.*)/);
+                            const parameterName = match[1];
+                            if (parseInt(parameter.value, 10)) {
+                                value = parseInt(parameter.value, 10)
+                            }
+                            else if (parameter.value.toLowerCase() === 'true') {
+                                value = true
+                            }
+                            else if (parameter.value.toLowerCase() === 'false') {
+                                value = false
+                            }
+                            else {
+                                value = parameter.value
+                            }
+                            dynamicProps[parameterName] = value
+                        }
                     }
-                    dynamicProps[parameter.parameter] = value;
+                    if (!dependent) {
+                        dynamicProps[parameter.parameter] = value;
+                    }
                 });
                 //let dynamicProps = {"width":1000, "breakpoint":5000, position:'bottom'};
 

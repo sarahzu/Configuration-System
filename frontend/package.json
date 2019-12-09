@@ -16,6 +16,7 @@
     "ensure-array": "^1.0.0",
     "env-cmd": "^10.0.1",
     "html-react-parser": "^0.10.0",
+    "list-react-files": "^0.2.0",
     "moment": "^2.24.0",
     "prop-types": "latest",
     "react": "^16.10.2",

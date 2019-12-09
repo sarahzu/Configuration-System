@@ -8,6 +8,7 @@ import {Editors} from "react-data-grid-addons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faQuestion} from "@fortawesome/free-solid-svg-icons";
 import {confirmAlert} from "react-confirm-alert";
+import listReactFiles from 'list-react-files'
 require('dotenv').config();
 const { DropDownEditor } = Editors;
 
@@ -48,6 +49,23 @@ class SetComponents extends React.Component {
                     {key: "type", name: "Type"},
                     {key: "value", name: "Value", editor: dropdownEditor}]});
         });
+    }
+
+    getModelsAndCreateDynamicDataGridColumns2() {
+
+        // get all models
+        //const data = require('../../gitclone/' + out_or_in_string + '/aum.mfa.' + out_or_in_string + '.' + filename + ".json");
+        let models = [];
+        let filePathList = [];
+
+
+        // create dropdown editor for data grid
+        let dropdownEditor = <DropDownEditor options={models}/>;
+
+        this.setState({dynamicColumnsComponents: [
+                {key: "parameter", name: "Parameter"},
+                {key: "type", name: "Type"},
+                {key: "value", name: "Value", editor: dropdownEditor}]});
     }
 
     /**

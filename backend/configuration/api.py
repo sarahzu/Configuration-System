@@ -3,7 +3,7 @@ import ast
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_cors import CORS
-from controller import Controller
+from controller import Controller, get_model_names, get_value_from_data_json
 import os
 
 from pandas import json
@@ -267,13 +267,26 @@ def is_component_parameter_in_database(component_id, parameter_name):
 class GetModels(Resource):
 
     def get(self):
-        database = get_db()
-        if database.execute('SELECT model_name from model').fetchone() is not None:
-            models = database.execute('SELECT model_name from model')
-            result = [item[0] for item in models.fetchall()]
-            return result
-        else:
-            return []
+        # database = get_db()
+        # if database.execute('SELECT model_name from model').fetchone() is not None:
+        #     models = database.execute('SELECT model_name from model')
+        #     result = [item[0] for item in models.fetchall()]
+        #     return result
+        # else:
+        #     return []
+        return get_model_names()
+
+
+class GetValueFromDataSource(Resource):
+
+    def post(self):
+        frontend_response = request.get_json()
+        try:
+            final_value = get_value_from_data_json(frontend_response.get('new_source'),
+                                                   frontend_response.get('node_path'))
+            return {'value': final_value}
+        except():
+            return {'value': None}
 
 
 # class GetOutputJson(Resource):
@@ -296,6 +309,8 @@ api.add_resource(LocalGitRepoPath, '/config_api/local_git_repo_path')
 api.add_resource(FileNames, '/config_api/filenames')
 api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
 api.add_resource(GetModels, '/config_api/get_models')
+api.add_resource(GetValueFromDataSource, '/config_api/get_value')
+
 # api.add_resource(GetOutputJson, '/config_api/get_output_json')
 # api.add_resource(CloneGitRepoForTestcaseUI, '/config_api/clone_git_repo_for_testcaseUI')
 

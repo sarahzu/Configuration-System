@@ -1,12 +1,14 @@
 import mmap
 import re
 import shutil
+from os.path import isfile, join
 
 from git import Repo
 import os
 import git
 
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -82,7 +84,7 @@ class GitRepo:
             try:
                 g = git.cmd.Git(self.localRepoPath)
                 git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
-                regex = re.compile(r'Fetch\sURL\:\s(https.*.git)')
+                regex = re.compile(r'Fetch\sURL\:\s((https|git).*.git)')
                 match = re.search(regex, git_remote_show_origin)
                 current_clone_url = match.group(1)
                 # if git repo in local repo path is not the same repo as given in the clone url
@@ -141,7 +143,8 @@ def findJsFiles(dirPath):
                             # reset parameter list form previously found component
                             parameter_list = []
                         elif vis_comp_found and re.compile(r'\s\*\s@props.*').match(line):
-                            regex = re.compile(r'\s\*[\s|\t]@props[\s|\t]{(.*)\}[\s|\t](.*?)[\s|\t]?(\[(.*)\])?[\s|\t](\((.*?)\))?')
+                            regex = re.compile(
+                                r'\s\*[\s|\t]@props[\s|\t]{(.*)\}[\s|\t](.*?)[\s|\t]?(\[(.*)\])?[\s|\t](\((.*?)\))?[\s|\t]?({(.*?)\})?')
                             match = re.search(regex, line)
                             props_type = match.group(1)
                             props_name = match.group(2)
@@ -152,11 +155,24 @@ def findJsFiles(dirPath):
                                 default_value = ""
 
                             try:
-                                value_origin = match.group(6)
-                            except():
-                                value_origin = ""
+                                value_dependent = match.group(8)
+                                # add name of parameter to dependent value so that the frontend knows
+                                # where to put the values
+                                value_dependent = props_name + "--" + value_dependent
+                            except TypeError:
+                                value_dependent = ""
 
-                            parameter_list.append({'name': props_name, 'type': props_type, 'defaultValue': default_value})
+                            try:
+                                value_origin = match.group(6)
+
+                                default_value = get_value_from_origin_name(value_origin, None)
+
+                            except (TypeError, AttributeError):
+                                pass
+
+                            parameter_list.append(
+                                {'name': props_name, 'type': props_type, 'defaultValue': default_value,
+                                 'dependentOn': value_dependent})
                         elif vis_comp_found and line.find(' */') != -1:
                             end_of_doc_string_found = True
                         elif vis_comp_found and end_of_doc_string_found and line.startswith('class'):
@@ -171,6 +187,81 @@ def findJsFiles(dirPath):
                                               'path': file_path, 'parameters': parameter_list}
                             vis_comp_name_list.append(component_info)
     return vis_comp_name_list
+
+
+def get_value_from_origin_name(value_origin, node_path_string):
+    """
+    extract in or out value, filename, and tree node elements form given origin name
+
+    :param node_path_string:    node path to value. None if path to value is included in value_origin
+    :param value_origin:        origin of the value, e.g. aum.mfa.out.PrivateVehicles
+    :return:                    final value
+    """
+
+    filename_regex = re.compile(r'(aum\.mfa\.(out|in)\..*?)(\.+(.+)|$)')
+    filename_match = re.search(filename_regex, value_origin)
+    filename = filename_match.group(1)
+    input_or_output_file = filename_match.group(2)
+
+    if node_path_string is not None:
+        path = node_path_string
+        value_origin_tree_notes = path.split('.')
+
+    else:
+        path = filename_match.group(4)
+        value_origin_tree_notes = path.split('.')
+
+    # get data from json file
+    return get_value_from_data(input_or_output_file, filename, value_origin_tree_notes)
+
+
+def get_value_from_data(input_or_output_file, filename, value_origin_tree_notes):
+    """
+    extract a value from a data json file
+
+    :param input_or_output_file:    "in" if input, "out" if output file
+    :param filename:                filename of the data json
+    :param value_origin_tree_notes: list of all tree notes that have to be passed to get to the final value e.g.
+                                    ["value", "1", "name"]
+    :return:                        final value
+    """
+    try:
+        if input_or_output_file == "in":
+            data_file = open(os.path.dirname(os.path.abspath(__file__)) + os.getenv(
+                "LOCAL_DEMO_DATA_PATH_IN") + "/" + filename + ".json", "r")
+        else:
+            data_file = open(os.path.dirname(os.path.abspath(__file__)) + os.getenv(
+                "LOCAL_DEMO_DATA_PATH_OUT") + "/" + filename + ".json", "r")
+        data = json.load(data_file)
+    except FileNotFoundError:
+        data = {}
+
+    try:
+        parent_node = data
+        for node in value_origin_tree_notes:
+            current_node = parent_node[node]
+            parent_node = current_node
+        return parent_node
+    except KeyError:
+        return "1"
+
+
+def get_all_model_names(model_path):
+    """
+    extract all models form the given path
+
+    :param model_path:  path to the folder with all model json files
+    :return:            list with all model filenames
+    """
+    filenames = [f for f in os.listdir(model_path) if
+                 isfile(join(model_path, f)) and f.endswith(".json")]
+    name_index = 0
+    for name in filenames:
+        # striped_name = name.strip('.json')
+        striped_name = re.sub(r"\.json", "", name)
+        filenames[name_index] = striped_name
+        name_index += 1
+    return filenames
 
 
 def getDC():

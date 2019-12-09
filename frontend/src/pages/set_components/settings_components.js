@@ -27,6 +27,7 @@ class SettingsComponents extends React.Component {
             {key: "value", name: "Value", editable: true}];
         let descriptionComponents;
         let parameters;
+        let currentParameters;
 
         if (localStorage.getItem("parametersUpper")) {parameters = JSON.parse(localStorage.getItem("parametersUpper"))}
         else {parameters = {}}
@@ -71,6 +72,9 @@ class SettingsComponents extends React.Component {
         if (localStorage.getItem("descriptionComponents")) {descriptionComponents = JSON.parse(localStorage.getItem("descriptionComponents"))}
         else {descriptionComponents = ""}
 
+        if (localStorage.getItem("currentParameters")) {currentParameters = JSON.parse(localStorage.getItem("currentParameters"))}
+        else {currentParameters = []}
+
         let checkboxComponents = {};
 
         if (props.settingsInfo.components) {
@@ -89,10 +93,13 @@ class SettingsComponents extends React.Component {
             issueTypeEditorDataGridComponents: null,
             componentsDataGridColumns: componentsDataGridColumns,
             descriptionComponents: descriptionComponents,
+            currentDependentValue: null,
+            currentParameters: currentParameters,
         };
 
         this.createCheckboxComponents = this.createCheckboxComponents.bind(this);
         this.handleCheckboxChangeComponents = this.handleCheckboxChangeComponents.bind(this);
+        this.getValueFromSource = this.getValueFromSource.bind(this);
     }
 
     componentDidMount() {
@@ -120,6 +127,8 @@ class SettingsComponents extends React.Component {
         if (localStorage.getItem("descriptionComponents")) {this.setState({descriptionComponents: JSON.parse(localStorage.getItem("descriptionComponents"))});}
         if (localStorage.getItem("parametersUpper")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("parametersUpper"))});}
         //if (localStorage.getItem("dynamicDataGridColumns")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("dynamicDataGridColumns"))});}
+        if (localStorage.getItem("currentParameters")) {this.setState({currentParameters: JSON.parse(localStorage.getItem("currentParameters"))});}
+
     }
 
     /**
@@ -178,24 +187,85 @@ class SettingsComponents extends React.Component {
         const currCompName = currState.currComponentName;
         const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
         const finalOutputComps = finalOutput.configuration.components;
+        let comp_index = 0;
         finalOutputComps.map(v => {
             if (v.name === currCompName) {
                 v.parameter = gridRows;
+                //this.setState({"currentParameters": v.parameter});
+                localStorage.setItem("currentParameters", JSON.stringify(v.parameter));
+                let parameters = v.parameter;
+
+                let param_index = 0;
+                v.parameter.map(dependentParameter => {
+                    if (dependentParameter.type === "dependent") {
+                        let match = dependentParameter.parameter.match(/(.*?)--(.*?)--(.*)/);
+                        try {
+                            const dependentParameterOriginalName = match[1];
+                            const dependentParameterName = match[2];
+                            const dependentParameterNodePath = match[3];
+
+                            v.parameter.map(dynamicParameter => {
+                                if (dependentParameterName === dynamicParameter.parameter && dynamicParameter.type !== "dependent") {
+
+                                    const newSource = dynamicParameter.value;
+                                    const apiRequest = {"new_source": newSource, "node_path": dependentParameterNodePath};
+                                    const response = this.getValueFromSource(apiRequest, parameters, param_index, v.name,
+                                        finalOutputComps, finalOutput, gridRows, comp_index);
+                                }
+                            })
+                        }
+                        catch (e) {}
+                    }
+                    param_index++;
+                    v.parameter = JSON.parse(localStorage.getItem("currentParameters"));
+                });
 
                 // also update the overall parameters
                 let selectedParameters = this.state.parametersUpper;
-                selectedParameters[v.name] = gridRows;
+                //selectedParameters[v.name] = gridRows;
+                selectedParameters[v.name] = JSON.parse(localStorage.getItem("currentParameters"));;
                 this.setState({parametersUpper: selectedParameters});
                 localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters))
             }
+            comp_index++;
         });
         finalOutput.configuration.components = finalOutputComps;
+
         localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
         this.setState({componentsDataGridRows: gridRows});
         localStorage.setItem("componentsDataGridRows", JSON.stringify(gridRows));
 
     };
+
+    async getValueFromSource(source_json, currentParameters, index_parameter, currentName, finalOutputComps, finalOutput, gridRows, index_comp) {
+        await axios.post(process.env.REACT_APP_GET_VALUE, source_json, {headers: {'Content-Type': 'application/json'}})
+            .then(response => {
+                //this.setState({"currentDependentValue": response.data.value});
+                currentParameters[index_parameter].value = response.data.value;
+                //this.setState({"currentParameters": currentParameters});
+                localStorage.setItem("currentParameters", JSON.stringify(currentParameters));
+
+
+                // also update the overall parameters
+                let selectedParameters = this.state.parametersUpper;
+                //selectedParameters[v.name] = gridRows;
+                selectedParameters[currentName] = JSON.parse(localStorage.getItem("currentParameters"));
+                this.setState({parametersUpper: selectedParameters});
+                localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters));
+
+                finalOutputComps[index_comp].parameter = JSON.parse(localStorage.getItem("currentParameters"))
+
+                finalOutput.configuration.components = finalOutputComps;
+
+                localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+                this.setState({componentsDataGridRows: gridRows});
+                localStorage.setItem("componentsDataGridRows", JSON.stringify(gridRows));
+            }
+        );
+
+        }
 
     /**
      * get data grid rows
@@ -381,6 +451,7 @@ class SettingsComponents extends React.Component {
 
                 // set in final output the checked state of the component
                 const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+                // get default parameters from api response
                 let parameters;
                 if (JSON.parse(localStorage.getItem("apiResponse"))) {
                      parameters = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[i].rows
@@ -389,14 +460,14 @@ class SettingsComponents extends React.Component {
                     parameters = []
                 }
                 const finalOutputComps = finalOutput.configuration.components;
+                // add checked state to final output
                 finalOutputComps.map(v => {
                     if (v.name === name) {
                         v.enabled = checked;
+                        // also add default parameters
                         v.parameter = parameters;
                     }
                 });
-                //TODO: add default parameters
-
                 finalOutput.configuration.components = finalOutputComps;
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
@@ -525,7 +596,7 @@ class SettingsComponents extends React.Component {
     getNonDynamicComponentsDataGridRows(fullDataGridRows) {
         let dynamicDataGridRows = [];
         fullDataGridRows.map(item => {
-            if (item.type !== "dynamic") {
+            if (item.type !== "dynamic" && item.type !== "dependent") {
                 dynamicDataGridRows.push(item)
             }
         });
