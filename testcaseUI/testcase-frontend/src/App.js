@@ -17,12 +17,12 @@ class App extends React.Component {
     this.state = {
       currentBreakpoint: "lg",
       compactType: "vertical",
-      componentFilenameList: [],
+      componentFilenameList: null,
       outputJson: {},
-      layouts: {lg:[]},
-      componentList: [],
+      layouts: null,
+      componentList: null,
       gitRepoAddress: "",
-      gitClonedSuccessfully: false,
+      gitClonedSuccessfully: null,
     };
 
     this.generateVisualComponents = this.generateVisualComponents.bind(this);
@@ -242,9 +242,9 @@ class App extends React.Component {
     const textStyle = {
       textAlign: "center"
     };
-
-    if (this.state.layouts[this.state.currentBreakpoint].length === 0 || this.state.componentFilenameList.length === 0
-        || this.state.componentList.length === 0 || !this.state.gitClonedSuccessfully) {
+    
+    if (this.state.layouts === null || this.state.componentFilenameList === null
+        || this.state.componentList === null || this.state.gitClonedSuccessfully == null) {
       return <span>Loading data...</span>
     }
     else {

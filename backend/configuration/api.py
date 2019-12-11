@@ -118,6 +118,16 @@ class PullFromRemoteGit(Resource):
             git_repo_address = get_git_repo_address()
             try:
                 controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                # erase previous settings form database
+                database = get_db()
+                # if git repo gets updated, erase previous settings form database
+                database.execute('UPDATE general_settings SET output_json = (?) WHERE config_id = 1', (None,))
+                database.execute('DELETE FROM parameter')
+                database.execute('DELETE FROM component')
+                database.execute('DELETE FROM decision_card')
+                database.commit()
+
+                return {'success': controller.pull_from_remote_repo()}
             except (git.exc.GitCommandError, TypeError):
                 # recreate lost gitclone folder
                 try:
@@ -125,17 +135,6 @@ class PullFromRemoteGit(Resource):
                 except FileExistsError:
                     pass
                 return {"success": False}
-
-            # erase previous settings form database
-            database = get_db()
-            # if git repo gets updated, erase previous settings form database
-            database.execute('UPDATE general_settings SET output_json = (?) WHERE config_id = 1', (None,))
-            database.execute('DELETE FROM parameter')
-            database.execute('DELETE FROM component')
-            database.execute('DELETE FROM decision_card')
-            database.commit()
-
-            return {'success': controller.pull_from_remote_repo()}
         else:
             return {'success': False}
 

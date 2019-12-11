@@ -35,7 +35,7 @@ class CloneGitRepoForTestcaseUI(Resource):
                 except (git.exc.GitCommandError, TypeError):
                     # recreate lost gitclone folder
                     try:
-                        os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                        os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
                     except FileExistsError:
                         pass
                     return {"success": False}
@@ -76,7 +76,7 @@ class FileNames(Resource):
         except (git.exc.GitCommandError, TypeError):
             # recreate lost gitclone folder
             try:
-                os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
             except FileExistsError:
                 pass
             return []
