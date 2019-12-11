@@ -19,4 +19,5 @@ build/
 
 run-API.command
 run-backend.command
+init-db.command
 testParser/
