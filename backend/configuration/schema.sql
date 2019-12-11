@@ -29,7 +29,7 @@ CREATE TABLE component (
 CREATE TABLE parameter (
   parameter_id INTEGER PRIMARY KEY AUTOINCREMENT,
   component_id INTEGER NOT NULL,
-  parameter_name TEXT UNIQUE NOT NULL,
+  parameter_name TEXT NOT NULL,
   parameter_type TEXT NOT NULL,
   parameter_value TEXT NOT NULL,
   FOREIGN KEY (component_id) REFERENCES component (component_id)
