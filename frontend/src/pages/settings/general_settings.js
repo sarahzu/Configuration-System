@@ -63,7 +63,8 @@ class GeneralSettings extends React.Component {
                     localStorage.clear();
                 }
                 else {
-                    console.alert("git repo is not valid")
+                    this.message("Something went wrong!", "Git repo is not valid or you miss the needed credentials.")
+                    localStorage.clear();
                 }
             });
     }

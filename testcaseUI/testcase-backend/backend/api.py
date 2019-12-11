@@ -27,13 +27,21 @@ class CloneGitRepoForTestcaseUI(Resource):
         try:
             if not get_git_repo_address() == "":
                 git_repo_address = get_git_repo_address()
-                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
-                if controller.is_new_pull_request_available():
-                    controller.pull_from_remote_repo()
-                return {'success': True}
+                try:
+                    controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
+                    if controller.is_new_pull_request_available():
+                        controller.pull_from_remote_repo()
+                    return {'success': True}
+                except (git.exc.GitCommandError, TypeError):
+                    # recreate lost gitclone folder
+                    try:
+                        os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                    except FileExistsError:
+                        pass
+                    return {"success": False}
             else:
                 return {'success': False}
-        except git.exc.GitCommandError:
+        except (git.exc.GitCommandError, TypeError):
             return {'success': False}
 
 
@@ -64,9 +72,14 @@ class FileNames(Resource):
             git_repo_address = get_git_repo_address()
             controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
             filenames = controller.get_file_names()
-        except git.exc.GitCommandError:
+            return filenames
+        except (git.exc.GitCommandError, TypeError):
+            # recreate lost gitclone folder
+            try:
+                os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            except FileExistsError:
+                pass
             return []
-        return filenames
 
 
 class GetOutputJson(Resource):

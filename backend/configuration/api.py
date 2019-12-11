@@ -1,5 +1,6 @@
 import ast
 
+import git
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_cors import CORS
@@ -30,29 +31,42 @@ class GeneralSettings(Resource):
             database = get_db()
             git_repo_json = request.get_json()
             git_repo_address = git_repo_json.get('gitRepoAddress')
+            try:
+                Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            except (git.exc.GitCommandError, TypeError):
+                # recreate lost gitclone folder
+                try:
+                    os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                except FileExistsError:
+                    pass
+                enterGitRepoAddressIntoDatabase(database, None)
+                return {"success": False}
 
-            # check if database already has entry
-            if database.execute('SELECT * FROM general_settings WHERE config_id =1').fetchone() is not None:
-                database.execute('UPDATE general_settings SET git_repo_address=(?), output_json=(?) WHERE config_id=(?)',
-                                 (git_repo_address, None, 1))
-                # if git repo changes, erase previous settings form database
-                database.execute('DELETE FROM parameter')
-                database.execute('DELETE FROM component')
-                database.execute('DELETE FROM decision_card')
-
-                database.commit()
-            else:
-                database.execute(
-                    'INSERT INTO general_settings (git_repo_address, config_id, is_active) VALUES (?, ?, ?)',
-                    (git_repo_address, 1, True)
-                )
-                database.commit()
+            enterGitRepoAddressIntoDatabase(database, git_repo_address)
 
             return {"success": True}
 
         except():
             return {"success": False}
 
+
+def enterGitRepoAddressIntoDatabase(database, git_repo_address):
+    # check if database already has entry
+    if database.execute('SELECT * FROM general_settings WHERE config_id =1').fetchone() is not None:
+        database.execute('UPDATE general_settings SET git_repo_address=(?), output_json=(?) WHERE config_id=(?)',
+                         (git_repo_address, None, 1))
+        # if git repo changes, erase previous settings form database
+        database.execute('DELETE FROM parameter')
+        database.execute('DELETE FROM component')
+        database.execute('DELETE FROM decision_card')
+
+        database.commit()
+    else:
+        database.execute(
+            'INSERT INTO general_settings (git_repo_address, config_id, is_active, output_json) VALUES (?, ?, ?)',
+            (git_repo_address, 1, True, None)
+        )
+        database.commit()
 
 # class CloneGitRepoForTestcaseUI(Resource):
 #
@@ -70,8 +84,16 @@ class ConfigurationSettingInput(Resource):
     def get(self):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
-            settings_info = controller.get_configuration_settings_input()
+            try:
+                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                settings_info = controller.get_configuration_settings_input()
+            except (git.exc.GitCommandError, TypeError):
+                # recreate lost gitclone folder
+                try:
+                    os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                except FileExistsError:
+                    pass
+                return {"input": {}}
             return {'input': settings_info}
         else:
             return {'input': {}}
@@ -94,7 +116,15 @@ class PullFromRemoteGit(Resource):
 
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            try:
+                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            except (git.exc.GitCommandError, TypeError):
+                # recreate lost gitclone folder
+                try:
+                    os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                except FileExistsError:
+                    pass
+                return {"success": False}
 
             # erase previous settings form database
             database = get_db()
@@ -115,7 +145,15 @@ class NewPullAvailable(Resource):
     def get(self):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
-            controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            try:
+                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            except (git.exc.GitCommandError, TypeError):
+                # recreate lost gitclone folder
+                try:
+                    os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                except FileExistsError:
+                    return {"pull": False}
+                return {"pull": False}
             return {'pull': controller.is_new_pull_request_available()}
         else:
             return {'pull': False}
@@ -143,9 +181,17 @@ class FileNames(Resource):
 
     def get(self):
         git_repo_address = get_git_repo_address()
-        controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
-        filenames = controller.get_file_names()
-        return filenames
+        try:
+            controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            filenames = controller.get_file_names()
+            return filenames
+        except (git.exc.GitCommandError, TypeError):
+            # recreate lost gitclone folder
+            try:
+                os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            except FileExistsError:
+                pass
+            return []
 
 
 class ComponentsInfoFromFrontend(Resource):

@@ -28,7 +28,7 @@ class ArrangeComponents extends React.Component {
         super(props);
         this.state = {
             layout: [],
-            componentFilenameList: [],
+            componentFilenameList: null,
         };
         this.onLayoutChange = this.onLayoutChange.bind(this);
         this.getComponentsFilenames = this.getComponentsFilenames.bind(this);
@@ -95,7 +95,7 @@ class ArrangeComponents extends React.Component {
     render() {
         const compFilenameList = this.state.componentFilenameList;
 
-        if (compFilenameList.length === 0) {
+        if (!compFilenameList) {
             return <span>Loading data...</span>
         }
 
