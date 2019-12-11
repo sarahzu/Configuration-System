@@ -253,15 +253,18 @@ def get_all_model_names(model_path):
     :param model_path:  path to the folder with all model json files
     :return:            list with all model filenames
     """
-    filenames = [f for f in os.listdir(model_path) if
-                 isfile(join(model_path, f)) and f.endswith(".json")]
-    name_index = 0
-    for name in filenames:
-        # striped_name = name.strip('.json')
-        striped_name = re.sub(r"\.json", "", name)
-        filenames[name_index] = striped_name
-        name_index += 1
-    return filenames
+    try:
+        filenames = [f for f in os.listdir(model_path) if
+                     isfile(join(model_path, f)) and f.endswith(".json")]
+        name_index = 0
+        for name in filenames:
+            # striped_name = name.strip('.json')
+            striped_name = re.sub(r"\.json", "", name)
+            filenames[name_index] = striped_name
+            name_index += 1
+        return filenames
+    except FileNotFoundError:
+        return []
 
 
 def getDC():
