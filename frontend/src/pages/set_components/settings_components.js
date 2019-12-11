@@ -596,7 +596,7 @@ class SettingsComponents extends React.Component {
     getNonDynamicComponentsDataGridRows(fullDataGridRows) {
         let dynamicDataGridRows = [];
         fullDataGridRows.map(item => {
-            if (item.type !== "dynamic" && item.type !== "dependent") {
+            if (item.type !== "dynamic" && item.type !== "dependent" && item.type !== 'inputLocation') {
                 dynamicDataGridRows.push(item)
             }
         });

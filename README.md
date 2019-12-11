@@ -18,7 +18,7 @@ flask init-db
 
 To run the backend API:
 ```
-cd ~/backend/
+cd ~/backend
 pip install -r requirements.txt
 cd configuration
 python3 api.py
