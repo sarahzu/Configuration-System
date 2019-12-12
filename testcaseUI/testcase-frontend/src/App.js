@@ -242,7 +242,7 @@ class App extends React.Component {
     const textStyle = {
       textAlign: "center"
     };
-    
+
     if (this.state.layouts === null || this.state.componentFilenameList === null
         || this.state.componentList === null || this.state.gitClonedSuccessfully == null) {
       return <span>Loading data...</span>

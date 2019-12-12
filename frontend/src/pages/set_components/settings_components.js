@@ -496,8 +496,8 @@ class SettingsComponents extends React.Component {
                     layout[i] = {
                         x: i + i,
                         y: 0,
-                        w: 2,
-                        h: 6,
+                        w: 4,
+                        h: 10,
                         i: i.toString(),
                         static: false
                     };
