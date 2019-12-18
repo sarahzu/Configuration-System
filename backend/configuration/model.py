@@ -278,36 +278,14 @@ def getDC():
                 "name": "Decision Card 1",
                 "rows": [
                     {
-                        "parameter": "Parameter 1",
-                        "value": "Value 4",
-                        "issueTypes": [
-                            {
-                                "id": "value4",
-                                "value": "Value 4"
-                            },
-                            {
-                                "id": "value7",
-                                "value": "Value 7"
-                            }
-                        ]
+                        "parameter": "name",
+                        "type": "string",
+                        "value": "dc 1"
                     },
                     {
-                        "parameter": "Parameter 2",
-                        "value": "Value 2",
-                        "issueTypes": [
-                            {
-                                "id": "value1",
-                                "value": "Value 1"
-                            },
-                            {
-                                "id": "value2",
-                                "value": "Value 2"
-                            },
-                            {
-                                "id": "value8",
-                                "value": "Value 8"
-                            }
-                        ]
+                        "parameter": "value",
+                        "type": "integer",
+                        "value": "2"
                     }
                 ],
                 "description": "bliiiiii"
@@ -316,68 +294,14 @@ def getDC():
                 "name": "Decision Card 2",
                 "rows": [
                     {
-                        "parameter": "Parameter 1",
-                        "value": "Value 1",
-                        "issueTypes": [
-                            {
-                                "id": "value1",
-                                "value": "Value 1"
-                            },
-                            {
-                                "id": "value4",
-                                "value": "Value 4"
-                            }
-                        ]
+                        "parameter": "name",
+                        "type": "string",
+                        "value": "dc 2"
                     },
                     {
-                        "parameter": "Parameter 2",
-                        "value": "Value 2",
-                        "issueTypes": [
-                            {
-                                "id": "value2",
-                                "value": "Value 2"
-                            },
-                            {
-                                "id": "value3",
-                                "value": "Value 3"
-                            },
-                            {
-                                "id": "value9",
-                                "value": "Value 9"
-                            }
-                        ]
-                    },
-                    {
-                        "parameter": "Parameter 3",
-                        "value": "Value 3",
-                        "issueTypes": [
-                            {
-                                "id": "value1",
-                                "value": "Value 1"
-                            },
-                            {
-                                "id": "value3",
-                                "value": "Value 3"
-                            },
-                            {
-                                "id": "value4",
-                                "value": "Value 4"
-                            }
-                        ]
-                    },
-                    {
-                        "parameter": "Parameter 4",
-                        "value": "Value 4",
-                        "issueTypes": [
-                            {
-                                "id": "value1",
-                                "value": "Value 1"
-                            },
-                            {
-                                "id": "value4",
-                                "value": "Value 4"
-                            }
-                        ]
+                        "parameter": "value",
+                        "type": "integer",
+                        "value": "4"
                     }
                 ],
                 "description": "blooob"
@@ -386,22 +310,14 @@ def getDC():
                 "name": "Decision Card 3",
                 "rows": [
                     {
-                        "parameter": "Parameter 1",
-                        "value": "Value 1",
-                        "issueTypes": [
-                            {
-                                "id": "value1",
-                                "value": "Value 1"
-                            },
-                            {
-                                "id": "value10",
-                                "value": "Value 10"
-                            },
-                            {
-                                "id": "value11",
-                                "value": "Value 11"
-                            }
-                        ]
+                        "parameter": "name",
+                        "type": "string",
+                        "value": "dc 3"
+                    },
+                    {
+                        "parameter": "value",
+                        "type": "integer",
+                        "value": "8"
                     }
                 ],
                 "description": "blob blob blob"

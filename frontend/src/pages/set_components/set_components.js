@@ -76,7 +76,7 @@ class SetComponents extends React.Component {
     async getSettingsInfo() {
         await axios.get(process.env.REACT_APP_SETTINGS_INFO, {headers: {'Content-Type': 'application/json'}}).then(response => {
             this.setState({info: response.data.input});
-            if (localStorage.getItem("apiResponse") && response.data.input.components) {
+            if (localStorage.getItem("apiResponse") && response.data.input.components && response.data.input.decisionCards) {
                 const prevResponse = JSON.parse(localStorage.getItem("apiResponse"));
                 // check if api response differs from last response. If so, clear local storage, so that new
                 // settings can be made
@@ -84,10 +84,11 @@ class SetComponents extends React.Component {
                     localStorage.clear();
                     localStorage.setItem("apiResponse", JSON.stringify(response.data.input));
                     // make a new entry for the final output after erasing everything
-                    localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}}))
+                    localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}}));
 
                     // fill final output with infos
                     const components = response.data.input.components;
+                    const decisionCards = response.data.input.decisionCards;
                     let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
                     components.map(v => {
                         let currComp = {
@@ -99,13 +100,22 @@ class SetComponents extends React.Component {
                         };
                         finalOutput.configuration.components.push(currComp);
                     });
+                    decisionCards.map(v => {
+                        let currDc = {
+                            "name": v,
+                            "parameter": [],
+                            "enabled": false
+                        };
+                        finalOutput.configuration.decisionCards.push(currDc);
+                    });
                     localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
                 }
             }
-            else if (response.data.input.components) {
+            else if (response.data.input.components && response.data.input.decisionCards) {
                 localStorage.setItem("apiResponse", JSON.stringify(response.data.input));
                 // fill final output with infos
                 const components = response.data.input.components;
+                const decisionCards = response.data.input.decisionCards;
                 let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
                 components.map(v => {
                     let currComp = {
@@ -116,6 +126,14 @@ class SetComponents extends React.Component {
                         "toolbox": false
                     };
                     finalOutput.configuration.components.push(currComp);
+                });
+                decisionCards.map(v => {
+                    let currDc = {
+                        "name": v,
+                        "parameter": [],
+                        "enabled": false
+                    };
+                    finalOutput.configuration.decisionCards.push(currDc);
                 });
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
             }

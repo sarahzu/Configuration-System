@@ -25,6 +25,7 @@ class Settings extends React.Component {
         //initialize final output and current stats
         let finalComponentsInfo;
         let currentStats;
+        let currentStatsDc;
         if (localStorage.getItem("currentStats")) {currentStats = JSON.parse(localStorage.getItem("currentStats"))}
         else {
             currentStats = {
@@ -35,6 +36,15 @@ class Settings extends React.Component {
                 currToolbox: false
             };
             localStorage.setItem("currentStats", JSON.stringify(currentStats))
+        }
+        if (localStorage.getItem("currentStatsDc")) {currentStatsDc = JSON.parse(localStorage.getItem("currentStatsDc"))}
+        else {
+            currentStatsDc = {
+                currDcName: "",
+                currParameters: [],
+                currEnabled: false,
+            };
+            localStorage.setItem("currentStatsDc", JSON.stringify(currentStatsDc))
         }
         if (localStorage.getItem('fullComponentsInfo')){finalComponentsInfo = JSON.parse(localStorage.getItem('fullComponentsInfo'))}
         else {
@@ -60,6 +70,7 @@ class Settings extends React.Component {
             currEnabled: currentStats.currEnabled,
             currToolbox: currentStats.currToolbox,
 
+
             models: [],
         };
 
@@ -70,6 +81,7 @@ class Settings extends React.Component {
     componentDidMount() {
         if (localStorage.getItem("fullComponentsInfo")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("fullComponentsInfo"))});}
         if (localStorage.getItem("currentStats")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("currentStats"))});}
+        if (localStorage.getItem("currentStatsDc")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("currentStatsDc"))});}
     }
 
 
@@ -122,7 +134,7 @@ class Settings extends React.Component {
         };
 
         const stylesGridLower = {
-            background: "lightblue",
+            background: "lightgray",
             marginTop: "10px",
             marginBottom:"5px",
             borderRadius: "10px",
@@ -135,6 +147,7 @@ class Settings extends React.Component {
                 <div className="row">
                     <form className="form">
                         <SettingsComponents dynamicColumnsComponents ={this.props.dynamicColumnsComponents} stylesGridUpper={stylesGridUpper} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
+                        <SettingsDecisionCards stylesGridLower={stylesGridLower} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
                     </form>
                 </div>
             </div>

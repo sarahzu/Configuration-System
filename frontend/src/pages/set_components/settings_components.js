@@ -138,7 +138,7 @@ class SettingsComponents extends React.Component {
      * @param toRow     index of new row
      * @param updated   updated value
      */
-    onComponentGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+     onComponentGridRowsUpdated = ({ fromRow, toRow, updated }) => {
         let gridRows = this.getGridRows(fromRow, toRow, updated);
 
         // add chance to current stats
@@ -254,7 +254,7 @@ class SettingsComponents extends React.Component {
                 this.setState({parametersUpper: selectedParameters});
                 localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters));
 
-                finalOutputComps[index_comp].parameter = JSON.parse(localStorage.getItem("currentParameters"))
+                finalOutputComps[index_comp].parameter = JSON.parse(localStorage.getItem("currentParameters"));
 
                 finalOutput.configuration.components = finalOutputComps;
 

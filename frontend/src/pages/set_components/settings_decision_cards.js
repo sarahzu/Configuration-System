@@ -8,20 +8,42 @@ class SettingsDecisionCards extends React.Component {
 
     constructor(props) {
         super(props);
-        let dcDataGridRows;
-        let dcDataGridColumns;
-        let decision_cards;
-        let checkedDc;
-        let issueTypesDataGridDc: [];
-        let selectedItem;
-        let issueTypeEditorDataGridDc;
-        let descriptionDc;
-        let currentStats;
-        let parameters;
 
-        if (localStorage.getItem("decisionCards")) {decision_cards = JSON.parse(localStorage.getItem("decisionCards"));}
+        let decisionCards;
+        let checkedDc;
+        let dcDataGridRows;
+        let issueTypesDataGridDc;
+        let issueTypeEditorDataGridDc;
+        let dcDataGridColumns = [
+            {key: "parameter", name: "Parameter"},
+            {key: "type", name: "Type"},
+            {key: "value", name: "Value", editable: true}];
+        let selectedItem;
+        let descriptionDc;
+        //let currentStats;
+        let parameters;
+        let currentParametersDc;
+
+        if (localStorage.getItem("parametersLower")) {parameters = JSON.parse(localStorage.getItem("parametersLower"))}
+        else {parameters = {}}
+
+        if (localStorage.getItem("currentParametersDc")) {currentParametersDc = JSON.parse(localStorage.getItem("currentParametersDc"))}
+        else {currentParametersDc = []}
+
+        if (localStorage.getItem("decisionCards")) {
+            decisionCards =  JSON.parse(localStorage.getItem("decisionCards"));
+            if (Object.keys(decisionCards).length < this.props.settingsInfo.decisionCards.length) {
+                decisionCards = this.props.settingsInfo.decisionCards.reduce(
+                    (options, option) => ({
+                        ...options,
+                        [option]: false
+                    }),
+                    {}
+                )
+            }
+        }
         else if (this.props.settingsInfo.decisionCards) {
-            decision_cards = this.props.settingsInfo.decisionCards.reduce(
+            decisionCards = this.props.settingsInfo.decisionCards.reduce(
                 (options, option) => ({
                     ...options,
                     [option]: false
@@ -30,7 +52,7 @@ class SettingsDecisionCards extends React.Component {
             )
         }
         else {
-            decision_cards = []
+            decisionCards = []
         }
 
         if (localStorage.getItem("descriptionDc")) {descriptionDc = JSON.parse(localStorage.getItem("descriptionDc"))}
@@ -45,8 +67,8 @@ class SettingsDecisionCards extends React.Component {
         if (localStorage.getItem("dcDataGridRows")) {dcDataGridRows = JSON.parse(localStorage.getItem("dcDataGridRows"))}
         else {dcDataGridRows = []}
 
-        if (localStorage.getItem("dcDataGridColumns")) {dcDataGridColumns = JSON.parse(localStorage.getItem("dcDataGridColumns"))}
-        else {dcDataGridColumns = []}
+        // if (localStorage.getItem("dcDataGridColumns")) {dcDataGridColumns = JSON.parse(localStorage.getItem("dcDataGridColumns"))}
+        // else {dcDataGridColumns = []}
 
         let checkboxDecisionCards = {};
         if (props.settingsInfo.decisionCards) {
@@ -57,13 +79,16 @@ class SettingsDecisionCards extends React.Component {
 
         this.state = {
             dcDataGridColumns:  dcDataGridColumns,
-            decision_cards: decision_cards,
+            decision_cards: decisionCards,
             checkedDc: checkedDc,
             dcDataGridRows:dcDataGridRows,
             issueTypesDataGridDc: [],
-            selectedItem: selectedItem,
+            selectedItemLower: selectedItem,
             descriptionDc: descriptionDc,
             issueTypeEditorDataGridDc: null,
+            parametersLower: parameters,
+            currentDependentValue: null,
+            currentParametersDc: currentParametersDc,
         };
 
         this.createCheckboxDc = this.createCheckboxDc.bind(this);
@@ -72,12 +97,27 @@ class SettingsDecisionCards extends React.Component {
     }
 
     componentDidMount() {
+        if (localStorage.getItem("decisionCards")) {
+            let dcs = JSON.parse(localStorage.getItem("decisionCards"));
+            if (Object.keys(dcs).length < this.props.settingsInfo.decisionCards.length) {
+                dcs = this.props.settingsInfo.decisionCards.reduce(
+                    (options, option) => ({
+                        ...options,
+                        [option]: false
+                    }),
+                    {}
+                )
+            }
+            this.setState({decision_cards: dcs});
+        }
         if (localStorage.getItem("dcDataGridColumns")) {this.setState({dcDataGridColumns: JSON.parse(localStorage.getItem("dcDataGridColumns"))});}
         if (localStorage.getItem("dcDataGridRows")) {this.setState({dcDataGridRows: JSON.parse(localStorage.getItem("dcDataGridRows"))});}
-        if (localStorage.getItem("decisionCards")) {this.setState({decision_cards: JSON.parse(localStorage.getItem("decisionCards"))});}
         if (localStorage.getItem("checkedDecisionCards")) {this.setState({checkedDc: JSON.parse(localStorage.getItem("checkedDecisionCards"))});}
         if (localStorage.getItem("selectedDc")) {this.setState({selectedItemLower: JSON.parse(localStorage.getItem("selectedDc"))});}
         if (localStorage.getItem("descriptionDc")) {this.setState({descriptionDc: JSON.parse(localStorage.getItem("descriptionDc"))});}
+        if (localStorage.getItem("parametersLower")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("parametersLower"))});}
+        if (localStorage.getItem("currentParametersDc")) {this.setState({currentParametersDc: JSON.parse(localStorage.getItem("currentParametersDc"))});}
+
     }
 
     /**
@@ -97,6 +137,8 @@ class SettingsDecisionCards extends React.Component {
         return null;
     }
 
+    //FIXME: I'm here
+
     /**
      * Action happening after item is selected in the lower selection bar.
      * All states and local storage entries are updated according to selection.
@@ -104,31 +146,106 @@ class SettingsDecisionCards extends React.Component {
      * @param selectedItemLower selected item in the selection. In the form {label:"name", value: -1}
      */
     getSelectedDcInput = selectedItemLower => {
+        // this.setState({selectedItemLower: selectedItemLower});
+        // let selectedDc = this.findSelected(selectedItemLower.label, this.props.settingsInfo.decisionCardsParameters);
+        // this.setState({dcDataGridRows: selectedDc.rows});
+        // this.setState({issueTypesDataGridDc: selectedDc.issueTypes});
+        // this.setState({descriptionDc: selectedDc.description});
+        // //this.setState({issueTypeEditorDataGridDc: <DropDownEditor options={this.state.issueTypesDataGridDc}/>});
+        // // let dropdown = <DropDownEditor options={selectedDc.issueTypes}/>
+        //
+        // this.setState({
+        //     dcDataGridColumns: [
+        //         {key: "parameter", name: "Parameter"},
+        //         {key: "type", name: "Type"},
+        //         {key: "value", name: "Value", editable: true}]
+        // });
+        //
+        //
+        // localStorage.setItem("issueTypesDataGridDC", JSON.stringify(selectedDc.issueTypes));
+        // localStorage.setItem("selectedDc", JSON.stringify(selectedItemLower));
+        // localStorage.setItem("dcDataGridColumns", JSON.stringify([
+        //     {key: "parameter", name: "Parameter"},
+        //     {key: "type", name: "Type"},
+        //     {key: "value", name: "Value", editable: true}]));
+        // localStorage.setItem("dcDataGridRows", JSON.stringify(selectedDc.rows));
+        // localStorage.setItem("descriptionDc", JSON.stringify(selectedDc.description));
+
         this.setState({selectedItemLower: selectedItemLower});
-        let selectedDc = this.findSelected(selectedItemLower.label, this.props.settingsInfo.decisionCardsParameters);
-        this.setState({dcDataGridRows: selectedDc.rows});
-        this.setState({issueTypesDataGridDc: selectedDc.issueTypes});
-        this.setState({descriptionDc: selectedDc.description});
-        //this.setState({issueTypeEditorDataGridDc: <DropDownEditor options={this.state.issueTypesDataGridDc}/>});
-        // let dropdown = <DropDownEditor options={selectedDc.issueTypes}/>
+        let selectedDecisionCards = this.findSelected(selectedItemLower.label, this.props.settingsInfo.decisionCardsParameters);
 
+        // set current stats and store them in local storage
+        const currStats = {};
         this.setState({
-            dcDataGridColumns: [
-                {key: "parameter", name: "Parameter"},
-                {key: "type", name: "Type"},
-                {key: "value", name: "Value", editable: true}]
+            currDcName: selectedItemLower.label,
+            currParametersDc: selectedDecisionCards.rows,
         });
+        // let parameters = JSON.parse(localStorage.getItem("parametersUpper"));
+        let parameters = this.state.parametersLower;
 
+        let localCurrStats;
+        if (JSON.parse(localStorage.getItem("currentStatsDc"))) {
+            localCurrStats = JSON.parse(localStorage.getItem("currentStatsDc"));
+        }
+        else {
+            localCurrStats = {}
+        }
 
-        localStorage.setItem("issueTypesDataGridDC", JSON.stringify(selectedDc.issueTypes));
+        localCurrStats.currDcName = selectedItemLower.label;
+        // localCurrStats.currParameters = selectedComponent.rows;
+        localCurrStats.currParametersDc = parameters[selectedItemLower.label];
+        localStorage.setItem("currentStatsDc", JSON.stringify(localCurrStats));
+
+        // set data grid rows according to parameters of selected component
+        if (localCurrStats.currParametersDc) {
+            this.setState({dcDataGridRows: localCurrStats.currParametersDc});
+            localStorage.setItem("dcDataGridRows", JSON.stringify(localCurrStats.currParametersDc));
+
+        }
+        else {
+            this.setState({dcDataGridRows: selectedDecisionCards.rows});
+            localStorage.setItem("dcDataGridRows", JSON.stringify(selectedDecisionCards.rows));
+        }
+
+        //this.setState({issueTypesDataGridDc: selectedDecisionCards.issueTypes});
+        this.setState({descriptionDc: selectedDecisionCards.description});
+
+        //localStorage.setItem("issueTypesDataGridDc", JSON.stringify(selectedDecisionCards.issueTypes));
         localStorage.setItem("selectedDc", JSON.stringify(selectedItemLower));
-        localStorage.setItem("dcDataGridColumns", JSON.stringify([
-            {key: "parameter", name: "Parameter"},
-            {key: "type", name: "Type"},
-            {key: "value", name: "Value", editable: true}]));
-        localStorage.setItem("dcDataGridRows", JSON.stringify(selectedDc.rows));
-        localStorage.setItem("descriptionDc", JSON.stringify(selectedDc.description));
+        localStorage.setItem("descriptionDc", JSON.stringify(selectedDecisionCards.description));
     };
+
+    /**
+     * Check if a given component (identified with an id) is in one of the dictionaries contained in the given list.
+     *
+     * @param compId {int} id of the component in the list
+     * @param list {array} list of the format [{..., i: compId, ...}, {...}]
+     * @return {boolean} true if component is in one of the dictionaries in list, false otherwise
+     */
+    isComponentInList(compId, list) {
+        let j;
+        for (j = 0; j < list.length; j++) {
+            if(list[j].i === compId.toString()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * remove a given component dictionary (identified with an id) in the given list.
+     *
+     * @param compId {int} id of the component in the list
+     * @param list {array} list of the format [{..., i: compId, ...}, {...}]
+     */
+    removeComponentInList(compId, list) {
+        let j;
+        for (j = 0; j < list.length; j++) {
+            if(list[j].i === compId.toString()) {
+                list[j] = {};
+            }
+        }
+    }
 
     /**
      * Triggers when decision cards checkbox is checked or unchecked.
@@ -141,9 +258,34 @@ class SettingsDecisionCards extends React.Component {
         const { name } = changeEvent.target;
 
         let dict = {};
-        Object.keys(this.state.decision_cards).map((v) => {
+        Object.keys(this.state.decision_cards).map((v, i) => {
             if (v === name) {
-                dict[name] = (this.state.decision_cards[v] === false)
+                //dict[name] = (this.state.decision_cards[v] === false)
+                let checked = this.state.decision_cards[v] === false;
+
+                // set in final output the checked state of the component
+                const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+                // get default parameters from api response
+                let parameters;
+                if (JSON.parse(localStorage.getItem("apiResponse"))) {
+                    parameters = JSON.parse(localStorage.getItem("apiResponse")).decisionCardsParameters[i].rows
+                }
+                else {
+                    parameters = []
+                }
+                const finalOutputDc = finalOutput.configuration.decisionCards;
+                // add checked state to final output
+                finalOutputDc.map(v => {
+                    if (v.name === name) {
+                        v.enabled = checked;
+                        // also add default parameters
+                        v.parameter = parameters;
+                    }
+                });
+                finalOutput.configuration.decisionCards = finalOutputDc;
+                localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+                dict[name] = (checked);
             }
             else {
                 dict[v] = this.state.decision_cards[v]
@@ -160,24 +302,21 @@ class SettingsDecisionCards extends React.Component {
 
         try {
             if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemLower.label) < 0) {
-                //FIXME: add local storage
                 this.setState({selectedItemLower: []});
                 this.setState({dcDataGridRows: []});
-                this.setState({issueTypesDataGridDc: []});
+                //this.setState({issueTypesDataGridDc: []});
                 this.setState({descriptionDc: ""});
                 //this.setState({issueTypeEditorDataGridDc: null});
-                this.setState({dcDataGridColumns: []});
+                //this.setState({dcDataGridColumns: []});
 
-                localStorage.setItem("issueTypesDataGridDC", JSON.stringify([]));
+                //localStorage.setItem("issueTypesDataGridDC", JSON.stringify([]));
                 localStorage.setItem("selectedDc", JSON.stringify([]));
-                localStorage.setItem("dcDataGridColumns", JSON.stringify([]));
+                //localStorage.setItem("dcDataGridColumns", JSON.stringify([]));
                 localStorage.setItem("dcDataGridRows", JSON.stringify([]));
                 localStorage.setItem("descriptionDc", JSON.stringify(""));
             }
         }
-        catch (e) {
-
-        }
+        catch (e) {}
 
     };
 
@@ -192,27 +331,28 @@ class SettingsDecisionCards extends React.Component {
         let gridRows = this.getGridRows(fromRow, toRow, updated);
 
         // add chance to current stats
-        // let currState = JSON.parse(localStorage.getItem("currentStats"));
-        // currState.currParameters = gridRows;
-        // localStorage.setItem("currentStats", JSON.stringify(currState));
-        // const currCompName = currState.currComponentName;
-        // const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-        // const finalOutputComps = finalOutput.configuration.components;
-        // finalOutputComps.map(v => {
-        //     if (v.name === currCompName) {
-        //         v.parameter = gridRows;
-        //
-        //         // also update the overall parameters
-        //         let selectedParameters = localStorage.getItem("parametersUpper");
-        //         selectedParameters[v.name] = gridRows;
-        //         localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters))
-        //     }
-        // });
-        // finalOutput.configuration.components = finalOutputComps;
-        // localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+        let currState = JSON.parse(localStorage.getItem("currentStatsDc"));
+        currState.currParameters = gridRows;
+        localStorage.setItem("currentStatsDc", JSON.stringify(currState));
+        const currDcName = currState.currDecisionCardName;
+        const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        const finalOutputDc = finalOutput.configuration.decisionCards;
+        finalOutputDc.map(v => {
+            if (v.name === currDcName) {
+                v.parameter = gridRows;
 
-        this.setState({dcDataGridColumns: gridRows});
-        localStorage.setItem("dcDataGridColumns", JSON.stringify(gridRows));
+                // also update the overall parameters
+                let selectedParameters = this.state.parametersLower;
+                selectedParameters[v.name] = gridRows;
+                this.setState({parametersLower: selectedParameters});
+                localStorage.setItem("parametersLower", JSON.stringify(selectedParameters))
+            }
+        });
+        finalOutput.configuration.decisionCards = finalOutputDc;
+        localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+        this.setState({dcDataGridRows: gridRows});
+        localStorage.setItem("dcDataGridRows", JSON.stringify(gridRows));
 
     };
 
@@ -298,6 +438,7 @@ class SettingsDecisionCards extends React.Component {
                             rowsCount={this.state.dcDataGridRows.length}
                             onGridRowsUpdated={this.onDecisionCardsGridRowsUpdated}
                             enableCellSelect={true}
+                            minHeight={400}
                         />
                     </div>
                 </Grid>
