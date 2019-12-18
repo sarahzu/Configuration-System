@@ -334,7 +334,7 @@ class SettingsDecisionCards extends React.Component {
         let currState = JSON.parse(localStorage.getItem("currentStatsDc"));
         currState.currParameters = gridRows;
         localStorage.setItem("currentStatsDc", JSON.stringify(currState));
-        const currDcName = currState.currDecisionCardName;
+        const currDcName = currState.currDcName;
         const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
         const finalOutputDc = finalOutput.configuration.decisionCards;
         finalOutputDc.map(v => {
