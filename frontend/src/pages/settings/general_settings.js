@@ -61,6 +61,8 @@ class GeneralSettings extends React.Component {
                     //alert('Git Repo was successfully updated');
                     this.message('Success!', 'Git Repo was successfully updated');
                     localStorage.clear();
+                    localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}, githubRepository: this.state.gitRepoAddress}));
+
                 }
                 else {
                     this.message("Something went wrong!", "Git repo is not valid or you miss the needed credentials. Make sure that you are also connected to the internet.")
