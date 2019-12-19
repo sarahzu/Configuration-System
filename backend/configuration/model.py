@@ -20,11 +20,14 @@ def is_new_pull_available(local_repo_path):
     :param local_repo_path: path to the local git repo
     :return: {boolean} true if pull is available, false otherwise
     """
-    g = git.cmd.Git(local_repo_path)
-    git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
-    regex = re.compile(r'master pushes to master \((.*)\)')
-    match = re.search(regex, git_remote_show_origin)
-    up_to_date_status = match.group(1)
+    try:
+        g = git.cmd.Git(local_repo_path)
+        git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
+        regex = re.compile(r'master pushes to master \((.*)\)')
+        match = re.search(regex, git_remote_show_origin)
+        up_to_date_status = match.group(1)
+    except git.exc.GitCommandError:
+        return False
 
     if up_to_date_status == 'local out of date':
         return True

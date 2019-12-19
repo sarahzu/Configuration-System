@@ -63,7 +63,7 @@ class GeneralSettings extends React.Component {
                     localStorage.clear();
                 }
                 else {
-                    this.message("Something went wrong!", "Git repo is not valid or you miss the needed credentials.")
+                    this.message("Something went wrong!", "Git repo is not valid or you miss the needed credentials. Make sure that you are also connected to the internet.")
                     localStorage.clear();
                 }
             });

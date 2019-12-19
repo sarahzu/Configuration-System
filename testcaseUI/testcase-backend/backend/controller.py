@@ -7,7 +7,10 @@ class Controller:
         self.gitRepoAddress = gitRepoAddress
         self.local_repo_path = local_repo_path
         # clone_url = os.getenv("REPO_PATH")
-        self.git_repo = GitRepo(self.local_repo_path, gitRepoAddress)
+        try:
+            self.git_repo = GitRepo(self.local_repo_path, gitRepoAddress)
+        except Exception:
+            pass
 
     def get_file_names(self):
         """

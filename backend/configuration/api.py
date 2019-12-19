@@ -32,7 +32,7 @@ class GeneralSettings(Resource):
             git_repo_json = request.get_json()
             git_repo_address = git_repo_json.get('gitRepoAddress')
             try:
-                Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
             except (git.exc.GitCommandError, TypeError):
                 # recreate lost gitclone folder
                 try:
@@ -41,11 +41,11 @@ class GeneralSettings(Resource):
                     pass
                 enterGitRepoAddressIntoDatabase(database, None)
                 return {"success": False}
-
-            enterGitRepoAddressIntoDatabase(database, git_repo_address)
-
-            return {"success": True}
-
+            if controller.git_repo_created:
+                enterGitRepoAddressIntoDatabase(database, git_repo_address)
+                return {"success": True}
+            else:
+                return {"success": False}
         except():
             return {"success": False}
 
@@ -361,5 +361,4 @@ api.add_resource(GetValueFromDataSource, '/config_api/get_value')
 
 
 if __name__ == '__main__':
-
-    app.run(debug=True)
+    app.run(port=5000, debug=True)
