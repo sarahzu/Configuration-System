@@ -442,7 +442,7 @@ class SettingsComponents extends React.Component {
      * @param changeEvent
      */
     handleCheckboxChangeComponents = changeEvent => {
-        const { name } = changeEvent.target;
+        const {name} = changeEvent.target;
 
         let dict = {};
         Object.keys(this.state.vis_components).map((v, i) => {
@@ -603,6 +603,7 @@ class SettingsComponents extends React.Component {
         return dynamicDataGridRows
     }
 
+
     render() {
         let checkedComponents = Object.keys(this.state.vis_components).filter(k => this.state.vis_components[k]);
 
@@ -642,6 +643,7 @@ class SettingsComponents extends React.Component {
                                         values={components}
                                         input={"comp"}
                                     />*/}
+                        {/*<button onClick={this.selectAllCheckboxFields(propsComponents)}>select all</button>*/}
                         {propsComponents}
                     </div>
                 </Grid>

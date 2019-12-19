@@ -23,6 +23,10 @@ class SettingsDecisionCards extends React.Component {
         //let currentStats;
         let parameters;
         let currentParametersDc;
+        let checkboxAllCheckedDc;
+
+        if (localStorage.getItem("checkboxAllCheckedDc")) {checkboxAllCheckedDc = JSON.parse(localStorage.getItem("checkboxAllCheckedDc"))}
+        else {checkboxAllCheckedDc = false;}
 
         if (localStorage.getItem("parametersLower")) {parameters = JSON.parse(localStorage.getItem("parametersLower"))}
         else {parameters = {}}
@@ -67,6 +71,8 @@ class SettingsDecisionCards extends React.Component {
         if (localStorage.getItem("dcDataGridRows")) {dcDataGridRows = JSON.parse(localStorage.getItem("dcDataGridRows"))}
         else {dcDataGridRows = []}
 
+
+
         // if (localStorage.getItem("dcDataGridColumns")) {dcDataGridColumns = JSON.parse(localStorage.getItem("dcDataGridColumns"))}
         // else {dcDataGridColumns = []}
 
@@ -89,10 +95,12 @@ class SettingsDecisionCards extends React.Component {
             parametersLower: parameters,
             currentDependentValue: null,
             currentParametersDc: currentParametersDc,
+            checkboxAllCheckedDc: checkboxAllCheckedDc,
         };
 
         this.createCheckboxDc = this.createCheckboxDc.bind(this);
         this.handleCheckboxChangeDc = this.handleCheckboxChangeDc.bind(this);
+        this.checkboxEvent = this.checkboxEvent.bind(this);
 
     }
 
@@ -117,7 +125,7 @@ class SettingsDecisionCards extends React.Component {
         if (localStorage.getItem("descriptionDc")) {this.setState({descriptionDc: JSON.parse(localStorage.getItem("descriptionDc"))});}
         if (localStorage.getItem("parametersLower")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("parametersLower"))});}
         if (localStorage.getItem("currentParametersDc")) {this.setState({currentParametersDc: JSON.parse(localStorage.getItem("currentParametersDc"))});}
-
+        if (localStorage.getItem("checkboxAllCheckedDc")) {this.setState({currentParametersDc: JSON.parse(localStorage.getItem("checkboxAllCheckedDc"))});}
     }
 
     /**
@@ -248,6 +256,29 @@ class SettingsDecisionCards extends React.Component {
     }
 
     /**
+     * Trigger when Check / Uncheck All checkbox is checked or unchecked.
+     * Update all other checkboxed according to the value of Check / Uncheck All checkbox.
+     *
+     * @param event
+     */
+    handleAllChecked = (event) => {
+        const dcs = this.state.decision_cards;
+        let checkValue;
+
+        // get check state of checked all checkbox and alter state of all other checkboxes accordingly
+        if (this.state.checkboxAllCheckedDc) {
+            checkValue = false
+        }
+        else {
+            checkValue = true
+        }
+        this.checkAllEvent(checkValue);
+        // update check all checkbox value
+        this.setState({checkboxAllCheckedDc: checkValue});
+        localStorage.setItem("checkboxAllCheckedDc", checkValue);
+    };
+
+    /**
      * Triggers when decision cards checkbox is checked or unchecked.
      * Update local storage and state according to the selection, so that other page elements like the selection bar
      * can get updated.
@@ -255,14 +286,82 @@ class SettingsDecisionCards extends React.Component {
      * @param changeEvent
      */
     handleCheckboxChangeDc = changeEvent => {
-        const { name } = changeEvent.target;
+        const {name} = changeEvent.target;
+        const checkedValue = this.state.decision_cards[name] === false;
+        this.checkboxEvent(name, checkedValue);
+    };
+
+    /**
+     * update all checkboxes according to the given value
+     *
+     * @param checkedValue  value of the checkbox
+     */
+    checkAllEvent(checkedValue) {
+        let dict = {};
+        Object.keys(this.state.decision_cards).map((dc, i) => {
+            // set in final output the checked state of the component
+            const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+            // get default parameters from api response
+            let parameters;
+            if (JSON.parse(localStorage.getItem("apiResponse"))) {
+                parameters = JSON.parse(localStorage.getItem("apiResponse")).decisionCardsParameters[i].rows
+            }
+            else {
+                parameters = []
+            }
+            const finalOutputDc = finalOutput.configuration.decisionCards;
+            // add checked state to final output
+            finalOutputDc.map(v => {
+                if (v.name === dc) {
+                    v.enabled = checkedValue;
+                    // also add default parameters
+                    v.parameter = parameters;
+                }
+            });
+            finalOutput.configuration.decisionCards = finalOutputDc;
+            localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+            dict[dc] = (checkedValue);
+        });
+
+        this.setState({decision_cards: dict});
+        localStorage.setItem("decisionCards", JSON.stringify(dict));
+
+        let checkedItems = Object.keys(dict).filter(k => dict[k]);
+
+        this.setState({checkedDc: checkedItems});
+        localStorage.setItem("checkedDecisionCards", JSON.stringify(checkedItems));
+
+        try {
+            if (checkedItems.length === 0 || checkedItems.indexOf(this.state.selectedItemLower.label) < 0) {
+                this.setState({selectedItemLower: []});
+                this.setState({dcDataGridRows: []});
+                //this.setState({issueTypesDataGridDc: []});
+                this.setState({descriptionDc: ""});
+                //this.setState({issueTypeEditorDataGridDc: null});
+                //this.setState({dcDataGridColumns: []});
+
+                //localStorage.setItem("issueTypesDataGridDC", JSON.stringify([]));
+                localStorage.setItem("selectedDc", JSON.stringify([]));
+                //localStorage.setItem("dcDataGridColumns", JSON.stringify([]));
+                localStorage.setItem("dcDataGridRows", JSON.stringify([]));
+                localStorage.setItem("descriptionDc", JSON.stringify(""));
+            }
+        }
+        catch (e) {}
+    }
+
+    /**
+     * update only given checkbox with the given value
+     * 
+     * @param name          name of the checkbox
+     * @param checkedValue  new value of the checkbox
+     */
+    checkboxEvent(name, checkedValue) {
 
         let dict = {};
         Object.keys(this.state.decision_cards).map((v, i) => {
             if (v === name) {
-                //dict[name] = (this.state.decision_cards[v] === false)
-                let checked = this.state.decision_cards[v] === false;
-
                 // set in final output the checked state of the component
                 const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
                 // get default parameters from api response
@@ -277,7 +376,7 @@ class SettingsDecisionCards extends React.Component {
                 // add checked state to final output
                 finalOutputDc.map(v => {
                     if (v.name === name) {
-                        v.enabled = checked;
+                        v.enabled = checkedValue;
                         // also add default parameters
                         v.parameter = parameters;
                     }
@@ -285,7 +384,7 @@ class SettingsDecisionCards extends React.Component {
                 finalOutput.configuration.decisionCards = finalOutputDc;
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
-                dict[name] = (checked);
+                dict[name] = (checkedValue);
             }
             else {
                 dict[v] = this.state.decision_cards[v]
@@ -293,9 +392,9 @@ class SettingsDecisionCards extends React.Component {
         });
 
         this.setState({decision_cards: dict});
+        localStorage.setItem("decisionCards", JSON.stringify(dict));
 
         let checkedItems = Object.keys(dict).filter(k => dict[k]);
-        localStorage.setItem("decisionCards", JSON.stringify(dict));
 
         this.setState({checkedDc: checkedItems});
         localStorage.setItem("checkedDecisionCards", JSON.stringify(checkedItems));
@@ -413,7 +512,15 @@ class SettingsDecisionCards extends React.Component {
                                        values={decisionCards}
                                        input={"dc"}
                                    />*/}
-                                   {propsDecisionCards}
+                        {/*<input type="checkbox" onClick={this.handleAllChecked}  value="checkedall" /> */}
+                        <Checkbox
+                            label={"Check / Uncheck All"}
+                            isSelected={this.state.checkboxAllCheckedDc}
+                            onCheckboxChange={this.handleAllChecked}
+                            key={"Check / Uncheck All"}
+                        />
+
+                        {propsDecisionCards}
                     </div>
                 </Grid>
                 <Grid item xs={2}>
