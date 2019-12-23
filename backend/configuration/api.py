@@ -198,9 +198,10 @@ class ComponentsInfoFromFrontend(Resource):
     def post(self):
         frontend_request = request.get_json()
         configuration = frontend_request.get("configuration")
-        components = configuration.get("components")
+        current_configuration = configuration.get("1")
+        components = current_configuration.get("components")
         # TODO: handle decision cards
-        decision_cards = configuration.get("decisionCards")
+        decision_cards = current_configuration.get("decisionCards")
 
         database = get_db()
         # add request json to database

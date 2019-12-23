@@ -123,7 +123,7 @@ class SettingsDecisionCards extends React.Component {
         if (localStorage.getItem("checkedDecisionCards")) {this.setState({checkedDc: JSON.parse(localStorage.getItem("checkedDecisionCards"))});}
         if (localStorage.getItem("selectedDc")) {this.setState({selectedItemLower: JSON.parse(localStorage.getItem("selectedDc"))});}
         if (localStorage.getItem("descriptionDc")) {this.setState({descriptionDc: JSON.parse(localStorage.getItem("descriptionDc"))});}
-        if (localStorage.getItem("parametersLower")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("parametersLower"))});}
+        if (localStorage.getItem("parametersLower")) {this.setState({parametersLower: JSON.parse(localStorage.getItem("parametersLower"))});}
         if (localStorage.getItem("currentParametersDc")) {this.setState({currentParametersDc: JSON.parse(localStorage.getItem("currentParametersDc"))});}
         if (localStorage.getItem("checkboxAllCheckedDc")) {this.setState({currentParametersDc: JSON.parse(localStorage.getItem("checkboxAllCheckedDc"))});}
     }
@@ -381,7 +381,7 @@ class SettingsDecisionCards extends React.Component {
         else {
             parameters = []
         }
-        const finalOutputDc = finalOutput.configuration.decisionCards;
+        const finalOutputDc = finalOutput.configuration["1"].decisionCards;
         // add checked state to final output
         finalOutputDc.map(v => {
             if (v.name === decisionCard) {
@@ -390,7 +390,7 @@ class SettingsDecisionCards extends React.Component {
                 v.parameter = parameters;
             }
         });
-        finalOutput.configuration.decisionCards = finalOutputDc;
+        finalOutput.configuration["1"].decisionCards = finalOutputDc;
         localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
     }
 
@@ -410,7 +410,7 @@ class SettingsDecisionCards extends React.Component {
         localStorage.setItem("currentStatsDc", JSON.stringify(currState));
         const currDcName = currState.currDcName;
         const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-        const finalOutputDc = finalOutput.configuration.decisionCards;
+        const finalOutputDc = finalOutput.configuration["1"].decisionCards;
         finalOutputDc.map(v => {
             if (v.name === currDcName) {
                 v.parameter = gridRows;
@@ -422,7 +422,7 @@ class SettingsDecisionCards extends React.Component {
                 localStorage.setItem("parametersLower", JSON.stringify(selectedParameters))
             }
         });
-        finalOutput.configuration.decisionCards = finalOutputDc;
+        finalOutput.configuration["1"].decisionCards = finalOutputDc;
         localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
         this.setState({dcDataGridRows: gridRows});

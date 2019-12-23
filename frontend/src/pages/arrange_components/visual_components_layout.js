@@ -135,7 +135,7 @@ class VisualComponentsLayout extends React.Component {
                 // fill final output with layout information
                 const visCompName = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[compIndex].name;
                 let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-                const finalOutputComps = finalOutput.configuration.components;
+                const finalOutputComps = finalOutput.configuration['1'].components;
                 finalOutputComps.map(v => {
                     if (v.name === visCompName) {
                         v.position = {
@@ -144,11 +144,11 @@ class VisualComponentsLayout extends React.Component {
                         }
                     }
                 });
-                finalOutput.configuration.components = finalOutputComps;
+                finalOutput.configuration['1'].components = finalOutputComps;
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
                 // create dynamic props from parameters
-                const visCompParameters = finalOutput.configuration.components[compIndex].parameter;
+                const visCompParameters = finalOutput.configuration['1'].components[compIndex].parameter;
                 let dynamicProps = {};
                 visCompParameters.map(parameter => {
                     let value = '';
@@ -289,13 +289,13 @@ class VisualComponentsLayout extends React.Component {
         // fill final output with layout information
         const visCompName = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[parseInt(item.i, 10)].name;
         let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-        const finalOutputComps = finalOutput.configuration.components;
+        const finalOutputComps = finalOutput.configuration["1"].components;
         finalOutputComps.map(v => {
             if (v.name === visCompName) {
                 v.toolbox = false;
             }
         });
-        finalOutput.configuration.components = finalOutputComps;
+        finalOutput.configuration["1"].components = finalOutputComps;
         localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
     };
 
@@ -326,13 +326,13 @@ class VisualComponentsLayout extends React.Component {
         // fill final output with layout information
         const visCompName = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[parseInt(item.i, 10)].name;
         let finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-        const finalOutputComps = finalOutput.configuration.components;
+        const finalOutputComps = finalOutput.configuration["1"].components;
         finalOutputComps.map(v => {
             if (v.name === visCompName) {
                 v.toolbox = true;
             }
         });
-        finalOutput.configuration.components = finalOutputComps;
+        finalOutput.configuration["1"].components = finalOutputComps;
         localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
     };

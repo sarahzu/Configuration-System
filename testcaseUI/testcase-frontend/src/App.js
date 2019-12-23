@@ -159,7 +159,7 @@ class App extends React.Component {
   getLayout() {
     try {
       let layout = {[this.state.currentBreakpoint]: []};
-      let components = this.state.outputJson.configuration.components;
+      let components = this.state.outputJson.configuration['1'].components;
       let compIndex = 0;
       components.map(component => {
         const componentPosition = component.position;
@@ -206,7 +206,7 @@ class App extends React.Component {
 
   getComponentsList() {
     try {
-      return this.state.outputJson.configuration.components
+      return this.state.outputJson.configuration['1'].components
     }
     catch (e) {
       return []

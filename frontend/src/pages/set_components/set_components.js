@@ -84,7 +84,7 @@ class SetComponents extends React.Component {
                     localStorage.clear();
                     localStorage.setItem("apiResponse", JSON.stringify(response.data.input));
                     // make a new entry for the final output after erasing everything
-                    localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{components:[], decisionCards:[]}}));
+                    localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration:{1:{components:[], decisionCards:[]}}}));
 
                     // fill final output with infos
                     const components = response.data.input.components;
@@ -98,7 +98,7 @@ class SetComponents extends React.Component {
                             "enabled": false,
                             "toolbox": false
                         };
-                        finalOutput.configuration.components.push(currComp);
+                        finalOutput.configuration['1'].components.push(currComp);
                     });
                     decisionCards.map(v => {
                         let currDc = {
@@ -106,7 +106,7 @@ class SetComponents extends React.Component {
                             "parameter": [],
                             "enabled": false
                         };
-                        finalOutput.configuration.decisionCards.push(currDc);
+                        finalOutput.configuration['1'].decisionCards.push(currDc);
                     });
                     localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
                 }
@@ -125,7 +125,7 @@ class SetComponents extends React.Component {
                         "enabled": false,
                         "toolbox": false
                     };
-                    finalOutput.configuration.components.push(currComp);
+                    finalOutput.configuration['1'].components.push(currComp);
                 });
                 decisionCards.map(v => {
                     let currDc = {
@@ -133,7 +133,7 @@ class SetComponents extends React.Component {
                         "parameter": [],
                         "enabled": false
                     };
-                    finalOutput.configuration.decisionCards.push(currDc);
+                    finalOutput.configuration['1'].decisionCards.push(currDc);
                 });
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
             }

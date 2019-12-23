@@ -48,7 +48,7 @@ class Settings extends React.Component {
         }
         if (localStorage.getItem('fullComponentsInfo')){finalComponentsInfo = JSON.parse(localStorage.getItem('fullComponentsInfo'))}
         else {
-            localStorage.setItem('fullComponentsInfo', JSON.stringify({configuration:{components:[], decisionCards:[]}}));
+            localStorage.setItem('fullComponentsInfo', JSON.stringify({configuration:{'1':{components:[], decisionCards:[]}}}));
             finalComponentsInfo = {}
         }
 
@@ -80,8 +80,8 @@ class Settings extends React.Component {
 
     componentDidMount() {
         if (localStorage.getItem("fullComponentsInfo")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("fullComponentsInfo"))});}
-        if (localStorage.getItem("currentStats")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("currentStats"))});}
-        if (localStorage.getItem("currentStatsDc")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("currentStatsDc"))});}
+        if (localStorage.getItem("currentStats")) {this.setState({currentStats: JSON.parse(localStorage.getItem("currentStats"))});}
+        if (localStorage.getItem("currentStatsDc")) {this.setState({currentStatsDc: JSON.parse(localStorage.getItem("currentStatsDc"))});}
     }
 
 

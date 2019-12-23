@@ -125,7 +125,7 @@ class SettingsComponents extends React.Component {
         //if (localStorage.getItem("issueTypeEditorDataGridDc")) {this.setState({issueTypeEditorDataGridDc: JSON.parse(localStorage.getItem("issueTypeEditorDataGridDc"))});}
         if (localStorage.getItem("componentsDataGridColumns")) {this.setState({componentsDataGridColumns: JSON.parse(localStorage.getItem("componentsDataGridColumns"))});}
         if (localStorage.getItem("descriptionComponents")) {this.setState({descriptionComponents: JSON.parse(localStorage.getItem("descriptionComponents"))});}
-        if (localStorage.getItem("parametersUpper")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("parametersUpper"))});}
+        if (localStorage.getItem("parametersUpper")) {this.setState({parametersUpper: JSON.parse(localStorage.getItem("parametersUpper"))});}
         //if (localStorage.getItem("dynamicDataGridColumns")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("dynamicDataGridColumns"))});}
         if (localStorage.getItem("currentParameters")) {this.setState({currentParameters: JSON.parse(localStorage.getItem("currentParameters"))});}
 
@@ -147,7 +147,7 @@ class SettingsComponents extends React.Component {
         localStorage.setItem("currentStats", JSON.stringify(currState));
         const currCompName = currState.currComponentName;
         const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-        const finalOutputComps = finalOutput.configuration.components;
+        const finalOutputComps = finalOutput.configuration['1'].components;
         finalOutputComps.map(v => {
             if (v.name === currCompName) {
                 v.parameter = gridRows;
@@ -159,7 +159,7 @@ class SettingsComponents extends React.Component {
                 localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters))
             }
         });
-        finalOutput.configuration.components = finalOutputComps;
+        finalOutput.configuration['1'].components = finalOutputComps;
         localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
         this.setState({componentsDataGridRows: gridRows});
@@ -186,7 +186,7 @@ class SettingsComponents extends React.Component {
         localStorage.setItem("currentStats", JSON.stringify(currState));
         const currCompName = currState.currComponentName;
         const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-        const finalOutputComps = finalOutput.configuration.components;
+        const finalOutputComps = finalOutput.configuration['1'].components;
         let comp_index = 0;
         finalOutputComps.map(v => {
             if (v.name === currCompName) {
@@ -200,7 +200,7 @@ class SettingsComponents extends React.Component {
                     if (dependentParameter.type === "dependent") {
                         let match = dependentParameter.parameter.match(/(.*?)--(.*?)--(.*)/);
                         try {
-                            const dependentParameterOriginalName = match[1];
+                            const dependentParameterOriginalName = match['1'];
                             const dependentParameterName = match[2];
                             const dependentParameterNodePath = match[3];
 
@@ -229,7 +229,7 @@ class SettingsComponents extends React.Component {
             }
             comp_index++;
         });
-        finalOutput.configuration.components = finalOutputComps;
+        finalOutput.configuration['1'].components = finalOutputComps;
 
         localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
@@ -256,7 +256,7 @@ class SettingsComponents extends React.Component {
 
                 finalOutputComps[index_comp].parameter = JSON.parse(localStorage.getItem("currentParameters"));
 
-                finalOutput.configuration.components = finalOutputComps;
+                finalOutput.configuration['1'].components = finalOutputComps;
 
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
@@ -459,7 +459,7 @@ class SettingsComponents extends React.Component {
                 else {
                     parameters = []
                 }
-                const finalOutputComps = finalOutput.configuration.components;
+                const finalOutputComps = finalOutput.configuration['1'].components;
                 // add checked state to final output
                 finalOutputComps.map(v => {
                     if (v.name === name) {
@@ -468,7 +468,7 @@ class SettingsComponents extends React.Component {
                         v.parameter = parameters;
                     }
                 });
-                finalOutput.configuration.components = finalOutputComps;
+                finalOutput.configuration['1'].components = finalOutputComps;
                 localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
 
                 dict[name] = (checked);
