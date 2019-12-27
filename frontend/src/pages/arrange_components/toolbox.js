@@ -7,7 +7,8 @@ export class ToolBoxItem extends React.Component {
                 className="toolbox__items__item"
                 onClick={this.props.onTakeItem.bind(undefined, this.props.item)}
             >
-                {this.props.item.i}
+                {/*{this.props.item.i}*/}
+                {this.props.title}
             </div>
         );
     }
@@ -19,11 +20,14 @@ export class ToolBox extends React.Component {
                 <span className="toolbox__title">Toolbox</span>
                 <div className="toolbox__items">
                     {this.props.items.map(item => (
-                        <ToolBoxItem
-                            key={item.i}
-                            item={item}
-                            onTakeItem={this.props.onTakeItem}
-                        />
+                        Object.keys(item).length !== 0 ?
+                            (
+                                <ToolBoxItem
+                                    key={item.i}
+                                    item={item}
+                                    onTakeItem={this.props.onTakeItem}
+                                    title={item.i}
+                        />) : (<div style={{display:"inline"}}/>)
                     ))}
                 </div>
             </div>

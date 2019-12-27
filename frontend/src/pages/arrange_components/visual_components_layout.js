@@ -419,7 +419,7 @@ class VisualComponentsLayout extends React.Component {
     render() {
 
         const layoutStyle = {
-            backgroundColor: "#dcdcdc",
+            backgroundColor: "#eee",
             borderStyle: "dashed",
             height: "auto",
             width: "auto",
