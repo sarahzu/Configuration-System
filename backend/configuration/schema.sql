@@ -28,7 +28,8 @@ CREATE TABLE component (
 
 CREATE TABLE parameter (
   parameter_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  component_id INTEGER NOT NULL,
+  component_id INTEGER,
+  decision_card_id INTEGER,
   parameter_name TEXT NOT NULL,
   parameter_type TEXT NOT NULL,
   parameter_value TEXT NOT NULL,

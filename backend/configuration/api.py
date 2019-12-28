@@ -63,7 +63,7 @@ def enterGitRepoAddressIntoDatabase(database, git_repo_address):
         database.commit()
     else:
         database.execute(
-            'INSERT INTO general_settings (git_repo_address, config_id, is_active, output_json) VALUES (?, ?, ?)',
+            'INSERT INTO general_settings (git_repo_address, config_id, is_active, output_json) VALUES (?, ?, ?, ?)',
             (git_repo_address, 1, True, None)
         )
         database.commit()
@@ -200,7 +200,6 @@ class ComponentsInfoFromFrontend(Resource):
         configuration = frontend_request.get("configuration")
         current_configuration = configuration.get("1")
         components = current_configuration.get("components")
-        # TODO: handle decision cards
         decision_cards = current_configuration.get("decisionCards")
 
         database = get_db()
@@ -208,8 +207,81 @@ class ComponentsInfoFromFrontend(Resource):
         if database.execute('SELECT * from general_settings where config_id = 1').fetchone() is not None:
             database.execute('UPDATE OR IGNORE general_settings SET output_json = (?) WHERE config_id = 1', (str(frontend_request),))
         else:
-            database.execute('INSERT OR IGNORE INTO general_settings (config_id, is_active, output_json) '
-                             'VALUES ((?), (?), (?))' (1, True, str(frontend_request)))
+            database.execute('INSERT OR IGNORE INTO general_settings (config_id, is_active, output_json) VALUES ((?), (?), (?))' (1, True, str(frontend_request)))
+
+        ######################
+        # inset decision cards
+        ######################
+        for decision_card in decision_cards:
+            # if decision card is already included in database
+            if is_decision_card_in_database(decision_card.get("name")):
+                # update decision card table
+                database.execute('UPDATE OR IGNORE decision_card '
+                                 'SET description = (?), enabled = (?) WHERE decision_card_name = (?)',
+                                 (decision_card.get("description"), decision_card.get("enabled"), decision_card.get("name")))
+
+                decision_card_name = decision_card.get("name")
+                decision_card_id = database.execute(
+                    'SELECT decision_card_id FROM decision_card WHERE decision_card_name = (?)',
+                    (decision_card_name,)).fetchone()[0]
+                parameters = decision_card.get("parameter")
+                if len(parameters) == 0:
+                    # if no parameters given, erase all previously given parameters
+                    database.execute('UPDATE OR IGNORE parameter SET '
+                                     'parameter_value = (?) WHERE decision_card_id = (?)', ("", decision_card_id))
+                else:
+                    # also add parameters to database
+                    for parameter in parameters:
+                        value = ""
+                        # extract value if it is given
+                        if parameter.get("value"):
+                            value = parameter.get("value")
+                        # check if parameter is already included in database
+                        if is_decision_card_parameter_in_database(decision_card_id, parameter.get("parameter")):
+                            # update parameter table
+                            database.execute(
+                                'UPDATE OR IGNORE parameter SET parameter_name = (?), parameter_type = (?), '
+                                'parameter_value = (?) WHERE component_id = (?)', (parameter.get("parameter"),
+                                                                                   parameter.get("type"),
+                                                                                   value, decision_card_id))
+                        else:
+                            # insert the new parameter in the parameter table
+                            database.execute('INSERT OR IGNORE INTO parameter (decision_card_id, parameter_name, '
+                                             'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+                                             (decision_card_id, parameter.get("parameter"), parameter.get("type"), value))
+            # decision card is not already included in component table
+            else:
+                # insert new decision card in decision card table
+                database.execute('INSERT INTO decision_card (config_id, decision_card_name, description, enabled) '
+                                 'VALUES ((?), (?), (?), (?))',
+                                 (1, decision_card.get("name"), decision_card.get("description"),
+                                  decision_card.get("enabled")))
+                decision_card_name = decision_card.get("name")
+                decision_card_id = database.execute('SELECT decision_card_id FROM decision_card WHERE decision_card_name = ?'
+                                                , (decision_card_name,)).fetchone()[0]
+                parameters = decision_card.get("parameter")
+                # also add all parameters to database
+                for parameter in parameters:
+                    value = ""
+                    # extract value if given
+                    if parameter.get("value"):
+                        value = parameter.get("value")
+                    # check if parameter is already included parameter table
+                    if is_decision_card_parameter_in_database(decision_card_id, parameter.get("parameter")):
+                        # update parameter in parameter table
+                        database.execute('UPDATE parameter SET parameter_name = (?), parameter_type = (?), '
+                                         'parameter_value = (?) WHERE decision_card_id = (?)', (parameter.get("parameter"),
+                                                                                            parameter.get("type"),
+                                                                                            value, decision_card_id))
+                    else:
+                        # insert new parameter in parameter table
+                        database.execute('INSERT INTO parameter (decision_card_id, parameter_name, '
+                                         'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+                                         (decision_card_id, parameter.get("parameter"), parameter.get("type"), value))
+
+        ##########################
+        # insert visual components
+        ##########################
         for component in components:
             # if component is already included in database
             if is_component_in_database(component.get("name")):
@@ -287,6 +359,7 @@ class ComponentsInfoFromFrontend(Resource):
                         database.execute('INSERT INTO parameter (component_id, parameter_name, '
                                          'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
                                          (component_id, parameter.get("parameter"), parameter.get("type"), value))
+
         # commit all gathered database commands
         database.commit()
         return True
@@ -301,6 +374,15 @@ def is_component_in_database(component_name):
         return False
 
 
+def is_decision_card_in_database(decision_card_name):
+    database = get_db()
+    if database.execute('SELECT * FROM decision_card WHERE config_id = (?) AND decision_card_name = (?)',
+                        (1, decision_card_name)).fetchone() is not None:
+        return True
+    else:
+        return False
+
+
 def is_component_parameter_in_database(component_id, parameter_name):
     database = get_db()
     if database.execute('SELECT component_id FROM parameter WHERE component_id = (?) and parameter_name = (?)',
@@ -309,6 +391,13 @@ def is_component_parameter_in_database(component_id, parameter_name):
     else:
         return False
 
+def is_decision_card_parameter_in_database(decision_card_id, parameter_name):
+    database = get_db()
+    if database.execute('SELECT decision_card_id FROM parameter WHERE decision_card_id = (?) and parameter_name = (?)',
+                        (decision_card_id, parameter_name)).fetchone() is not None:
+        return True
+    else:
+        return False
 
 class GetModels(Resource):
 
