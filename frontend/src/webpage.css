@@ -1,3 +1,52 @@
+/* ==========================================================================
+   #FONT
+   ========================================================================== */
+.font-robo {
+    font-family: "Roboto", "Arial", "Helvetica Neue", sans-serif;
+}
+
+.font-poppins {
+    font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
+}
+
+body {
+    font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+}
+
+h1 {
+    font-size: 36px;
+}
+
+h2 {
+    font-size: 30px;
+}
+
+h3 {
+    font-size: 24px;
+}
+
+h4 {
+    font-size: 18px;
+}
+
+h5 {
+    font-size: 15px;
+}
+
+h6 {
+    font-size: 13px;
+}
+
+
+/* ==========================================================================
+   #BURGER MENU
+   ========================================================================== */
 
 /* variables */
 :root {
@@ -125,6 +174,7 @@ Note: Beware of modifying this element as it can break the animations - you shou
 .bm-item-list a span {
     margin-left: 20px;
     font-weight: 100;
+    font-size: 18px;
     font-family: "Roboto", sans-serif;
 }
 
