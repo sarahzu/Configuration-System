@@ -15,18 +15,25 @@ export class ToolBoxItem extends React.Component {
 }
 export class ToolBox extends React.Component {
     render() {
+        let compList
+        if (localStorage.getItem("visualComponents")) {
+           compList  = Object.keys(JSON.parse(localStorage.getItem("visualComponents")));
+        }
+        else {
+            compList = []
+        }
         return (
             <div className="toolbox">
                 <span className="toolbox__title">Toolbox</span>
                 <div className="toolbox__items">
                     {this.props.items.map(item => (
-                        Object.keys(item).length !== 0 ?
+                        Object.keys(item).length !== 0 && compList.length !== 0?
                             (
                                 <ToolBoxItem
                                     key={item.i}
                                     item={item}
                                     onTakeItem={this.props.onTakeItem}
-                                    title={item.i}
+                                    title={compList[parseInt(item.i, 10)]}
                         />) : (<div style={{display:"inline"}}/>)
                     ))}
                 </div>
