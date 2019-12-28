@@ -193,6 +193,9 @@ class VisualComponentsLayout extends React.Component {
                             }
                             dynamicProps[parameterName] = value
                         }
+                        else if (parameter.type === 'callback') {
+                            value = parameter.value;
+                        }
                     }
                     if (!dependent) {
                         dynamicProps[parameter.parameter] = value;

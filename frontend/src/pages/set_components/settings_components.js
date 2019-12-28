@@ -168,6 +168,23 @@ class SettingsComponents extends React.Component {
     };
 
     /**
+     * update callback data grid rows when selection on components is made. Store new value in local storage and state.
+     *
+     * @param fromRow   index of origin row
+     * @param toRow     index of new row
+     * @param updated   updated value
+     */
+     onCallbackComponentGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+         const nonDynamicDataGridRowsLength = this.getNonDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length;
+         const dynamicDataGridRowsLength = this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length;
+         const dependentDataGridRowsLength = this.getDependentComponentsDataGridRows(this.state.componentsDataGridRows).length;
+         const callbackFromRow = fromRow + nonDynamicDataGridRowsLength + dynamicDataGridRowsLength + dependentDataGridRowsLength;
+         const callbackToRow = toRow + nonDynamicDataGridRowsLength + dynamicDataGridRowsLength + dependentDataGridRowsLength;
+         let gridRows = this.getGridRows(callbackFromRow , callbackToRow, updated);
+         this.updateDynamicAndCallbackComponentGridRows(gridRows);
+     };
+
+    /**
      * update dynamic data grid rows when selection on components is made. Store new value in local storage and state.
      *
      * @param fromRow   index of origin row
@@ -177,8 +194,12 @@ class SettingsComponents extends React.Component {
     onDynamicComponentGridRowsUpdated = ({ fromRow, toRow, updated }) => {
         const dynamicFromRow = fromRow + this.getNonDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length;
         const dynamicToRow = toRow + this.getNonDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length;
-
         let gridRows = this.getGridRows(dynamicFromRow , dynamicToRow, updated);
+
+        this.updateDynamicAndCallbackComponentGridRows(gridRows);
+    };
+
+    updateDynamicAndCallbackComponentGridRows (gridRows) {
 
         // add chance to current stats
         let currState = JSON.parse(localStorage.getItem("currentStats"));
@@ -223,7 +244,7 @@ class SettingsComponents extends React.Component {
                 // also update the overall parameters
                 let selectedParameters = this.state.parametersUpper;
                 //selectedParameters[v.name] = gridRows;
-                selectedParameters[v.name] = JSON.parse(localStorage.getItem("currentParameters"));;
+                selectedParameters[v.name] = JSON.parse(localStorage.getItem("currentParameters"));
                 this.setState({parametersUpper: selectedParameters});
                 localStorage.setItem("parametersUpper", JSON.stringify(selectedParameters))
             }
@@ -236,7 +257,7 @@ class SettingsComponents extends React.Component {
         this.setState({componentsDataGridRows: gridRows});
         localStorage.setItem("componentsDataGridRows", JSON.stringify(gridRows));
 
-    };
+    }
 
     async getValueFromSource(source_json, currentParameters, index_parameter, currentName, finalOutputComps, finalOutput, gridRows, index_comp) {
         await axios.post(process.env.REACT_APP_GET_VALUE, source_json, {headers: {'Content-Type': 'application/json'}})
@@ -594,13 +615,45 @@ class SettingsComponents extends React.Component {
      * @return {array} filtered data grid row list
      */
     getNonDynamicComponentsDataGridRows(fullDataGridRows) {
-        let dynamicDataGridRows = [];
+        let nonDynamicDataGridRows = [];
         fullDataGridRows.map(item => {
-            if (item.type !== "dynamic" && item.type !== "dependent" && item.type !== 'inputLocation') {
-                dynamicDataGridRows.push(item)
+            if (item.type !== "dynamic" && item.type !== "dependent" && item.type !== 'callback') {
+                nonDynamicDataGridRows.push(item)
             }
         });
-        return dynamicDataGridRows
+        return nonDynamicDataGridRows
+    }
+
+    /**
+     * extract all dependent parameters from the given data grid rows
+     *
+     * @param fullDataGridRows {array} list of row content of data grid in the form [{parameter: ..., type: ..., value: ...}, {}, ...]
+     * @return {array} filtered data grid row list
+     */
+    getDependentComponentsDataGridRows(fullDataGridRows) {
+        let dependentDataGridRows = [];
+        fullDataGridRows.map(item => {
+            if (item.type === "dependent") {
+                dependentDataGridRows.push(item)
+            }
+        });
+        return dependentDataGridRows
+    }
+
+    /**
+     * extract all callback pramamters form the given data grid rows
+     *
+     * @param fullDataGridRows {array} list of row content of data grid in the form [{parameter: ..., type: ..., value: ...}, {}, ...]
+     * @return {array} filtered data grid row list
+     */
+    getCallbackComponentsDataGridRows(fullDataGridRows) {
+        let callbackDataGridRows = [];
+        fullDataGridRows.map(item => {
+            if (item.type === 'callback') {
+                callbackDataGridRows.push(item)
+            }
+        });
+        return callbackDataGridRows
     }
 
 
@@ -678,6 +731,16 @@ class SettingsComponents extends React.Component {
                             rowGetter={i => this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows)[i]}
                             rowsCount={this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows).length}
                             onGridRowsUpdated={this.onDynamicComponentGridRowsUpdated}
+                            enableCellSelect={true}
+                            minHeight={200}
+                        />
+                    </div>
+                    <div className={"noHeaderWrapper"}>
+                        <ReactDataGrid
+                            columns={this.props.callbackColumnsComponents}
+                            rowGetter={i => this.getCallbackComponentsDataGridRows(this.state.componentsDataGridRows)[i]}
+                            rowsCount={this.getCallbackComponentsDataGridRows(this.state.componentsDataGridRows).length}
+                            onGridRowsUpdated={this.onCallbackComponentGridRowsUpdated}
                             enableCellSelect={true}
                             minHeight={200}
                         />

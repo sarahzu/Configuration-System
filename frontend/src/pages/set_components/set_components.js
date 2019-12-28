@@ -19,7 +19,8 @@ class SetComponents extends React.Component {
         super(props);
         this.state = {
             info: [],
-            dynamicColumnsComponents: []
+            dynamicColumnsComponents: [],
+            callbackColumnsComponents: []
         };
 
         this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
@@ -28,9 +29,15 @@ class SetComponents extends React.Component {
 
     componentDidMount() {
         this.getSettingsInfo();
-        this.getModelsAndCreateDynamicDataGridColumns()
+        this.getModelsAndCreateDynamicDataGridColumns();
+        this.getCallbacksAndCreateDynamicDataGridColumns();
     }
 
+    /**
+     * get model list from backend and create dropdown editor for data grid rows
+     *
+     * @returns {Promise<void>}
+     */
     async getModelsAndCreateDynamicDataGridColumns() {
         await axios.get(process.env.REACT_APP_GET_MODELS).then(response => {
             this.setState({models: response.data});
@@ -51,21 +58,29 @@ class SetComponents extends React.Component {
         });
     }
 
-    getModelsAndCreateDynamicDataGridColumns2() {
+    /**
+     * get callback list from backend and create dropdown editor for data grid rows
+     *
+     * @returns {Promise<void>}
+     */
+    async getCallbacksAndCreateDynamicDataGridColumns() {
+        await axios.get(process.env.REACT_APP_GET_CALLBACK).then(response => {
+            this.setState({models: response.data});
+            let j = 1;
+            let callback = [];
+            // map through all models in the response. put them in the form e.g. {id: "model1", value:"Energy"}
+            // and put them in a list [{id: "model1", value:"Energy"}, {...}, ...]
+            response.data.map(item => {
+                callback.push({id: "callback"+j, value: item})
+            });
+            // create dropdown editor for data grid
+            let dropdownEditor = <DropDownEditor options={callback}/>;
 
-        // get all models
-        //const data = require('../../gitclone/' + out_or_in_string + '/aum.mfa.' + out_or_in_string + '.' + filename + ".json");
-        let models = [];
-        let filePathList = [];
-
-
-        // create dropdown editor for data grid
-        let dropdownEditor = <DropDownEditor options={models}/>;
-
-        this.setState({dynamicColumnsComponents: [
-                {key: "parameter", name: "Parameter"},
-                {key: "type", name: "Type"},
-                {key: "value", name: "Value", editor: dropdownEditor}]});
+            this.setState({callbackColumnsComponents: [
+                    {key: "parameter", name: "Parameter"},
+                    {key: "type", name: "Type"},
+                    {key: "value", name: "Value", editor: dropdownEditor}]});
+        });
     }
 
     /**
@@ -194,7 +209,7 @@ class SetComponents extends React.Component {
                 <div style={{ display: "flex" }}>
                     <button onClick={this.onInfoButtonClicked} style={{ marginLeft: "auto" }}><FontAwesomeIcon icon={faQuestion}/></button>
                 </div>
-                <Settings settingsInfo={this.state.info} dynamicColumnsComponents={this.state.dynamicColumnsComponents}/>
+                <Settings settingsInfo={this.state.info} dynamicColumnsComponents={this.state.dynamicColumnsComponents}  callbackColumnsComponents={this.state.callbackColumnsComponents}/>
             </div>);
     }
 

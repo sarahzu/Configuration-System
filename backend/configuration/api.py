@@ -335,6 +335,10 @@ class GetValueFromDataSource(Resource):
             return {'value': None}
 
 
+class GetCallbackFunctions(Resource):
+    def get(self):
+        return ['showAlert', 'onButtonClicked']
+
 # class GetOutputJson(Resource):
 #
 #     def get(self):
@@ -356,6 +360,8 @@ api.add_resource(FileNames, '/config_api/filenames')
 api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
 api.add_resource(GetModels, '/config_api/get_models')
 api.add_resource(GetValueFromDataSource, '/config_api/get_value')
+api.add_resource(GetCallbackFunctions, '/config_api/get_callback')
+
 
 # api.add_resource(GetOutputJson, '/config_api/get_output_json')
 # api.add_resource(CloneGitRepoForTestcaseUI, '/config_api/clone_git_repo_for_testcaseUI')
