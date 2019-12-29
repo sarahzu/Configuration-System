@@ -32,8 +32,8 @@ class GeneralSettings(Resource):
             git_repo_json = request.get_json()
             git_repo_address = git_repo_json.get('gitRepoAddress')
             try:
-                #Fixme: check if response of successful git creation is true or false and do not delete gitignore folder
-                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                controller = Controller(git_repo_address,
+                                        os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
             except (git.exc.GitCommandError, TypeError):
                 # recreate lost gitclone folder
                 try:
@@ -76,13 +76,15 @@ def enterGitRepoAddressIntoDatabase(database, git_repo_address):
         )
         database.commit()
 
+
 class ConfigurationSettingInput(Resource):
 
     def get(self):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
             try:
-                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                controller = Controller(git_repo_address,
+                                        os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
                 settings_info = controller.get_configuration_settings_input()
             except (git.exc.GitCommandError, TypeError):
                 # recreate lost gitclone folder
@@ -114,7 +116,8 @@ class PullFromRemoteGit(Resource):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
             try:
-                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                controller = Controller(git_repo_address,
+                                        os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
                 # erase previous settings form database
                 database = get_db()
                 # if git repo gets updated, erase previous settings form database
@@ -142,7 +145,8 @@ class NewPullAvailable(Resource):
         if not get_git_repo_address() == "":
             git_repo_address = get_git_repo_address()
             try:
-                controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                controller = Controller(git_repo_address,
+                                        os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
             except (git.exc.GitCommandError, TypeError):
                 # recreate lost gitclone folder
                 try:
@@ -179,7 +183,8 @@ class FileNames(Resource):
     def get(self):
         git_repo_address = get_git_repo_address()
         try:
-            controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+            controller = Controller(git_repo_address,
+                                    os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
             filenames = controller.get_file_names()
             return filenames
         except (git.exc.GitCommandError, TypeError):
@@ -203,9 +208,12 @@ class ComponentsInfoFromFrontend(Resource):
         database = get_db()
         # add request json to database
         if database.execute('SELECT * from general_settings where config_id = 1').fetchone() is not None:
-            database.execute('UPDATE OR IGNORE general_settings SET output_json = (?) WHERE config_id = 1', (str(frontend_request),))
+            database.execute('UPDATE OR IGNORE general_settings SET output_json = (?) WHERE config_id = 1',
+                             (str(frontend_request),))
         else:
-            database.execute('INSERT OR IGNORE INTO general_settings (config_id, is_active, output_json) VALUES ((?), (?), (?))' (1, True, str(frontend_request)))
+            database.execute(
+                'INSERT OR IGNORE INTO general_settings (config_id, is_active, output_json) VALUES ((?), (?), (?))'
+                (1, True, str(frontend_request)))
 
         ######################
         # inset decision cards
@@ -216,7 +224,8 @@ class ComponentsInfoFromFrontend(Resource):
                 # update decision card table
                 database.execute('UPDATE OR IGNORE decision_card '
                                  'SET description = (?), enabled = (?) WHERE decision_card_name = (?)',
-                                 (decision_card.get("description"), decision_card.get("enabled"), decision_card.get("name")))
+                                 (decision_card.get("description"), decision_card.get("enabled"),
+                                  decision_card.get("name")))
 
                 decision_card_name = decision_card.get("name")
                 decision_card_id = database.execute(
@@ -238,15 +247,15 @@ class ComponentsInfoFromFrontend(Resource):
                         if is_decision_card_parameter_in_database(decision_card_id, parameter.get("parameter")):
                             # update parameter table
                             database.execute(
-                                'UPDATE OR IGNORE parameter SET parameter_name = (?), parameter_type = (?), '
-                                'parameter_value = (?) WHERE component_id = (?)', (parameter.get("parameter"),
-                                                                                   parameter.get("type"),
-                                                                                   value, decision_card_id))
+                                'UPDATE OR IGNORE parameter SET parameter_type = (?), '
+                                'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
+                                (parameter.get("type"), value, decision_card_id, parameter.get("parameter")))
                         else:
                             # insert the new parameter in the parameter table
                             database.execute('INSERT OR IGNORE INTO parameter (decision_card_id, parameter_name, '
                                              'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
-                                             (decision_card_id, parameter.get("parameter"), parameter.get("type"), value))
+                                             (decision_card_id, parameter.get("parameter"), parameter.get("type"),
+                                              value))
             # decision card is not already included in component table
             else:
                 # insert new decision card in decision card table
@@ -255,8 +264,9 @@ class ComponentsInfoFromFrontend(Resource):
                                  (1, decision_card.get("name"), decision_card.get("description"),
                                   decision_card.get("enabled")))
                 decision_card_name = decision_card.get("name")
-                decision_card_id = database.execute('SELECT decision_card_id FROM decision_card WHERE decision_card_name = ?'
-                                                , (decision_card_name,)).fetchone()[0]
+                decision_card_id = \
+                    database.execute('SELECT decision_card_id FROM decision_card WHERE decision_card_name = ?'
+                                     , (decision_card_name,)).fetchone()[0]
                 parameters = decision_card.get("parameter")
                 # also add all parameters to database
                 for parameter in parameters:
@@ -267,10 +277,9 @@ class ComponentsInfoFromFrontend(Resource):
                     # check if parameter is already included parameter table
                     if is_decision_card_parameter_in_database(decision_card_id, parameter.get("parameter")):
                         # update parameter in parameter table
-                        database.execute('UPDATE parameter SET parameter_name = (?), parameter_type = (?), '
-                                         'parameter_value = (?) WHERE decision_card_id = (?)', (parameter.get("parameter"),
-                                                                                            parameter.get("type"),
-                                                                                            value, decision_card_id))
+                        database.execute('UPDATE parameter SET parameter_type = (?), '
+                                         'parameter_value = (?) WHERE decision_card_id = (?) and parameter_name = (?)',
+                                         (parameter.get("type"), value, decision_card_id, parameter.get("parameter")))
                     else:
                         # insert new parameter in parameter table
                         database.execute('INSERT INTO parameter (decision_card_id, parameter_name, '
@@ -293,7 +302,7 @@ class ComponentsInfoFromFrontend(Resource):
                                   component.get("enabled"), component.get("toolbox"), component.get("name")))
                 comp_name = component.get("name")
                 component_id = database.execute('SELECT component_id FROM component WHERE component_name = (?)'
-                                                , (comp_name, )).fetchone()[0]
+                                                , (comp_name,)).fetchone()[0]
                 parameters = component.get("parameter")
                 if len(parameters) == 0:
                     # if no parameters given, erase all previously given parameters
@@ -307,12 +316,12 @@ class ComponentsInfoFromFrontend(Resource):
                         if parameter.get("value"):
                             value = parameter.get("value")
                         # check if parameter is already included in database
-                        if is_component_parameter_in_database(component_id, parameter.get("parameter")):
+                        if is_component_parameter_in_database(component_id, parameter.get("parameter"), database):
                             # update parameter table
-                            database.execute('UPDATE OR IGNORE parameter SET parameter_name = (?), parameter_type = (?), '
-                                             'parameter_value = (?) WHERE component_id = (?)', (parameter.get("parameter"),
-                                                                                                parameter.get("type"),
-                                                                                                value, component_id))
+                            database.execute(
+                                'UPDATE OR IGNORE parameter SET parameter_type = (?), '
+                                'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
+                                (parameter.get("type"), value, component_id, parameter.get("parameter")))
                         else:
                             # insert the new parameter in the parameter table
                             database.execute('INSERT OR IGNORE INTO parameter (component_id, parameter_name, '
@@ -346,12 +355,11 @@ class ComponentsInfoFromFrontend(Resource):
                     if parameter.get("value"):
                         value = parameter.get("value")
                     # check if parameter is already included parameter table
-                    if is_component_parameter_in_database(component_id, parameter.get("parameter")):
+                    if is_component_parameter_in_database(component_id, parameter.get("parameter"), database):
                         # update parameter in parameter table
-                        database.execute('UPDATE parameter SET parameter_name = (?), parameter_type = (?), '
-                                         'parameter_value = (?) WHERE component_id = (?)', (parameter.get("parameter"),
-                                                                                            parameter.get("type"),
-                                                                                            value, component_id))
+                        database.execute('UPDATE parameter SET parameter_type = (?), '
+                                         'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
+                                         parameter.get("type"), value, component_id, (parameter.get("parameter")))
                     else:
                         # insert new parameter in parameter table
                         database.execute('INSERT INTO parameter (component_id, parameter_name, '
@@ -381,13 +389,14 @@ def is_decision_card_in_database(decision_card_name):
         return False
 
 
-def is_component_parameter_in_database(component_id, parameter_name):
-    database = get_db()
-    if database.execute('SELECT component_id FROM parameter WHERE component_id = (?) and parameter_name = (?)',
-                        (component_id, parameter_name)).fetchone() is not None:
+def is_component_parameter_in_database(component_id, parameter_name, database):
+    query = database.execute('SELECT * FROM parameter WHERE component_id = (?) and parameter_name = (?)',
+                             (component_id, parameter_name)).fetchone()
+    if query is not None:
         return True
     else:
         return False
+
 
 def is_decision_card_parameter_in_database(decision_card_id, parameter_name):
     database = get_db()
@@ -396,6 +405,7 @@ def is_decision_card_parameter_in_database(decision_card_id, parameter_name):
         return True
     else:
         return False
+
 
 class GetModels(Resource):
 
@@ -426,6 +436,7 @@ class GetCallbackFunctions(Resource):
     def get(self):
         return ['showAlert', 'onButtonClicked']
 
+
 # class GetOutputJson(Resource):
 #
 #     def get(self):
@@ -448,7 +459,6 @@ api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
 api.add_resource(GetModels, '/config_api/get_models')
 api.add_resource(GetValueFromDataSource, '/config_api/get_value')
 api.add_resource(GetCallbackFunctions, '/config_api/get_callback')
-
 
 # api.add_resource(GetOutputJson, '/config_api/get_output_json')
 # api.add_resource(CloneGitRepoForTestcaseUI, '/config_api/clone_git_repo_for_testcaseUI')
