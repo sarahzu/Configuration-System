@@ -32,6 +32,7 @@ class GeneralSettings(Resource):
             git_repo_json = request.get_json()
             git_repo_address = git_repo_json.get('gitRepoAddress')
             try:
+                #Fixme: check if response of successful git creation is true or false and do not delete gitignore folder
                 controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
             except (git.exc.GitCommandError, TypeError):
                 # recreate lost gitclone folder
@@ -41,10 +42,17 @@ class GeneralSettings(Resource):
                     pass
                 enterGitRepoAddressIntoDatabase(database, None)
                 return {"success": False}
+            # check if git repo was created
             if controller.git_repo_created:
                 enterGitRepoAddressIntoDatabase(database, git_repo_address)
                 return {"success": True}
             else:
+                # recreate lost gitclone folder
+                try:
+                    os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                except FileExistsError:
+                    pass
+                enterGitRepoAddressIntoDatabase(database, None)
                 return {"success": False}
         except():
             return {"success": False}
@@ -67,17 +75,6 @@ def enterGitRepoAddressIntoDatabase(database, git_repo_address):
             (git_repo_address, 1, True, None)
         )
         database.commit()
-
-# class CloneGitRepoForTestcaseUI(Resource):
-#
-#     def get(self):
-#         if not get_git_repo_address() == "":
-#             git_repo_address = get_git_repo_address()
-#             controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
-#             return {'success': True}
-#         else:
-#            return {'success': False}
-
 
 class ConfigurationSettingInput(Resource):
 
@@ -153,7 +150,8 @@ class NewPullAvailable(Resource):
                 except FileExistsError:
                     return {"pull": False}
                 return {"pull": False}
-            return {'pull': controller.is_new_pull_request_available()}
+            pull_available = controller.is_new_pull_request_available()
+            return {'pull': pull_available}
         else:
             return {'pull': False}
 

@@ -26,7 +26,7 @@ def is_new_pull_available(local_repo_path):
         regex = re.compile(r'master pushes to master \((.*)\)')
         match = re.search(regex, git_remote_show_origin)
         up_to_date_status = match.group(1)
-    except git.exc.GitCommandError:
+    except (git.exc.GitCommandError, AttributeError):
         return False
 
     if up_to_date_status == 'local out of date':

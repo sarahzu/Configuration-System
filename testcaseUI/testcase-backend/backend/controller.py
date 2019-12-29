@@ -9,8 +9,9 @@ class Controller:
         # clone_url = os.getenv("REPO_PATH")
         try:
             self.git_repo = GitRepo(self.local_repo_path, gitRepoAddress)
+            self.git_repo_created = True
         except Exception:
-            pass
+            self.git_repo_created = False
 
     def get_file_names(self):
         """

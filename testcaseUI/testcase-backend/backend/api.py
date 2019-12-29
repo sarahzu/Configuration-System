@@ -29,6 +29,12 @@ class CloneGitRepoForTestcaseUI(Resource):
                 git_repo_address = get_git_repo_address()
                 try:
                     controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
+                    if not controller.git_repo_created:
+                        try:
+                            os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
+                        except FileExistsError:
+                            pass
+                        return {"success": False}
                     if controller.is_new_pull_request_available():
                         controller.pull_from_remote_repo()
                     return {'success': True}
@@ -71,6 +77,12 @@ class FileNames(Resource):
         try:
             git_repo_address = get_git_repo_address()
             controller = Controller(git_repo_address, os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
+            if not controller.git_repo_created:
+                # recreate lost gitclone folder
+                try:
+                    os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH_TEST_CASE"))
+                except FileExistsError:
+                    pass
             filenames = controller.get_file_names()
             return filenames
         except (git.exc.GitCommandError, TypeError, FileNotFoundError):

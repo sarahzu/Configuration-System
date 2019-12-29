@@ -125,7 +125,7 @@ class SettingsDecisionCards extends React.Component {
         if (localStorage.getItem("descriptionDc")) {this.setState({descriptionDc: JSON.parse(localStorage.getItem("descriptionDc"))});}
         if (localStorage.getItem("parametersLower")) {this.setState({parametersLower: JSON.parse(localStorage.getItem("parametersLower"))});}
         if (localStorage.getItem("currentParametersDc")) {this.setState({currentParametersDc: JSON.parse(localStorage.getItem("currentParametersDc"))});}
-        if (localStorage.getItem("checkboxAllCheckedDc")) {this.setState({currentParametersDc: JSON.parse(localStorage.getItem("checkboxAllCheckedDc"))});}
+        if (localStorage.getItem("checkboxAllCheckedDc")) {this.setState({checkboxAllCheckedDc: JSON.parse(localStorage.getItem("checkboxAllCheckedDc"))});}
     }
 
     /**

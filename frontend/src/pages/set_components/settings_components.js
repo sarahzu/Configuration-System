@@ -28,6 +28,10 @@ class SettingsComponents extends React.Component {
         let descriptionComponents;
         let parameters;
         let currentParameters;
+        let checkboxAllChecked;
+
+        if (localStorage.getItem("checkboxAllChecked")) {checkboxAllChecked = JSON.parse(localStorage.getItem("checkboxAllChecked"))}
+        else {checkboxAllChecked = false;}
 
         if (localStorage.getItem("parametersUpper")) {parameters = JSON.parse(localStorage.getItem("parametersUpper"))}
         else {parameters = {}}
@@ -95,6 +99,7 @@ class SettingsComponents extends React.Component {
             descriptionComponents: descriptionComponents,
             currentDependentValue: null,
             currentParameters: currentParameters,
+            checkboxAllChecked: checkboxAllChecked,
         };
 
         this.createCheckboxComponents = this.createCheckboxComponents.bind(this);
@@ -128,6 +133,7 @@ class SettingsComponents extends React.Component {
         if (localStorage.getItem("parametersUpper")) {this.setState({parametersUpper: JSON.parse(localStorage.getItem("parametersUpper"))});}
         //if (localStorage.getItem("dynamicDataGridColumns")) {this.setState({fullComponentsInfo: JSON.parse(localStorage.getItem("dynamicDataGridColumns"))});}
         if (localStorage.getItem("currentParameters")) {this.setState({currentParameters: JSON.parse(localStorage.getItem("currentParameters"))});}
+        if (localStorage.getItem("checkboxAllChecked")) {this.setState({checkboxAllChecked: JSON.parse(localStorage.getItem("checkboxAllChecked"))});}
 
     }
 
@@ -455,105 +461,16 @@ class SettingsComponents extends React.Component {
     }
 
     /**
-     * Triggers when components checkbox is checked or unchecked.
-     * Update local storage and state according to the selection, so that other page elements like the selection bar
-     * can get updated. Depending on checked or unchecked state, add/remove component from layouts or toolbox list
-     * so that the arrange component page can get updated as well.
+     * Update component and checked components entries in local storage and state.
+     * If nothing is selected reset state
      *
-     * @param changeEvent
+     * @param newComponent  new component dictionary in the form {dc1: true,  dc2: false, dc3: true}
      */
-    handleCheckboxChangeComponents = changeEvent => {
-        const {name} = changeEvent.target;
+    updateComponentsAndCheckedStorageWhenCheckboxIsChecked(newComponent) {
+        this.setState({vis_components: newComponent});
 
-        let dict = {};
-        Object.keys(this.state.vis_components).map((v, i) => {
-            if (v === name) {
-                let checked = this.state.vis_components[v] === false;
-
-                // set in final output the checked state of the component
-                const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-                // get default parameters from api response
-                let parameters;
-                if (JSON.parse(localStorage.getItem("apiResponse"))) {
-                     parameters = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[i].rows
-                }
-                else {
-                    parameters = []
-                }
-                const finalOutputComps = finalOutput.configuration['1'].components;
-                // add checked state to final output
-                finalOutputComps.map(v => {
-                    if (v.name === name) {
-                        v.enabled = checked;
-                        // also add default parameters
-                        v.parameter = parameters;
-                    }
-                });
-                finalOutput.configuration['1'].components = finalOutputComps;
-                localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
-
-                dict[name] = (checked);
-
-                let layout;
-                let toolbox;
-                if (JSON.parse(localStorage.getItem("SelectedLayout")) && JSON.parse(localStorage.getItem("toolbox"))) {
-                    layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
-                    toolbox = JSON.parse(localStorage.getItem("toolbox")).lg;
-                }
-                else {
-                    layout = [];
-                    toolbox = [];
-                }
-
-
-                if (checked && layout) {
-                    //fill empty slots in layout array
-                    let j;
-                    for (j = 0; j < i; j++) {
-                        if (!layout[j]) {
-                            layout[j] = {};
-                        }
-                    }
-                    layout[i] = {
-                        x: i + i,
-                        y: 0,
-                        w: 4,
-                        h: 10,
-                        i: i.toString(),
-                        static: false
-                    };
-                    localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
-                }
-                else {
-                    let usedList;
-                    let usedLocalStorageString;
-                    if (this.isComponentInList(i, layout)) {
-                        usedList = layout;
-                        usedLocalStorageString = "SelectedLayout";
-                    }
-                    else if (this.isComponentInList(i, toolbox)) {
-                        usedList = toolbox;
-                        usedLocalStorageString = "toolbox";
-                    }
-
-                    if (usedList) {
-                        this.removeComponentInList(i, usedList);
-                        localStorage.setItem(usedLocalStorageString, JSON.stringify({lg: usedList}));
-                    }
-                    else {
-                        console.log("element not found")
-                    }
-                }
-            }
-            else {
-                dict[v] = this.state.vis_components[v]
-            }
-        });
-
-        this.setState({vis_components: dict});
-
-        let checkedItems = Object.keys(dict).filter(k => dict[k]);
-        localStorage.setItem("visualComponents", JSON.stringify(dict));
+        let checkedItems = Object.keys(newComponent).filter(k => newComponent[k]);
+        localStorage.setItem("visualComponents", JSON.stringify(newComponent));
         this.setState({checkedComponents: checkedItems});
         localStorage.setItem("checkedComponents", JSON.stringify(checkedItems));
 
@@ -573,7 +490,180 @@ class SettingsComponents extends React.Component {
 
             if(checkedItems.length === 0) {localStorage.setItem("SelectedLayout", JSON.stringify({lg: []}))}
         }
+    }
 
+    /**
+     * Update final output according to new component and checked value.
+     *
+     * @param component     updated component name
+     * @param index         index of updated decision card
+     * @param checkedValue  new check value of updated decision card
+     */
+    updateFinaleOutputWhenCheckboxIsChecked(component, index, checkedValue) {
+        //let checked = this.state.vis_components[v] === false;
+
+        // set in final output the checked state of the component
+        const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        // get default parameters from api response
+        let parameters;
+        if (JSON.parse(localStorage.getItem("apiResponse"))) {
+            parameters = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[index].rows
+        }
+        else {
+            parameters = []
+        }
+        const finalOutputComps = finalOutput.configuration['1'].components;
+        // add checked state to final output
+        finalOutputComps.map(v => {
+            if (v.name === component) {
+                v.enabled = checkedValue;
+                // also add default parameters
+                v.parameter = parameters;
+                // when a new component is selected it is automatically send to the screen, not to the toolbox
+                // therefore the toolbox entry needs to be set to false with every selection
+                v.toolbox = false;
+            }
+        });
+        finalOutput.configuration['1'].components = finalOutputComps;
+        localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+        //dict[name] = (checkedValue);
+
+        let layout;
+        let toolbox;
+        if (JSON.parse(localStorage.getItem("SelectedLayout")) && JSON.parse(localStorage.getItem("toolbox"))) {
+            layout = JSON.parse(localStorage.getItem("SelectedLayout")).lg;
+            toolbox = JSON.parse(localStorage.getItem("toolbox")).lg;
+        }
+        else {
+            layout = [];
+            toolbox = [];
+        }
+
+
+        if (checkedValue && layout) {
+            //fill empty slots in layout array
+            let j;
+            for (j = 0; j < index; j++) {
+                if (!layout[j]) {
+                    layout[j] = {};
+                }
+            }
+            layout[index] = {
+                x: index + index,
+                y: 0,
+                w: 4,
+                h: 10,
+                i: index.toString(),
+                static: false
+            };
+            localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+        }
+        else {
+            let usedList;
+            let usedLocalStorageString;
+            if (this.isComponentInList(index, layout)) {
+                usedList = layout;
+                usedLocalStorageString = "SelectedLayout";
+            }
+            else if (this.isComponentInList(index, toolbox)) {
+                usedList = toolbox;
+                usedLocalStorageString = "toolbox";
+            }
+
+            if (usedList) {
+                this.removeComponentInList(index, usedList);
+                localStorage.setItem(usedLocalStorageString, JSON.stringify({lg: usedList}));
+            }
+            else {
+                console.log("element not found")
+            }
+        }
+    }
+
+    /**
+     * update all checkboxes according to the given value
+     *
+     * @param checkedValue  value of the checkbox
+     */
+    checkAllEvent(checkedValue) {
+        let updatedComponents = {};
+        Object.keys(this.state.vis_components).map((comp, i) => {
+            this.updateFinaleOutputWhenCheckboxIsChecked(comp, i, checkedValue);
+            updatedComponents[comp] = (checkedValue);
+        });
+        this.updateComponentsAndCheckedStorageWhenCheckboxIsChecked(updatedComponents)
+    }
+
+    /**
+     * update only given checkbox with the given value
+     *
+     * @param name          name of the checkbox
+     * @param checkedValue  new value of the checkbox
+     */
+    checkboxEvent(name, checkedValue) {
+        let updatedComponent = {};
+        Object.keys(this.state.vis_components).map((v, i) => {
+            if (v === name) {
+                this.updateFinaleOutputWhenCheckboxIsChecked(name, i, checkedValue);
+                updatedComponent[name] = (checkedValue);
+            }
+            else {
+                updatedComponent[v] = this.state.vis_components[v]
+            }
+        });
+
+        this.updateComponentsAndCheckedStorageWhenCheckboxIsChecked(updatedComponent)
+    }
+
+    /**
+     * Triggers when components checkbox is checked or unchecked.
+     * Update local storage and state according to the selection, so that other page elements like the selection bar
+     * can get updated. Depending on checked or unchecked state, add/remove component from layouts or toolbox list
+     * so that the arrange component page can get updated as well.
+     *
+     * @param changeEvent
+     */
+    handleCheckboxChangeComponents = changeEvent => {
+        // const {name} = changeEvent.target;
+        //
+        // let dict = {};
+        // Object.keys(this.state.vis_components).map((v, i) => {
+        //     if (v === name) {
+        //
+        //     }
+        //     else {
+        //         dict[v] = this.state.vis_components[v]
+        //     }
+        // });
+
+        const {name} = changeEvent.target;
+        const checkedValue = this.state.vis_components[name] === false;
+        this.checkboxEvent(name, checkedValue);
+    };
+
+    /**
+     * Trigger when Check / Uncheck All checkbox is checked or unchecked.
+     * Update all other checkbox' according to the value of Check / Uncheck All checkbox.
+     *
+     * @param event
+     */
+    handleAllChecked = (event) => {
+        const dcs = this.state.vis_components; // components is in the form {comp1: true,  comp2: false, comp3: true}
+        let checkValue;
+
+        // get check state of checked all checkbox and alter state of all other checkboxes accordingly
+        if (this.state.checkboxAllChecked) {
+            checkValue = false
+        }
+        else {
+            checkValue = true
+        }
+        this.checkAllEvent(checkValue);
+
+        // update check all checkbox value
+        this.setState({checkboxAllChecked: checkValue});
+        localStorage.setItem("checkboxAllChecked", checkValue);
     };
 
     /**
@@ -691,13 +781,15 @@ class SettingsComponents extends React.Component {
                                 </div>*/}
                     <div style={this.props.stylesCheckbox}>
                         <h4>Visual Components</h4>
-                        {/*<CheckboxList
-                                        onChange={(values) => this.onCheckboxChange('vis_components', values)}
-                                        values={components}
-                                        input={"comp"}
-                                    />*/}
-                        {/*<button onClick={this.selectAllCheckboxFields(propsComponents)}>select all</button>*/}
-                        {propsComponents}
+                            <Checkbox
+                                label={"Check / Uncheck All"}
+                                isSelected={this.state.checkboxAllChecked}
+                                onCheckboxChange={this.handleAllChecked}
+                                key={"Check / Uncheck All"}
+                            />
+                            <ul>
+                                {propsComponents}
+                            </ul>
                     </div>
                 </Grid>
                 <Grid item xs={2}>
