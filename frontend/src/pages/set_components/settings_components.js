@@ -451,11 +451,16 @@ class SettingsComponents extends React.Component {
      * @param compId {int} id of the component in the list
      * @param list {array} list of the format [{..., i: compId, ...}, {...}]
      */
-    removeComponentInList(compId, list) {
+    removeComponentInList(compId, list, isToolbox) {
         let j;
         for (j = 0; j < list.length; j++) {
             if(list[j].i === compId.toString()) {
-                list[j] = {};
+                if (isToolbox) {
+                    list.splice(j, 1)
+                }
+                else {
+                    list[j] = {};
+                }
             }
         }
     }
@@ -549,14 +554,23 @@ class SettingsComponents extends React.Component {
                     layout[j] = {};
                 }
             }
-            layout[index] = {
-                x: index + index,
-                y: 0,
-                w: 4,
-                h: 10,
-                i: index.toString(),
-                static: false
-            };
+            //layout[index] = {
+            let layoutAlreadyInList = false;
+            layout.map(item => {
+                if (item.i === index.toString()) {
+                    layoutAlreadyInList = true;
+                }
+            });
+            if (!layoutAlreadyInList) {
+                layout.push({
+                    x: index + index,
+                    y: 0,
+                    w: 4,
+                    h: 10,
+                    i: index.toString(),
+                    static: false
+                });
+            }
             localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
         }
         else {
@@ -572,7 +586,8 @@ class SettingsComponents extends React.Component {
             }
 
             if (usedList) {
-                this.removeComponentInList(index, usedList);
+                const isToolbox = usedLocalStorageString === "toolbox";
+                this.removeComponentInList(index, usedList, isToolbox);
                 localStorage.setItem(usedLocalStorageString, JSON.stringify({lg: usedList}));
             }
             else {

@@ -320,6 +320,7 @@ class VisualComponentsLayout extends React.Component {
             [this.state.currentBreakpoint]: this.state.layouts[
                 this.state.currentBreakpoint
                 ].filter(({ i }) => i !== item.i)
+                //].splice(parseInt(item.i, 10), 1, JSON.parse("{}"))
         };
 
         this.setState({toolbox: toolbox, layouts: layouts});
