@@ -3,6 +3,7 @@ import ReactDataGrid from "react-data-grid";
 import Grid from "@material-ui/core/Grid";
 import Select from "react-select";
 import Checkbox from "./checkbox";
+import './settings_components.css'
 
 class SettingsDecisionCards extends React.Component {
 
@@ -435,6 +436,147 @@ class SettingsDecisionCards extends React.Component {
 
     };
 
+    updateDynamicAndCallbackDecisionCardsGridRows (gridRows) {
+
+        // add chance to current stats
+        let currState = JSON.parse(localStorage.getItem("currentStatsDc"));
+        currState.currParameters = gridRows;
+        localStorage.setItem("currentStatsDc", JSON.stringify(currState));
+        const currCompName = currState.currDcName;
+        const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
+        const finalOutputComps = finalOutput.configuration['1'].decisionCards;
+        let comp_index = 0;
+        finalOutputComps.map(v => {
+            if (v.name === currCompName) {
+                v.parameter = gridRows;
+                //this.setState({"currentParametersDc": v.parameter});
+                localStorage.setItem("currentParametersDc", JSON.stringify(v.parameter));
+                let parameters = v.parameter;
+
+                // let param_index = 0;
+                // v.parameter.map(dependentParameter => {
+                //     if (dependentParameter.type === "dependent") {
+                //         let match = dependentParameter.parameter.match(/(.*?)--(.*?)--(.*)/);
+                //         try {
+                //             const dependentParameterOriginalName = match['1'];
+                //             const dependentParameterName = match[2];
+                //             const dependentParameterNodePath = match[3];
+                //
+                //             v.parameter.map(dynamicParameter => {
+                //                 if (dependentParameterName === dynamicParameter.parameter && dynamicParameter.type !== "dependent") {
+                //
+                //                     const newSource = dynamicParameter.value;
+                //                     const apiRequest = {"new_source": newSource, "node_path": dependentParameterNodePath};
+                //                     const response = this.getValueFromSource(apiRequest, parameters, param_index, v.name,
+                //                         finalOutputComps, finalOutput, gridRows, comp_index);
+                //                 }
+                //             })
+                //         }
+                //         catch (e) {}
+                //     }
+                //     param_index++;
+                //     v.parameter = JSON.parse(localStorage.getItem("currentParametersDc"));
+                // });
+
+                // also update the overall parameters
+                let selectedParameters = this.state.parametersLower;
+                //selectedParameters[v.name] = gridRows;
+                selectedParameters[v.name] = JSON.parse(localStorage.getItem("currentParametersDc"));
+                this.setState({parametersLower: selectedParameters});
+                localStorage.setItem("parametersLower", JSON.stringify(selectedParameters))
+            }
+            comp_index++;
+        });
+        finalOutput.configuration['1'].decisionCards = finalOutputComps;
+
+        localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput));
+
+        this.setState({dcDataGridRows: gridRows});
+        localStorage.setItem("dcDataGridRows", JSON.stringify(gridRows));
+
+    }
+
+    /**
+     * update callback data grid rows when selection on decision card is made. Store new value in local storage and state.
+     *
+     * @param fromRow   index of origin row
+     * @param toRow     index of new row
+     * @param updated   updated value
+     */
+    onCallbackDecisionCardsGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+        const nonDynamicDataGridRowsLength = this.getNonDynamicDecisionCardsDataGridRows(this.state.dcDataGridRows).length;
+        const dynamicDataGridRowsLength = this.getDynamicDecisionCardsDataGridRows(this.state.dcDataGridRows).length;
+        const dependentDataGridRowsLength = this.getDependentDecisionCardsDataGridRows(this.state.dcDataGridRows).length;
+        const callbackFromRow = fromRow + nonDynamicDataGridRowsLength + dynamicDataGridRowsLength + dependentDataGridRowsLength;
+        const callbackToRow = toRow + nonDynamicDataGridRowsLength + dynamicDataGridRowsLength + dependentDataGridRowsLength;
+        let gridRows = this.getGridRows(callbackFromRow , callbackToRow, updated);
+        this.updateDynamicAndCallbackDecisionCardsGridRows(gridRows);
+    };
+
+    /**
+     * extract all non-dynamic parameters from the given data grid rows
+     *
+     * @param fullDataGridRows {array} list of row content of data grid in the form [{parameter: ..., type: ..., value: ...}, {}, ...]
+     * @return {array} filtered data grid row list
+     */
+    getNonDynamicDecisionCardsDataGridRows(fullDataGridRows) {
+        let nonDynamicDataGridRows = [];
+        fullDataGridRows.map(item => {
+            if (item.type !== "dynamic" && item.type !== "dependent" && item.type !== 'callback') {
+                nonDynamicDataGridRows.push(item)
+            }
+        });
+        return nonDynamicDataGridRows
+    }
+
+    /**
+     * extract all dynamic parameters from the given data grid rows
+     *
+     * @param fullDataGridRows {array} list of row content of data grid in the form [{parameter: ..., type: ..., value: ...}, {}, ...]
+     * @return {array} filtered data grid row list
+     */
+    getDynamicDecisionCardsDataGridRows(fullDataGridRows) {
+        let dynamicDataGridRows = [];
+        fullDataGridRows.map(item => {
+            if (item.type === "dynamic") {
+                dynamicDataGridRows.push(item)
+            }
+        });
+        return dynamicDataGridRows
+    }
+
+    /**
+     * extract all dependent parameters from the given data grid rows
+     *
+     * @param fullDataGridRows {array} list of row content of data grid in the form [{parameter: ..., type: ..., value: ...}, {}, ...]
+     * @return {array} filtered data grid row list
+     */
+    getDependentDecisionCardsDataGridRows(fullDataGridRows) {
+        let dependentDataGridRows = [];
+        fullDataGridRows.map(item => {
+            if (item.type === "dependent") {
+                dependentDataGridRows.push(item)
+            }
+        });
+        return dependentDataGridRows
+    }
+
+    /**
+     * extract all callback pramamters form the given data grid rows
+     *
+     * @param fullDataGridRows {array} list of row content of data grid in the form [{parameter: ..., type: ..., value: ...}, {}, ...]
+     * @return {array} filtered data grid row list
+     */
+    getCallbackDecisionCardsDataGridRows(fullDataGridRows) {
+        let callbackDataGridRows = [];
+        fullDataGridRows.map(item => {
+            if (item.type === 'callback') {
+                callbackDataGridRows.push(item)
+            }
+        });
+        return callbackDataGridRows
+    }
+
     /**
      * get data grid rows
      *
@@ -522,11 +664,21 @@ class SettingsDecisionCards extends React.Component {
                     <div>
                         <ReactDataGrid
                             columns={this.state.dcDataGridColumns}
-                            rowGetter={i => this.state.dcDataGridRows[i]}
-                            rowsCount={this.state.dcDataGridRows.length}
+                            rowGetter={i => this.getNonDynamicDecisionCardsDataGridRows(this.state.dcDataGridRows)[i]}
+                            rowsCount={this.getNonDynamicDecisionCardsDataGridRows(this.state.dcDataGridRows).length}
                             onGridRowsUpdated={this.onDecisionCardsGridRowsUpdated}
                             enableCellSelect={true}
                             minHeight={400}
+                        />
+                    </div>
+                    <div className={"noHeaderWrapper"}>
+                        <ReactDataGrid
+                            columns={this.props.callbackColumnsDecisionCards}
+                            rowGetter={i => this.getCallbackDecisionCardsDataGridRows(this.state.dcDataGridRows)[i]}
+                            rowsCount={this.getCallbackDecisionCardsDataGridRows(this.state.dcDataGridRows).length}
+                            onGridRowsUpdated={this.onCallbackDecisionCardsGridRowsUpdated}
+                            enableCellSelect={true}
+                            minHeight={200}
                         />
                     </div>
                 </Grid>

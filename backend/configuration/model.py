@@ -26,7 +26,7 @@ def is_new_pull_available(local_repo_path):
         regex = re.compile(r'master pushes to master \((.*)\)')
         match = re.search(regex, git_remote_show_origin)
         up_to_date_status = match.group(1)
-    except (git.exc.GitCommandError, AttributeError):
+    except (git.exc.GitCommandError, git.exc.GitCommandNotFound, AttributeError):
         return False
 
     if up_to_date_status == 'local out of date':
@@ -292,6 +292,11 @@ def getDC():
                         "parameter": "value",
                         "type": "integer",
                         "value": "2"
+                    },
+                    {
+                        "parameter": "functionality",
+                        "type": "callback",
+                        "value": "showAlert"
                     }
                 ],
                 "description": "bliiiiii"

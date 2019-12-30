@@ -154,8 +154,16 @@ class NewPullAvailable(Resource):
                 except FileExistsError:
                     return {"pull": False}
                 return {"pull": False}
-            pull_available = controller.is_new_pull_request_available()
-            return {'pull': pull_available}
+            if controller.git_repo_created:
+                pull_available = controller.is_new_pull_request_available()
+                return {'pull': pull_available}
+            else:
+                # recreate lost gitclone folder
+                try:
+                    os.mkdir(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_REPO_PATH"))
+                except FileExistsError:
+                    return {"pull": False}
+                return {"pull": False}
         else:
             return {'pull': False}
 
@@ -248,7 +256,7 @@ class ComponentsInfoFromFrontend(Resource):
                             # update parameter table
                             database.execute(
                                 'UPDATE OR IGNORE parameter SET parameter_type = (?), '
-                                'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
+                                'parameter_value = (?) WHERE decision_card_id = (?) and parameter_name = (?)',
                                 (parameter.get("type"), value, decision_card_id, parameter.get("parameter")))
                         else:
                             # insert the new parameter in the parameter table

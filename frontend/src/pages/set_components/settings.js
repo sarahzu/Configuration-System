@@ -147,7 +147,7 @@ class Settings extends React.Component {
                 <div className="row">
                     <form className="form">
                         <SettingsComponents dynamicColumnsComponents ={this.props.dynamicColumnsComponents} callbackColumnsComponents={this.props.callbackColumnsComponents} stylesGridUpper={stylesGridUpper} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
-                        <SettingsDecisionCards stylesGridLower={stylesGridLower} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
+                        <SettingsDecisionCards callbackColumnsDecisionCards={this.props.callbackColumnsDecisionCards} stylesGridLower={stylesGridLower} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>
                     </form>
                 </div>
             </div>

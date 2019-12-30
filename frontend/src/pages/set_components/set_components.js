@@ -20,7 +20,8 @@ class SetComponents extends React.Component {
         this.state = {
             info: [],
             dynamicColumnsComponents: [],
-            callbackColumnsComponents: []
+            callbackColumnsComponents: [],
+            callbackColumnsDecisionCards: [],
         };
 
         this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
@@ -77,6 +78,10 @@ class SetComponents extends React.Component {
             let dropdownEditor = <DropDownEditor options={callback}/>;
 
             this.setState({callbackColumnsComponents: [
+                    {key: "parameter", name: "Parameter"},
+                    {key: "type", name: "Type"},
+                    {key: "value", name: "Value", editor: dropdownEditor}],
+                callbackColumnsDecisionCards: [
                     {key: "parameter", name: "Parameter"},
                     {key: "type", name: "Type"},
                     {key: "value", name: "Value", editor: dropdownEditor}]});
@@ -209,7 +214,12 @@ class SetComponents extends React.Component {
                 <div style={{ display: "flex" }}>
                     <button onClick={this.onInfoButtonClicked} style={{ marginLeft: "auto" }}><FontAwesomeIcon icon={faQuestion}/></button>
                 </div>
-                <Settings settingsInfo={this.state.info} dynamicColumnsComponents={this.state.dynamicColumnsComponents}  callbackColumnsComponents={this.state.callbackColumnsComponents}/>
+                <Settings
+                    settingsInfo={this.state.info}
+                    dynamicColumnsComponents={this.state.dynamicColumnsComponents}
+                    callbackColumnsComponents={this.state.callbackColumnsComponents}
+                    callbackColumnsDecisionCards={this.state.callbackColumnsDecisionCards}
+                />
             </div>);
     }
 
