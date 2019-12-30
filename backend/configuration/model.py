@@ -201,21 +201,24 @@ def get_value_from_origin_name(value_origin, node_path_string):
     :return:                    final value
     """
 
-    filename_regex = re.compile(r'(aum\.mfa\.(out|in)\..*?)(\.+(.+)|$)')
-    filename_match = re.search(filename_regex, value_origin)
-    filename = filename_match.group(1)
-    input_or_output_file = filename_match.group(2)
+    try:
+        filename_regex = re.compile(r'(aum\.mfa\.(out|in)\..*?)(\.+(.+)|$)')
+        filename_match = re.search(filename_regex, value_origin)
+        filename = filename_match.group(1)
+        input_or_output_file = filename_match.group(2)
 
-    if node_path_string is not None:
-        path = node_path_string
-        value_origin_tree_notes = path.split('.')
+        if node_path_string is not None:
+            path = node_path_string
+            value_origin_tree_notes = path.split('.')
 
-    else:
-        path = filename_match.group(4)
-        value_origin_tree_notes = path.split('.')
+        else:
+            path = filename_match.group(4)
+            value_origin_tree_notes = path.split('.')
 
-    # get data from json file
-    return get_value_from_data(input_or_output_file, filename, value_origin_tree_notes)
+        # get data from json file
+        return get_value_from_data(input_or_output_file, filename, value_origin_tree_notes)
+    except AttributeError:
+        return "1"
 
 
 def get_value_from_data(input_or_output_file, filename, value_origin_tree_notes):

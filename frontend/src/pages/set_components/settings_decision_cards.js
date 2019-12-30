@@ -374,7 +374,7 @@ class SettingsDecisionCards extends React.Component {
         // set in final output the checked state of the component
         const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
         const finalOutputDc = finalOutput.configuration["1"].decisionCards;
-        
+
         // add checked state to final output
         finalOutputDc.map(v => {
             if (v.name === decisionCard) {
