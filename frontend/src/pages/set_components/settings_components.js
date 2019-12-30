@@ -509,21 +509,27 @@ class SettingsComponents extends React.Component {
 
         // set in final output the checked state of the component
         const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-        // get default parameters from api response
-        let parameters;
-        if (JSON.parse(localStorage.getItem("apiResponse"))) {
-            parameters = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[index].rows
-        }
-        else {
-            parameters = []
-        }
         const finalOutputComps = finalOutput.configuration['1'].components;
+
         // add checked state to final output
         finalOutputComps.map(v => {
             if (v.name === component) {
                 v.enabled = checkedValue;
-                // also add default parameters
-                v.parameter = parameters;
+
+                // if there is no previouse parameters set in final output, take the default parameters from api response
+                // if not, the parameters are already stored in the final output and nothing needs to be done
+                if (v.parameter.length === 0 ) {
+                    // get default parameters from api response
+                    let parameters;
+                    if (JSON.parse(localStorage.getItem("apiResponse"))) {
+                        parameters = JSON.parse(localStorage.getItem("apiResponse")).componentsParameters[index].rows
+                    }
+                    else {
+                        parameters = []
+                    }
+                    // add default parameters to final output
+                    v.parameter = parameters;
+                }
                 // when a new component is selected it is automatically send to the screen, not to the toolbox
                 // therefore the toolbox entry needs to be set to false with every selection
                 v.toolbox = false;

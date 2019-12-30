@@ -373,21 +373,26 @@ class SettingsDecisionCards extends React.Component {
     updateFinaleOutputWhenCheckboxIsChecked(decisionCard, index, checkedValue) {
         // set in final output the checked state of the component
         const finalOutput = JSON.parse(localStorage.getItem("fullComponentsInfo"));
-        // get default parameters from api response
-        let parameters;
-        if (JSON.parse(localStorage.getItem("apiResponse"))) {
-            parameters = JSON.parse(localStorage.getItem("apiResponse")).decisionCardsParameters[index].rows
-        }
-        else {
-            parameters = []
-        }
         const finalOutputDc = finalOutput.configuration["1"].decisionCards;
+        
         // add checked state to final output
         finalOutputDc.map(v => {
             if (v.name === decisionCard) {
                 v.enabled = checkedValue;
-                // also add default parameters
-                v.parameter = parameters;
+                // if there is no previous parameters set in final output, take the default parameters from api response
+                // if not, the parameters are already stored in the final output and nothing needs to be done
+                if (v.parameter.length === 0 ) {
+                    // get default parameters from api response
+                    let parameters;
+                    if (JSON.parse(localStorage.getItem("apiResponse"))) {
+                        parameters = JSON.parse(localStorage.getItem("apiResponse")).decisionCardsParameters[index].rows
+                    }
+                    else {
+                        parameters = []
+                    }
+                    // add default parameters
+                    v.parameter = parameters;
+                }
             }
         });
         finalOutput.configuration["1"].decisionCards = finalOutputDc;
