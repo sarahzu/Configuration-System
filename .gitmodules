@@ -1,0 +1,3 @@
+[submodule "testing/github2"]
+	path = testing/github2
+	url = https://github.com/sarahzu/Visual-Components-Testcase-2.git
