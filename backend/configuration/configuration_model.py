@@ -34,23 +34,8 @@ def is_new_pull_available(local_repo_path):
     else:
         return False
 
-    # try:
-    #     count_modified_files = len(repo.index.diff(None))
-    #     count_staged_files = len(repo.index.diff("HEAD"))
-    #
-    #     head = repo.head.ref
-    #     tracking = head.tracking_branch()
-    #     test = tracking.commit.iter_items(repo, f'{head.path}..{tracking.path}')
-    #
-    #     if count_modified_files < 1 and count_staged_files < 1:
-    #         return False
-    #     else:
-    #         return True
-    # except AttributeError:
-    #     return False
 
-
-def cloneGitRepo(cloneUrl, localRepoPath):
+def clone_git_repo(cloneUrl, localRepoPath):
     """
     clone a git repo with the given url at the given path location.
 
@@ -66,35 +51,35 @@ class GitRepo:
     Creating and maintaining a given git Repo
     """
 
-    def __init__(self, localRepoPath, cloneUrl):
+    def __init__(self, local_repo_path, clone_url):
         """
         if given git repo at the clone url is not already cloned, clone it. If it is already there, pull to check
         for new updates.
 
-        :param localRepoPath:   path to local repo
-        :param cloneUrl:        url used to clone the remote repo
+        :param local_repo_path:   path to local repo
+        :param clone_url:        url used to clone the remote repo
         """
-        self.localRepoPath = localRepoPath
+        self.local_repo_path = local_repo_path
 
         # if dir of localRepoPath does not exists
-        if not os.path.isdir(self.localRepoPath):
-            cloneGitRepo(cloneUrl, self.localRepoPath)
+        if not os.path.isdir(self.local_repo_path):
+            clone_git_repo(clone_url, self.local_repo_path)
         # if dir of localRepPath exists but is empty
-        elif len(os.listdir(self.localRepoPath)) == 0:
-            cloneGitRepo(cloneUrl, self.localRepoPath)
+        elif len(os.listdir(self.local_repo_path)) == 0:
+            clone_git_repo(clone_url, self.local_repo_path)
         # if dir already exists and has content
         else:
             try:
-                g = git.cmd.Git(self.localRepoPath)
+                g = git.cmd.Git(self.local_repo_path)
                 git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
                 regex = re.compile(r'Fetch\sURL\:\s((https|git).*.git)')
                 match = re.search(regex, git_remote_show_origin)
                 current_clone_url = match.group(1)
                 # if git repo in local repo path is not the same repo as given in the clone url
-                if not current_clone_url == cloneUrl:
+                if not current_clone_url == clone_url:
                     # remove all files form folder and clone new git repo from given clone url
-                    shutil.rmtree(self.localRepoPath)
-                    cloneGitRepo(cloneUrl, self.localRepoPath)
+                    shutil.rmtree(self.local_repo_path)
+                    clone_git_repo(clone_url, self.local_repo_path)
                 # else:
                 #     repo = git.Repo(self.localRepoPath)
                 #     if isNewPullAvailable(repo):
@@ -103,7 +88,7 @@ class GitRepo:
                 print("dir is full with non git related content")
 
     def get_visual_components_from_git(self):
-        return findJsFiles(self.localRepoPath)
+        return find_js_files(self.local_repo_path)
 
 
 def pull_from_remote(local_repo_path):
@@ -121,7 +106,7 @@ def pull_from_remote(local_repo_path):
         return False
 
 
-def findJsFiles(dirPath):
+def find_js_files(dirPath):
     """
     go through given path and find all visual components in all javascript files
 

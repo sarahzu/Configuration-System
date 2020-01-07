@@ -668,7 +668,7 @@ class SettingsDecisionCards extends React.Component {
                             rowsCount={this.getNonDynamicDecisionCardsDataGridRows(this.state.dcDataGridRows).length}
                             onGridRowsUpdated={this.onDecisionCardsGridRowsUpdated}
                             enableCellSelect={true}
-                            minHeight={400}
+                            minHeight={200}
                         />
                     </div>
                     <div className={"noHeaderWrapper"}>

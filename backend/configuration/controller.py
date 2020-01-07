@@ -4,7 +4,7 @@ import os, json
 import re
 
 import git
-from model import GitRepo, is_new_pull_available, pull_from_remote, findJsFiles, getDC, get_all_model_names, \
+from configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, getDC, get_all_model_names, \
     get_value_from_data, get_value_from_origin_name
 
 # sys.path.append('/configuration')
@@ -37,12 +37,12 @@ def get_value_from_data_json(source_name, node_path_string):
 
 class Controller:
 
-    def __init__(self, gitRepoAddress, local_repo_path):
-        self.gitRepoAddress = gitRepoAddress
+    def __init__(self, git_repo_address, local_repo_path):
+        self.git_repo_address = git_repo_address
         self.local_repo_path = local_repo_path
         # clone_url = os.getenv("REPO_PATH")
         try:
-            self.git_repo = GitRepo(self.local_repo_path, gitRepoAddress)
+            self.git_repo = GitRepo(self.local_repo_path, self.git_repo_address)
             self.git_repo_created = True
         except Exception:
             self.git_repo_created = False
@@ -89,7 +89,7 @@ class Controller:
 
         :return: {list} list containing all filenames
         """
-        components_list = findJsFiles(self.local_repo_path)
+        components_list = find_js_files(self.local_repo_path)
         filenames_list = []
         for comp in components_list:
             filename = comp.get("filename")
@@ -101,7 +101,7 @@ class Controller:
         return a json object with all information needed, to build the configuration frontend page
         :return: {json} input file
         """
-        components_list = findJsFiles(self.local_repo_path)
+        components_list = find_js_files(self.local_repo_path)
         components_names_list = []
         parameter_list = []
         for comp in components_list:
