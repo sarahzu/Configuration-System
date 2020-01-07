@@ -21,11 +21,11 @@ sys.path.append(ROOT_DIR + '/backend/configuration')
 class ModelTest(unittest.TestCase):
 
     clone_url = "https://github.com/sarahzu/Visual-Components-Testcase-2.git"
-    local_repo_path = ROOT_DIR + "/backend/tests/local"
+    local_repo_path = ROOT_DIR + "/testing/local"
     git_repo = GitRepo(local_repo_path, clone_url)
 
     def test_pull_from_remote(self):
-        return_value = pull_from_remote(ROOT_DIR + "/backend/tests/local")
+        return_value = pull_from_remote(ROOT_DIR + "/testing/local")
         expected_value = False
         self.assertEqual(expected_value, return_value)
 
@@ -86,13 +86,13 @@ class ModelTest(unittest.TestCase):
 
     def test_is_new_pull_available(self):
         # no pull available
-        local_repo_path = ROOT_DIR + "/backend/tests/github"
+        local_repo_path = ROOT_DIR + "/testing/github"
         return_value = is_new_pull_available(local_repo_path)
         expected_value = False
         self.assertEqual(return_value, expected_value)
 
         # pull available
-        local_repo_path = ROOT_DIR + "/backend/tests/github2"
+        local_repo_path = ROOT_DIR + "/testing/github2"
         return_value = is_new_pull_available(local_repo_path)
         expected_value = True
         self.assertEqual(return_value, expected_value)
