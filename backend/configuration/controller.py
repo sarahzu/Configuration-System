@@ -4,9 +4,12 @@ import os, json
 import re
 
 import git
-from configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, getDC, get_all_model_names, \
-    get_value_from_data, get_value_from_origin_name
 
+# from configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, getDC, get_all_model_names, \
+#    get_value_from_data, get_value_from_origin_name
+
+from configuration.configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, getDC, get_all_model_names, \
+    get_value_from_data, get_value_from_origin_name
 # sys.path.append('/configuration')
 
 
