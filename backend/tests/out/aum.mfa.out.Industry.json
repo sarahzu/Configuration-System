@@ -1,0 +1,40 @@
+{
+	"name": "aum.mfa.out.Industry",
+	"value": {
+		"12": {
+			"name":"Flow from Components Markets to Indsutry",
+			"unit":"Tons of Materials",
+			"value": 6256
+		},
+		"13": {
+			"name":"Flow from Scrap Market to Industry",
+			"unit":"Tons of Materials",
+			"value": 56564
+		},
+		"14": {
+			"name":"Flow of Import of scrap material (secondary material) (recycled material)",
+			"unit":"Tons of Materials",
+			"value": 65465
+		},
+		"15": {
+			"name":"Flow of Imported components Materials",
+			"unit":"Tons of Materials",
+			"value": 34566
+		},
+		"16": {
+			"name":"Import of primary material",
+			"unit":"Tons of Materials",
+			"value": 45345
+		},
+		"10": {
+			"name":"energy",
+			"unit":"TJ",
+			"value": 3300
+		},
+		"11": {
+			"name":"emissions",
+			"unit":"CO2-Eq",
+			"value": 300000
+		}
+	}
+}

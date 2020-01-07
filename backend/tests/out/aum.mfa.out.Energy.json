@@ -1,0 +1,25 @@
+{
+	"name": "aum.mfa.out.Energy",
+	"value": {
+		"20": {
+			"name":"Flow of Energy towards Domestic Energy Production (nuclear power, hydropower, district heating and renewable)",
+			"unit":"TJ",
+			"value": 34
+		},
+		"21": {
+			"name":"Flow of Import of Energy (oil, gas, coal, electricity and wood)",
+			"unit":"TJ",
+			"value": 153
+		},
+		"22": {
+			"name":"Flow of Energy from the CH forests (wood)",
+			"unit":"TJ",
+			"value": 787
+		},
+		"23": {
+			"name":"Flow of Energy from fomestic production to electricity, district heating and renewable market",
+			"unit":"TJ",
+			"value": 8786
+		}
+	}
+}

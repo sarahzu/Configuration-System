@@ -5,7 +5,8 @@ from pathlib import Path
 
 import os
 
-from configuration.configuration_model import get_value_from_data, find_js_files, is_new_pull_available, GitRepo, pull_from_remote, get_value_from_origin_name
+from configuration.configuration_model import get_value_from_data, find_js_files, is_new_pull_available, GitRepo, \
+    pull_from_remote, get_value_from_origin_name, get_all_model_names
 
 ROOT_DIR = os.path.abspath(os.curdir)
 
@@ -42,6 +43,12 @@ class ModelTest(unittest.TestCase):
         return_value = get_value_from_data(input_or_output_file, filename, value_origin_tree_notes)
         expected_value = 3300
         self.assertEqual(return_value, expected_value)
+
+    def test_get_all_model_names(self):
+        model_path = ROOT_DIR + "/backend/tests/out"
+        return_value = get_all_model_names(model_path)
+        expected_value = ["aum.mfa.out.EndOfLifeMgmt", "aum.mfa.out.Energy", "aum.mfa.out.Industry"]
+        self.assertEqual(return_value.sort(), expected_value.sort())
 
     def test_find_js_files(self):
         return_value = find_js_files(ROOT_DIR + "/backend/tests/files")
