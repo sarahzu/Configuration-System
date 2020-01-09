@@ -132,14 +132,18 @@ def find_js_files(dirPath):
                             parameter_list = []
                         elif vis_comp_found and re.compile(r'\s\*\s@props.*').match(line):
                             regex = re.compile(
-                                r'\s\*[\s|\t]@props[\s|\t]{(.*)\}[\s|\t](.*?)[\s|\t]?(\[(.*)\])?[\s|\t](\((.*?)\))?[\s|\t]?({(.*?)\})?')
+                                r'\s\*[\s|\t]@props[\s|\t]{(.*?)\}[\s|\t](.*?)[\s|\t]?(\[(.*)\])?[\s|\t](\((.*?)\))?[\s|\t]?({(.*?)\})?')
                             match = re.search(regex, line)
-                            props_type = match.group(1)
-                            props_name = match.group(2)
+                            try:
+                                props_type = match.group(1)
+                                props_name = match.group(2)
+                            except AttributeError:
+                                props_type = ""
+                                props_name = ""
 
                             try:
                                 default_value = match.group(4)
-                            except():
+                            except (AttributeError, TypeError):
                                 default_value = ""
 
                             try:
@@ -147,7 +151,7 @@ def find_js_files(dirPath):
                                 # add name of parameter to dependent value so that the frontend knows
                                 # where to put the values
                                 value_dependent = props_name + "--" + value_dependent
-                            except TypeError:
+                            except Exception:
                                 value_dependent = ""
 
                             try:
@@ -163,15 +167,28 @@ def find_js_files(dirPath):
                                  'dependentOn': value_dependent})
                         elif vis_comp_found and line.find(' */') != -1:
                             end_of_doc_string_found = True
-                        elif vis_comp_found and end_of_doc_string_found and line.startswith('class'):
+                        elif vis_comp_found and end_of_doc_string_found and (line.startswith('class') or line.startswith('function')):
                             vis_comp_found = False
                             end_of_doc_string_found = False
 
-                            regex = re.compile(r'class\s(\w+).*{')
+                            regex = re.compile(r'(class|function)\s(\w+).*{')
                             match = re.search(regex, line)
-                            component_name = match.group(1)
+                            try:
+                                component_name = match.group(2)
+                            except Exception:
+                                component_name = ""
 
-                            component_info = {'name': component_name, 'filename': os.path.basename(f.name).strip('.js'),
+                            # extract filename path after gitclone folder
+                            regex_filename = re.compile(r'(.*?)gitclone(.*)')
+                            match_filename = re.search(regex_filename, file_path)
+                            try:
+                                filename = match_filename.group(2)[:-3]
+                                filename = filename[1:]
+                                # filename = "src/components/CarbonBudget/CarbonBudget"
+                            except Exception:
+                                filename = os.path.basename(f.name).strip('.js')
+
+                            component_info = {'name': component_name, 'filename': filename,
                                               'path': file_path, 'parameters': parameter_list}
                             vis_comp_name_list.append(component_info)
     return vis_comp_name_list

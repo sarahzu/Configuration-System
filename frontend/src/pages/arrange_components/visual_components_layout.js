@@ -160,6 +160,13 @@ class VisualComponentsLayout extends React.Component {
                             value = parameter.value;
                         } else if (parameter.type === 'boolean') {
                             value = (parameter.value.toLowerCase() === 'true')
+                        } else if (parameter.type === 'dictionary') {
+                            try {
+                                value = JSON.parse(parameter.value)
+                            }
+                            catch {
+                                value = {}
+                            }
                         }
                         else if (parameter.type === "dynamic") {
                             if (parseInt(parameter.value, 10)) {

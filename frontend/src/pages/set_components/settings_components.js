@@ -569,10 +569,10 @@ class SettingsComponents extends React.Component {
             });
             if (!layoutAlreadyInList) {
                 layout.push({
-                    x: index + index,
-                    y: 0,
+                    x: 0,
+                    y: 8 * index,
                     w: 4,
-                    h: 10,
+                    h: 6,
                     i: index.toString(),
                     static: false
                 });

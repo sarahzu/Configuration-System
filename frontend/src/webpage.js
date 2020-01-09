@@ -22,6 +22,11 @@ import Logo from "./images/logo_nfp73_en.png";
 import history from './history';
 import GeneralSettings from "./pages/settings/general_settings";
 
+//import './gitclone/src/actions/index'
+// Import Redux
+import {useSelector, useDispatch} from "react-redux";
+import {updateCarbonEmissionArea, updateCarbonGauge, updateGenericRolls} from "./actions";
+
 const Main = styled.main`
     position: relative;
     overflow: hidden;
@@ -30,7 +35,54 @@ const Main = styled.main`
     margin-left: ${props => (props.expanded ? 240 : 64)}px;
 `;
 
-export default class App extends React.Component {
+
+function AddActionsToRedux () {
+    const dispatch = useDispatch();
+
+    dispatch(updateGenericRolls({
+        id: "generic_rolls_1",
+        min: 0,
+        max: 25,
+        data: {
+            politics: 15,
+            energy: 5,
+            investor: 8,
+            population: 13,
+            planer: 16,
+            niche: 10,
+            industry: 4,
+        },
+    }));
+    /*dispatch(updateCarbonEmissionArea({
+            id:                    "carbon_budget_1" + '_carbon_area',
+            today:                  Date.parse(props.carbon_area.today),
+            min:                    props.carbon_area.min,
+            max:                    props.carbon_area.max,
+            timeseries:             props.carbon_area.timeseries
+        }));
+
+
+
+        dispatch(updateCarbonGauge({
+            id:                     "carbon_budget_1" + '_carbon_gauge',
+            cumulated_emissions:    props.carbon_gauge.cumulated_emissions,
+            critical_emissions:     props.carbon_gauge.critical_emissions,
+            years_left:             props.carbon_gauge.years_left,
+            year_speed:             props.carbon_gauge.year_speed,
+        }));*/
+}
+
+function App () {
+    try {
+        AddActionsToRedux();
+    }
+    catch (e) {}
+    return(<WebPage/>);
+}
+
+export default App;
+
+class WebPage extends React.Component {
 
     constructor (props) {
         super(props);
