@@ -25,7 +25,9 @@ import GeneralSettings from "./pages/settings/general_settings";
 //import './gitclone/src/actions/index'
 // Import Redux
 import {useSelector, useDispatch} from "react-redux";
-import {updateCarbonEmissionArea, updateCarbonGauge, updateGenericRolls} from "./actions";
+import {updateCarbonEmissionArea, updateCarbonGauge, updateGenericRolls, updateGenericValue} from "./actions";
+import {updateGenericTimeseries, updateRollspecificGoals} from "./gitclone/src/actions";
+import {generateData} from "./gitclone/src/testComponents/TestEnvironment/DataGenerator";
 
 const Main = styled.main`
     position: relative;
@@ -39,6 +41,9 @@ const Main = styled.main`
 function AddActionsToRedux () {
     const dispatch = useDispatch();
 
+    /*
+    Generic Rolls
+     */
     dispatch(updateGenericRolls({
         id: "generic_rolls_1",
         min: 0,
@@ -53,6 +58,58 @@ function AddActionsToRedux () {
             industry: 4,
         },
     }));
+
+    /*
+    Generic Value
+     */
+    dispatch(updateGenericValue({
+        id:             "test_1",
+        value:          300.4
+    }));
+
+    /*
+    Generic Timeseries
+     */
+    dispatch(updateGenericTimeseries({
+        id:         "generic_timeseries_1",
+        min:        Math.round(0),
+        max:        Math.round(200),
+        today:      Date.parse("01 Jan 2030"),
+        data:       [{
+            label:  "Personenwagen",
+            values: generateData( 105, 0.6, 81),
+        }, {
+            label:  "Bus und Tram",
+            values: generateData(11, 0.1, 81),
+        }, {
+            label:  "Zug",
+            values: generateData(25, 0.3, 81),
+        }, {
+            label:  "Fuss und Velo",
+            values: generateData(8, 0.1, 81),
+        }]
+    }));
+
+    /*
+    Role-specific Goals
+     */
+    dispatch(updateRollspecificGoals({
+        id:                     "rollspecific_goals_1",
+        data:                   {
+            politics:           { value: 0.30, speed: 1 },
+            population:         { value: 0.80, speed: 3 },
+            investor:           { value: 0.50, speed: 5 },
+            energy:             { value: 0.90, speed: 4 },
+            planer:             { value: 0.40, speed: 2 },
+            niche:              { value: 0.60, speed: 2 },
+            industry:           { value: 0.75, speed: 1 },
+        },
+    }));
+
+    /*
+    Carbon Budget
+     */
+
     /*dispatch(updateCarbonEmissionArea({
             id:                    "carbon_budget_1" + '_carbon_area',
             today:                  Date.parse(props.carbon_area.today),
