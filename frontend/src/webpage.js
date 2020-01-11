@@ -25,9 +25,8 @@ import GeneralSettings from "./pages/settings/general_settings";
 //import './gitclone/src/actions/index'
 // Import Redux
 import {useSelector, useDispatch} from "react-redux";
-import {updateCarbonEmissionArea, updateCarbonGauge, updateGenericRolls, updateGenericValue} from "./actions";
-import {updateGenericTimeseries, updateRollspecificGoals} from "./gitclone/src/actions";
-import {generateData} from "./gitclone/src/testComponents/TestEnvironment/DataGenerator";
+import {updateCarbonEmissionArea, updateCarbonGauge, updateGenericRolls, updateGenericValue, updateGenericTimeseries, updateRollspecificGoals} from "./actions";
+//import {generateData} from "./gitclone/src/testComponents/TestEnvironment/DataGenerator";
 
 const Main = styled.main`
     position: relative;
@@ -37,7 +36,12 @@ const Main = styled.main`
     margin-left: ${props => (props.expanded ? 240 : 64)}px;
 `;
 
-
+/**
+ * Fill redux storage with dummy data by using the predefined actions.
+ *
+ * This function is temporarily implemented. When the storage is filled with data form the AUM system
+ * this function is no longer needed
+ */
 function AddActionsToRedux () {
     const dispatch = useDispatch();
 
@@ -108,29 +112,95 @@ function AddActionsToRedux () {
 
     /*
     Carbon Budget
+    Carbon Emission Areas
      */
-
-    /*dispatch(updateCarbonEmissionArea({
-            id:                    "carbon_budget_1" + '_carbon_area',
-            today:                  Date.parse(props.carbon_area.today),
-            min:                    props.carbon_area.min,
-            max:                    props.carbon_area.max,
-            timeseries:             props.carbon_area.timeseries
+    dispatch(updateCarbonEmissionArea({
+            id:                    "carbon_budget_1_carbon_area",
+            today:                  Date.parse("01 Jan 2030"),
+            min:                    0,
+            max:                    100,
+            timeseries:             [
+                {
+                    label:          "Haushalte",
+                    values:         generateData(20, 0.03, 81),
+                    capturing:      false,
+                }, {
+                    label:          "Transport",
+                    values:         generateData(12, 0.01, 81),
+                    capturing:      false,
+                }, {
+                    label:          "Industrie",
+                    values:         generateData(7, -0.05, 81),
+                    capturing:      false,
+                }, {
+                    label:          "Energy",
+                    values:         generateData(5, 0.05, 81),
+                    capturing:      false,
+                }, {
+                    label:          "CO2 Rückgewinnung",
+                    values:         generateData(0,0, 81),
+                    capturing:      true
+                }]
         }));
 
-
-
+        /*
+        Carbon Budget
+        Carbon Gauge
+         */
         dispatch(updateCarbonGauge({
-            id:                     "carbon_budget_1" + '_carbon_gauge',
-            cumulated_emissions:    props.carbon_gauge.cumulated_emissions,
-            critical_emissions:     props.carbon_gauge.critical_emissions,
-            years_left:             props.carbon_gauge.years_left,
-            year_speed:             props.carbon_gauge.year_speed,
-        }));*/
+            id:                     "carbon_budget_1_carbon_gauge",
+            cumulated_emissions:    0,
+            critical_emissions:     1500,
+            years_left:             10,
+            year_speed:             5,
+        }));
+}
+
+/**
+ * function taken from Patrick Zurmühle's project (DataGenerator.js)
+ *
+ * generateData
+ * ------------
+ *
+ * Generate Timeseries in a yearly basis
+ *
+ * @param start     Float       Start value
+ * @param growth    Float       Linear growth value
+ * @param n         Integer     Number of datapoints
+ *
+ *
+ * @returns {Array}
+ */
+function generateData(start, growth, n) {
+
+    let values = [];
+
+    let timeseries = [];
+
+    let i;
+    for (i = 2020; i < (2020 + n); i++) {
+
+        values.push(start);
+        start += growth;
+
+        var data_point = {
+            date: Date.parse('01 Jan ' + i),
+            value: start
+        };
+
+        timeseries.push(data_point);
+
+        values.push(start);
+        start += growth;
+    }
+
+    return timeseries
+
 }
 
 function App () {
     try {
+        // fill redux storage with dummy data
         AddActionsToRedux();
     }
     catch (e) {}
