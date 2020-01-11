@@ -500,11 +500,16 @@ class SettingsComponents extends React.Component {
     /**
      * Update final output according to new component and checked value.
      *
-     * @param component     updated component name
-     * @param index         index of updated decision card
-     * @param checkedValue  new check value of updated decision card
+     * Return the width and y-coordinate of the updated component in order to position the next component below
+     * the current component.
+     *
+     * @param component         updated component name
+     * @param index             index of updated decision card
+     * @param checkedValue      new check value of updated decision card
+     * @param prevLayoutHeight  layout height of previous visual component
+     * @param prevLayoutY       layout y-coordinate of previous visual component
      */
-    updateFinaleOutputWhenCheckboxIsChecked(component, index, checkedValue) {
+    updateFinaleOutputWhenCheckboxIsCheckedAndReturnLayoutWidthAndY(component, index, checkedValue, prevLayoutHeight, prevLayoutY) {
         //let checked = this.state.vis_components[v] === false;
 
         // set in final output the checked state of the component
@@ -550,7 +555,8 @@ class SettingsComponents extends React.Component {
             layout = [];
             toolbox = [];
         }
-
+        let currLayoutHeight = prevLayoutHeight;
+        let  currLayoutY = prevLayoutY;
 
         if (checkedValue && layout) {
             //fill empty slots in layout array
@@ -568,16 +574,24 @@ class SettingsComponents extends React.Component {
                 }
             });
             if (!layoutAlreadyInList) {
+                let height = 16;
+                let width = 16;
+                // position the current visual component below the previous visual component
+                let y = prevLayoutY + prevLayoutHeight;
+                let x = 0;
                 layout.push({
-                    x: 0,
-                    y: 8 * index,
-                    w: 4,
-                    h: 6,
+                    x: x,
+                    y: y,
+                    w: width,
+                    h: height,
                     i: index.toString(),
                     static: false
                 });
+                currLayoutHeight = height;
+                currLayoutY = y;
             }
             localStorage.setItem("SelectedLayout", JSON.stringify({lg: layout}));
+            return [currLayoutHeight, currLayoutY]
         }
         else {
             let usedList;
@@ -597,8 +611,10 @@ class SettingsComponents extends React.Component {
                 localStorage.setItem(usedLocalStorageString, JSON.stringify({lg: usedList}));
             }
             else {
-                console.log("element not found")
+                console.log("element not found");
+                return [currLayoutHeight, currLayoutY]
             }
+            return [currLayoutHeight, currLayoutY]
         }
     }
 
@@ -609,8 +625,16 @@ class SettingsComponents extends React.Component {
      */
     checkAllEvent(checkedValue) {
         let updatedComponents = {};
+        let currLayoutHeight = 0;
+        let currLayoutY = 0;
         Object.keys(this.state.vis_components).map((comp, i) => {
-            this.updateFinaleOutputWhenCheckboxIsChecked(comp, i, checkedValue);
+            let newLayoutHeightAndY = this.updateFinaleOutputWhenCheckboxIsCheckedAndReturnLayoutWidthAndY(
+                comp, i, checkedValue, currLayoutHeight, currLayoutY);
+            // extract previously used width and y-coordinate which are used to position the next component
+            // below the current component
+            currLayoutHeight = newLayoutHeightAndY[0];
+            currLayoutY = newLayoutHeightAndY[1];
+
             updatedComponents[comp] = (checkedValue);
         });
         this.updateComponentsAndCheckedStorageWhenCheckboxIsChecked(updatedComponents)
@@ -624,9 +648,16 @@ class SettingsComponents extends React.Component {
      */
     checkboxEvent(name, checkedValue) {
         let updatedComponent = {};
+        let currLayoutHeight = 0;
+        let currLayoutY = 0;
         Object.keys(this.state.vis_components).map((v, i) => {
             if (v === name) {
-                this.updateFinaleOutputWhenCheckboxIsChecked(name, i, checkedValue);
+                let newLayoutHeightAndY = this.updateFinaleOutputWhenCheckboxIsCheckedAndReturnLayoutWidthAndY(
+                    name, i, checkedValue, currLayoutHeight, currLayoutY);
+                // extract previously used width and y-coordinate which are used to position the next component
+                // below the current component
+                currLayoutHeight = newLayoutHeightAndY[0];
+                currLayoutY = newLayoutHeightAndY[1];
                 updatedComponent[name] = (checkedValue);
             }
             else {

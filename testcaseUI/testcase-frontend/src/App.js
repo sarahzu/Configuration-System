@@ -4,12 +4,186 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import "./App.css"
 import axios from "axios";
 
+import {useDispatch} from "react-redux";
+import {updateCarbonEmissionArea, updateCarbonGauge, updateGenericRolls, updateGenericValue, updateGenericTimeseries, updateRollspecificGoals} from "./actions";
+
+
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 require('dotenv').config();
 
+/**
+ * Fill redux storage with dummy data by using the predefined actions.
+ *
+ * This function is temporarily implemented. When the storage is filled with data form the AUM system
+ * this function is no longer needed
+ */
+function AddActionsToRedux () {
+  const dispatch = useDispatch();
 
-class App extends React.Component {
+  /*
+  Generic Rolls
+   */
+  dispatch(updateGenericRolls({
+    id: "generic_rolls_1",
+    min: 0,
+    max: 25,
+    data: {
+      politics: 15,
+      energy: 5,
+      investor: 8,
+      population: 13,
+      planer: 16,
+      niche: 10,
+      industry: 4,
+    },
+  }));
+
+  /*
+  Generic Value
+   */
+  dispatch(updateGenericValue({
+    id:             "test_1",
+    value:          300.4
+  }));
+
+  /*
+  Generic Timeseries
+   */
+  dispatch(updateGenericTimeseries({
+    id:         "generic_timeseries_1",
+    min:        Math.round(0),
+    max:        Math.round(200),
+    today:      Date.parse("01 Jan 2030"),
+    data:       [{
+      label:  "Personenwagen",
+      values: generateData( 105, 0.6, 81),
+    }, {
+      label:  "Bus und Tram",
+      values: generateData(11, 0.1, 81),
+    }, {
+      label:  "Zug",
+      values: generateData(25, 0.3, 81),
+    }, {
+      label:  "Fuss und Velo",
+      values: generateData(8, 0.1, 81),
+    }]
+  }));
+
+  /*
+  Role-specific Goals
+   */
+  dispatch(updateRollspecificGoals({
+    id:                     "rollspecific_goals_1",
+    data:                   {
+      politics:           { value: 0.30, speed: 1 },
+      population:         { value: 0.80, speed: 3 },
+      investor:           { value: 0.50, speed: 5 },
+      energy:             { value: 0.90, speed: 4 },
+      planer:             { value: 0.40, speed: 2 },
+      niche:              { value: 0.60, speed: 2 },
+      industry:           { value: 0.75, speed: 1 },
+    },
+  }));
+
+  /*
+  Carbon Budget
+  Carbon Emission Areas
+   */
+  dispatch(updateCarbonEmissionArea({
+    id:                    "carbon_budget_1_carbon_area",
+    today:                  Date.parse("01 Jan 2030"),
+    min:                    0,
+    max:                    100,
+    timeseries:             [
+      {
+        label:          "Haushalte",
+        values:         generateData(20, 0.03, 81),
+        capturing:      false,
+      }, {
+        label:          "Transport",
+        values:         generateData(12, 0.01, 81),
+        capturing:      false,
+      }, {
+        label:          "Industrie",
+        values:         generateData(7, -0.05, 81),
+        capturing:      false,
+      }, {
+        label:          "Energy",
+        values:         generateData(5, 0.05, 81),
+        capturing:      false,
+      }, {
+        label:          "CO2 Rückgewinnung",
+        values:         generateData(0,0, 81),
+        capturing:      true
+      }]
+  }));
+
+  /*
+  Carbon Budget
+  Carbon Gauge
+   */
+  dispatch(updateCarbonGauge({
+    id:                     "carbon_budget_1_carbon_gauge",
+    cumulated_emissions:    0,
+    critical_emissions:     1500,
+    years_left:             10,
+    year_speed:             5,
+  }));
+}
+
+/**
+ * function taken from Patrick Zurmühle's project (DataGenerator.js)
+ *
+ * generateData
+ * ------------
+ *
+ * Generate Timeseries in a yearly basis
+ *
+ * @param start     Float       Start value
+ * @param growth    Float       Linear growth value
+ * @param n         Integer     Number of datapoints
+ *
+ *
+ * @returns {Array}
+ */
+function generateData(start, growth, n) {
+
+  let values = [];
+
+  let timeseries = [];
+
+  let i;
+  for (i = 2020; i < (2020 + n); i++) {
+
+    values.push(start);
+    start += growth;
+
+    var data_point = {
+      date: Date.parse('01 Jan ' + i),
+      value: start
+    };
+
+    timeseries.push(data_point);
+
+    values.push(start);
+    start += growth;
+  }
+
+  return timeseries
+
+}
+
+function App () {
+  try {
+    // fill redux storage with dummy data
+    AddActionsToRedux();
+  }
+  catch (e) {}
+  return(<WebPage/>);
+}
+
+class WebPage extends React.Component {
 
   constructor(props) {
     super(props);
@@ -74,6 +248,13 @@ class App extends React.Component {
               value = parameter.value;
             } else if (parameter.type === 'boolean') {
               value = (parameter.value.toLowerCase() === 'true')
+            } else if (parameter.type === 'dictionary') {
+              try {
+                value = JSON.parse(parameter.value)
+              }
+              catch {
+                value = {}
+              }
             }
             else if (parameter.type === "dynamic") {
               if (parseInt(parameter.value, 10)) {
@@ -231,11 +412,6 @@ class App extends React.Component {
   }
 
   render() {
-    const style = {
-      height: "auto",
-      width: "auto",
-    };
-
     const layoutStyle = {
       height: "auto",
       width: "auto",
@@ -253,7 +429,6 @@ class App extends React.Component {
     else {
       return (
           <div>
-            <div style={style}>
               <div style={textStyle}>
                 <h1>Post fossil cities Simulation Game</h1>
               </div>
@@ -264,18 +439,19 @@ class App extends React.Component {
                                            measureBeforeMount={true}
                                            isDraggable={false}
                                            isResizable={false}
+                                           compactType={"vertical"}
+                                           preventCollision={!"vertical"}
                 >
                   {this.generateVisualComponents(this.state.componentList, this.state.componentFilenameList, this.state.layouts)}
                 </ResponsiveReactGridLayout>
               </div>
-            </div>
           </div>
       );
     }
   }
 }
 
-App.defaultProps = {
+WebPage.defaultProps = {
   className: "layout",
   rowHeight: 30,
   onLayoutChange: function() {},

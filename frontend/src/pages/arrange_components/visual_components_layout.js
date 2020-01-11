@@ -56,7 +56,6 @@ class VisualComponentsLayout extends React.Component {
         this.onBreakpointChange = this.onBreakpointChange.bind(this);
         this.onCompactTypeChange = this.onCompactTypeChange.bind(this);
         this.onLayoutChange = this.onLayoutChange.bind(this);
-        this.onNewLayout = this.onNewLayout.bind(this);
         this.componentDidMount = this.componentDidMount(this);
         this.loadPreview = this.loadPreview.bind(this);
         this.backToArranging = this.backToArranging.bind(this);
@@ -359,11 +358,11 @@ class VisualComponentsLayout extends React.Component {
         this.setState({ compactType });
     }
 
-    onNewLayout() {
+    /*onNewLayout() {
         this.setState({
             layouts: { lg: generateLayout() }
         });
-    }
+    }*/
 
     /**
      * triggered when layout of visual components have been changed.
@@ -519,7 +518,7 @@ VisualComponentsLayout.defaultProps = {
     verticalCompact: false,
 };
 
-function generateLayout() {
+/*function generateLayout() {
     return _.map(_.range(0, 4), function(item, i) {
         var y = Math.ceil(4) + 1;
         return {
@@ -531,6 +530,6 @@ function generateLayout() {
             static: false
         };
     });
-}
+}*/
 
 export default withRouter(VisualComponentsLayout);

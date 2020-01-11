@@ -26,7 +26,6 @@ import GeneralSettings from "./pages/settings/general_settings";
 // Import Redux
 import {useSelector, useDispatch} from "react-redux";
 import {updateCarbonEmissionArea, updateCarbonGauge, updateGenericRolls, updateGenericValue, updateGenericTimeseries, updateRollspecificGoals} from "./actions";
-//import {generateData} from "./gitclone/src/testComponents/TestEnvironment/DataGenerator";
 
 const Main = styled.main`
     position: relative;
