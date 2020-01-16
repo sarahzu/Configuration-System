@@ -441,21 +441,17 @@ class GetValueFromDataSource(Resource):
 
 
 class GetCallbackFunctions(Resource):
+    """
+    This function is used for simulating the AUM system. However, it should be replaced in the future with a function
+    that extracts all available callback function from the AUM system.
+    """
     def get(self):
-        return ['showAlert', 'onButtonClicked']
+        return ['changeAverageVehicleLifetime', 'changePublicVehicles']
 
 
-# class GetOutputJson(Resource):
-#
-#     def get(self):
-#         database = get_db()
-#         if database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone() is not None:
-#             output_string = database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone()[0]
-#             return ast.literal_eval(output_string)
-#         else:
-#             return {}
-
-
+########################
+# create API addresses #
+########################
 api.add_resource(GeneralSettings, '/config_api/general_settings_input')
 api.add_resource(ConfigurationSettingInput, '/config_api/settings_input')
 api.add_resource(ExtractGitRepoAddressFromDB, '/config_api/get_git_repo_address')
@@ -467,9 +463,6 @@ api.add_resource(ComponentsInfoFromFrontend, '/config_api/set_components')
 api.add_resource(GetModels, '/config_api/get_models')
 api.add_resource(GetValueFromDataSource, '/config_api/get_value')
 api.add_resource(GetCallbackFunctions, '/config_api/get_callback')
-
-# api.add_resource(GetOutputJson, '/config_api/get_output_json')
-# api.add_resource(CloneGitRepoForTestcaseUI, '/config_api/clone_git_repo_for_testcaseUI')
 
 
 if __name__ == '__main__':

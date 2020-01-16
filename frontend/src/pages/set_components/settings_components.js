@@ -574,8 +574,8 @@ class SettingsComponents extends React.Component {
                 }
             });
             if (!layoutAlreadyInList) {
-                let height = 16;
-                let width = 16;
+                let height = 12;
+                let width = 6;
                 // position the current visual component below the previous visual component
                 let y = prevLayoutY + prevLayoutHeight;
                 let x = 0;
@@ -818,7 +818,7 @@ class SettingsComponents extends React.Component {
                 <Grid item xs={12}>
                     <h3> Components Settings </h3>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                     {/*<h4>Visual Components</h4>
                                 <div style={stylesCheckbox}>
                                     <div>
@@ -844,7 +844,7 @@ class SettingsComponents extends React.Component {
                             </ul>
                     </div>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                     <div>
                         <h4>Selected</h4>
                         <div>
@@ -852,12 +852,12 @@ class SettingsComponents extends React.Component {
                         </div>
                     </div>
                 </Grid>
-                <Grid xs={2}>
+                {/*<Grid xs={2}>
                     <div>
                         <h4>Description</h4>
                         <div> {this.state.descriptionComponents} </div>
                     </div>
-                </Grid>
+                </Grid>*/}
                 <Grid item xs={6}>
                     <div>
                         <ReactDataGrid

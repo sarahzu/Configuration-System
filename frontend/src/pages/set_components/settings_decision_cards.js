@@ -626,7 +626,7 @@ class SettingsDecisionCards extends React.Component {
                 <Grid item xs={12}>
                     <h3> Decision Cards Settings </h3>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                     <div style={this.props.stylesCheckbox}>
                         <h4>Decision Cards</h4>
                         {/*<CheckboxList
@@ -646,7 +646,7 @@ class SettingsDecisionCards extends React.Component {
                         </ul>
                     </div>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                     <div>
                         <h4>Selected</h4>
                         <div>
@@ -654,12 +654,12 @@ class SettingsDecisionCards extends React.Component {
                         </div>
                     </div>
                 </Grid>
-                <Grid xs={2}>
+                {/*<Grid xs={2}>
                     <div>
                         <h4>Description</h4>
                         <div> {this.state.descriptionDc} </div>
                     </div>
-                </Grid>
+                </Grid>*/}
                 <Grid item xs={6}>
                     <div>
                         <ReactDataGrid
