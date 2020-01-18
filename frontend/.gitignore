@@ -30,3 +30,7 @@ run-frontend.command
 
 # git repos
 /src/gitclone/
+
+# cypress
+/cypress/videos/
+/cypress/screenshots/
