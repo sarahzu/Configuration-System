@@ -27,7 +27,7 @@ class Home extends React.Component {
         this.setState({status: JSON.stringify(response.data)})
     }
 
-    async getResult() {
+    /*async getResult() {
 
         //send to server
         let json_req = {
@@ -41,7 +41,7 @@ class Home extends React.Component {
         this.setState({
             status: JSON.stringify(response.data)
         });
-    }
+    }*/
 
     onDataSourceSettingsPageClicked() {
         let path = `/settings`;
@@ -70,13 +70,15 @@ class Home extends React.Component {
             margin:"10px",
         };
         const buttonStyle = {
-            height: "50px",
-            width: "50px",
-            textAlign: "center"
+            height: "auto",
+            width: "110px",
+            paddingTop:"10px",
+            paddingButton:"10px",
+            textAlign: "center",
         };
         const fontStyle = {
-            height: "100%",
-            width: "100%",
+            height: "50%",
+            width: "50%",
             textAlign: "center",
             display: "inline-block",
             verticalAlign: "bottom",
@@ -95,7 +97,7 @@ class Home extends React.Component {
                 >
                     <Grid item xs={3} style={gridItemStyle}>
                         <Grid item xs={12}>
-                            <button style={buttonStyle} onClick={this.onDataSourceSettingsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faCog}/></button>
+                            <button style={buttonStyle} onClick={this.onDataSourceSettingsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faCog}/><br/>General Settings </button>
                         </Grid>
                         <Grid item xs={12}>
                             <div style={textStyle}>
@@ -105,7 +107,7 @@ class Home extends React.Component {
                     </Grid>
                     <Grid item xs={3} style={gridItemStyle}>
                         <Grid item xs={12}>
-                            <button style={buttonStyle} onClick={this.onSetComponentsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faClone}/></button>
+                            <button style={buttonStyle} onClick={this.onSetComponentsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faClone}/><br/>Set Visual Components </button>
                         </Grid>
                         <Grid item xs={12}>
                             <div style={textStyle}>
@@ -115,7 +117,7 @@ class Home extends React.Component {
                     </Grid>
                     <Grid item xs={3} style={gridItemStyle}>
                         <Grid item xs={12}>
-                            <button style={buttonStyle} onClick={this.onArrangeComponentsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faTh}/></button>
+                            <button style={buttonStyle} onClick={this.onArrangeComponentsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faTh}/><br/>Arrange Visual Components</button>
                         </Grid>
                         <Grid item xs={12}>
                             <div style={textStyle}>
