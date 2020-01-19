@@ -38,3 +38,10 @@ pip install -r requirements.txt
 cd backend
 python3 api.py
 ```
+
+To run frontend cypress end-to-end tests (frontend mustn't but API in backend needs to run during testing):
+```
+cd ~/frontend
+npm run test:cypress
+```
+When cypress testing interface opens in Browser, either click "Run all specs" to run every test or click on the individual spec you want to run. 

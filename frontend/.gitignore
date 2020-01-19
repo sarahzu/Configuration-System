@@ -34,3 +34,4 @@ run-frontend.command
 # cypress
 /cypress/videos/
 /cypress/screenshots/
+run-cypress-test.command
