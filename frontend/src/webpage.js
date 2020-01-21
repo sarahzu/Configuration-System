@@ -260,10 +260,10 @@ class WebPage extends React.Component {
         return (
             <Router>
                 <div>
-                    <Menu pageWrapId={ "page-wrap" } width={ 340 } isOpen={this.state.menuOpen} onStateChange={(state) => this.handleStateChange(state)}>
+                    <Menu id="burger-menu" pageWrapId={ "page-wrap" } width={ 340 } isOpen={this.state.menuOpen} onStateChange={(state) => this.handleStateChange(state)}>
                         <img src={Logo} alt="website logo" style={{className:"img", align:"center", height:49, marginBottom:50}}/>
-                        <div className="content-wrapper">
-                        <Link to="/" className="menu-item" style={{ textDecoration: 'none' } }>
+                        <div id="home" className="content-wrapper">
+                        <Link id="home-link" to="/" className="menu-item" style={{ textDecoration: 'none' } }>
                             <IconContext.Provider value={{className: "global-class-name" }}>
                                 <div>
                                     <FontAwesomeIcon icon={faHome}/><span>Home</span>
@@ -271,8 +271,8 @@ class WebPage extends React.Component {
                             </IconContext.Provider>
                         </Link>
                         </div>
-                        <div className="content-wrapper">
-                            <Link to="/settings" className="menu-item" style={{ textDecoration: 'none' }}>
+                        <div id="settings" className="content-wrapper">
+                            <Link id="settings-link" to="/settings" className="menu-item" style={{ textDecoration: 'none' }}>
                                 <IconContext.Provider value={{ className: "global-class-name" }}>
                                     <div>
                                         <FontAwesomeIcon icon={faCog}/><span>Data Source Settings</span>
@@ -280,8 +280,8 @@ class WebPage extends React.Component {
                                 </IconContext.Provider>
                             </Link>
                         </div>
-                        <div className="content-wrapper">
-                        <Link to="/set" className="menu-item" style={{ textDecoration: 'none' }}>
+                        <div id="set" className="content-wrapper">
+                        <Link id="set-comp-link" to="/set" className="menu-item" style={{ textDecoration: 'none' }}>
                             <IconContext.Provider value={{className: "global-class-name" }}>
                                 <div>
                                     <FontAwesomeIcon icon={faClone}/><span>Set Components</span>
@@ -289,8 +289,8 @@ class WebPage extends React.Component {
                             </IconContext.Provider>
                         </Link>
                         </div>
-                        <div className="content-wrapper">
-                        <Link to="/arrange" className="menu-item" style={{ textDecoration: 'none' }}>
+                        <div id="arrange" className="content-wrapper">
+                        <Link id="arrange-comp-link" to="/arrange" className="menu-item" style={{ textDecoration: 'none' }}>
                             <IconContext.Provider value={{ className: "global-class-name" }}>
                                 <div>
                                     <FontAwesomeIcon icon={faTh}/><span>Arrange Components</span>

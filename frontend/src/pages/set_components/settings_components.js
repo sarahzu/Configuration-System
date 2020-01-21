@@ -847,7 +847,7 @@ class SettingsComponents extends React.Component {
                 <Grid item xs={3}>
                     <div>
                         <h4>Selected</h4>
-                        <div>
+                        <div id="selector-visual-components">
                             <Select value={this.state.selectedItemUpper} options={selectedFormattedComponentsList} maxMenuHeight={180} onChange = {this.getSelectedComponentsInput}/>
                         </div>
                     </div>
@@ -859,7 +859,7 @@ class SettingsComponents extends React.Component {
                     </div>
                 </Grid>*/}
                 <Grid item xs={6}>
-                    <div>
+                    <div id="non-dynamic-data-grid">
                         <ReactDataGrid
                             columns={this.state.componentsDataGridColumns}
                             rowGetter={i => this.getNonDynamicComponentsDataGridRows(this.state.componentsDataGridRows)[i]}
@@ -869,7 +869,7 @@ class SettingsComponents extends React.Component {
                             minHeight={200}
                         />
                     </div>
-                    <div className={"noHeaderWrapper"}>
+                    <div className={"noHeaderWrapper"} id="dynamic-data-grid">
                         <ReactDataGrid
                             columns={this.props.dynamicColumnsComponents}
                             rowGetter={i => this.getDynamicComponentsDataGridRows(this.state.componentsDataGridRows)[i]}
@@ -879,7 +879,7 @@ class SettingsComponents extends React.Component {
                             minHeight={200}
                         />
                     </div>
-                    <div className={"noHeaderWrapper"}>
+                    <div className={"noHeaderWrapper"} id="callback-data-grid">
                         <ReactDataGrid
                             columns={this.props.callbackColumnsComponents}
                             rowGetter={i => this.getCallbackComponentsDataGridRows(this.state.componentsDataGridRows)[i]}

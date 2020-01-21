@@ -34,4 +34,40 @@ describe('App E2E homepage', () => {
         // if 'Finish' button was found, then the arrange components page was successfully loaded
         cy.contains('Finish')
     });
+
+    it('open burger menu and click on each link', () => {
+        cy.visit('/');
+
+        // general settings link
+        cy.get('.bm-burger-button').click();
+        cy.get('#settings').click("center");
+        cy.get('.bm-overlay').click("center");
+        cy.contains('pull');
+
+        // arrange components link
+        cy.get('.bm-burger-button').click();
+        cy.get('#arrange').click("center");
+        cy.get('.bm-overlay').click("center");
+        cy.contains('Finish');
+
+        // home link
+        cy.get('.bm-burger-button').click();
+        cy.get('#home').click("left");
+        cy.get('.bm-overlay').click("center");
+        cy.contains('Welcome to the Configuration System of the Post fossil cities project!');
+
+        // set components link
+        cy.get('.bm-burger-button').click();
+        cy.get('#set').click("center");
+        cy.get('.bm-overlay').click("center");
+        cy.contains('Go to \'Arrange Components\' page');
+
+    });
+
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        // returning false here prevents Cypress from
+        // failing the test
+        return false
+    });
+
 });
