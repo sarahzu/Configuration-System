@@ -649,7 +649,7 @@ class SettingsDecisionCards extends React.Component {
                 <Grid item xs={3}>
                     <div>
                         <h4>Selected</h4>
-                        <div>
+                        <div id="selector-decision-cards">
                             <Select value={this.state.selectedItemLower} options={ selectedFormattedDcList } maxMenuHeight={180} onChange = {this.getSelectedDcInput}/>
                         </div>
                     </div>
@@ -661,7 +661,7 @@ class SettingsDecisionCards extends React.Component {
                     </div>
                 </Grid>*/}
                 <Grid item xs={6}>
-                    <div>
+                    <div id="non-dynamic-react-data-grid-dc">
                         <ReactDataGrid
                             columns={this.state.dcDataGridColumns}
                             rowGetter={i => this.getNonDynamicDecisionCardsDataGridRows(this.state.dcDataGridRows)[i]}
@@ -671,7 +671,7 @@ class SettingsDecisionCards extends React.Component {
                             minHeight={200}
                         />
                     </div>
-                    <div className={"noHeaderWrapper"}>
+                    <div id="callback-react-data-grid-dc" className={"noHeaderWrapper"}>
                         <ReactDataGrid
                             columns={this.props.callbackColumnsDecisionCards}
                             rowGetter={i => this.getCallbackDecisionCardsDataGridRows(this.state.dcDataGridRows)[i]}
