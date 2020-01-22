@@ -17,25 +17,22 @@ describe('App E2E homepage', () => {
     it('should direct to right page after General Settings button was clicked', () => {
         cy.visit('/');
         cy.get('button').eq(2).click();
-        //cy.contains('General Settings').click();
+        cy.get('h1').should('have.text', 'Settings');
         // if pull button is on page, then the general settings page was successfully loaded
-        cy.contains('pull');
     });
 
     it('should direct to right page after Set Components button was clicked', () => {
         cy.visit('/');
         cy.get('button').eq(3).click();
-        //cy.contains('Set Visual Components').click();
+        cy.get('h1').should('have.text', 'Set Visual Components');
         // if 'go to arrange components page' button was found, then the set components page was successfully loaded
-        cy.contains('Go to \'Arrange Visual Components\' page')
     });
 
     it('should direct to right page after Arrange Components button was clicked', () => {
         cy.visit('/');
         cy.get('button').eq(4).click();
-        //cy.contains('Arrange Visual Components').click();
+        cy.get('h1').should('have.text', 'Arrange Visual Components');
         // if 'Finish' button was found, then the arrange components page was successfully loaded
-        cy.contains('Finish')
     });
 
     it('open burger menu and click on each link', () => {
@@ -45,24 +42,26 @@ describe('App E2E homepage', () => {
         cy.get('.bm-burger-button').click();
         cy.get('#settings').click("center");
         cy.get('.bm-overlay').click("center");
-        cy.contains('pull');
+        cy.get('h1').should('have.text', 'Settings');
 
         // arrange components link
         cy.get('.bm-burger-button').click();
         cy.get('#arrange').click("center");
         cy.get('.bm-overlay').click("center");
-        cy.contains('Finish');
+        cy.get('h1').should('have.text', 'Arrange Visual Components');
 
         // home link
         cy.get('.bm-burger-button').click();
         cy.get('#home').click("left");
         cy.get('.bm-overlay').click("center");
-        cy.contains('Welcome to the Configuration System of the Post fossil cities project!');
+        cy.get('h1').should('have.text', 'Welcome to the Configuration System of the Post fossil cities project!');
 
         // set components link
         cy.get('.bm-burger-button').click();
         cy.get('#set').click("center");
         cy.get('.bm-overlay').click("center");
+        cy.reload();
+        cy.get('h1').should('have.text', 'Set Visual Components');
         cy.reload();
         cy.contains('Go to \'Arrange Visual Components\' page');
 

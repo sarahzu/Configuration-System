@@ -7,48 +7,51 @@ describe('App E2E', () => {
 
   it('whole cycle: enter Github Repo link, select all, finish', () => {
     cy.visit('/');
-    //cy.contains('General Settings').click();
-    // click on general settings button
+    /**
+     * Go to general settings page and enter github repository link
+     */
     cy.get('button').eq(2).click();
-    cy.get('input').type('https://github.com/sarahzu/Visual-Components-Testcase.git');
+    cy.get('h1').should('have.text', 'Settings');
+    cy.get('input').clear();
+    cy.get('input').type('https://github.com/sarahzu/Visual-Components-Testcase.git')
+        .should('have.value', 'https://github.com/sarahzu/Visual-Components-Testcase.git');
     cy.contains('Save').click();
     cy.contains('Are you sure');
     cy.contains('Yes').click();
     cy.contains('Success');
     cy.contains('Ok').click();
+
+    /**
+     * Go to select visual components page, select visual components as well as decision cards
+     * and change parameter values
+     */
     cy.contains('Go to \'Set Visual Components\' page').click();
+    cy.get('h1').should('have.text', 'Set Visual Components');
     // check all checkboxes
     cy.get('[type="checkbox"]').check();
 
-    /**
-     * click on selector, select PieChart component and click enter
-     */
+    // click on selector, select PieChart component and click enter
     cy.get('#selector-visual-components').click().find('input').focus();
     cy.focused().type('PieChart', {force:true}).click().type('{enter}');
 
+    // select non-dynamic parameter data grid and enter parameter
+    cy.get('.form').find('.react-grid-Cell__value').eq(2).type('500');
+    cy.get('.form').type('{enter}');
+    cy.get('.form').find('.react-grid-Cell__value').eq(2).should('have.text', '500');
+
+    // select dynamic parameter data grid and enter parameter
+    cy.get('.form').find('.react-grid-Cell__value').eq(11).type('aum.mfa.in.PublicVehicles');
+    cy.get('.form').type('{enter}');
+
     /**
-     * select non-dynamic parameter data grid and enter parameter
+     * Go to arrange visual components page and re-arrange components
      */
-    //cy.get('#non-dynamic-data-grid').click(); //.find('react-grid-Cell__value'); //.find('input').focus();
-    // cy.contains('aum.mfa.out.Public').click().focus();
-    // cy.focused().select('aum.mfa.out.PrivateVehicles');
-    //cy.get('.react-grid-Cell__value').eq(2).dblclick().type('500', {force:true}).click().type('{enter}');
-
-    //cy.get('.react-grid-Cell__value').eq(2).dblclick().type('500', {validation: false, force: true});
-
-    //cy.get('.react-grid-Cell__value').eq(2).find('[contenteditable]').type('some text');
-
-    //cy.focused().type('500',  { force: true})
-    //cy.get('#dynamic-data-grid').click(); //.find('react-grid-Cell__value'); //.find('input').focus();
-    // cy.contains('aum.mfa.out.Public').click().focus();
-    // cy.focused().select('aum.mfa.out.PrivateVehicles');
-    //cy.get('.react-grid-Cell__value').eq(11).dblclick(); //.click().type('500', {force:true}).click().type('{enter}');
-      //cy.get('.react-grid-Row react-grid-Row--even').click();
-
     cy.contains('Go to \'Arrange Visual Components\' page').click();
     cy.reload();
+    cy.get('h1').should('have.text', 'Arrange Visual Components');
     //cy.get('.responsive-grid-background').find('.react-grid-layout layout');
 
+    // move PieChart
     cy.contains('Energy')
         .trigger('mousedown', { clientX: 338 , clientY: 268 })
     .wait(1000)
@@ -56,6 +59,7 @@ describe('App E2E', () => {
     .wait(1000)
         .trigger('mouseup');
 
+    // move DonutChart2
     cy.contains('Stock Number of Vehicles')
         .trigger('mousedown', { clientX: 338 , clientY: 268 })
         .wait(1000)
@@ -63,6 +67,7 @@ describe('App E2E', () => {
         .wait(1000)
         .trigger('mouseup');
 
+    // move DonutChart
     cy.contains('Stock in Tons of Materials')
         .trigger('mousedown', { clientX: 338 , clientY: 268 })
         .wait(1000)
@@ -70,10 +75,11 @@ describe('App E2E', () => {
         .wait(1000)
         .trigger('mouseup');
 
-        //.trigger('mouseleave', { clientX: 339 , clientY: 258 })
-        //.trigger('mouseover', { clientX: 318, clientY: 262});
-    //cy.get('.react-grid-item components react-draggable cssTransforms react-resizable').eq(0);
 
+    // check if parameter change was registered
+    cy.contains('aum.mfa.in.PublicVehicles');
+
+    // finish procedure
     cy.contains('Finish').click();
     cy.contains('Success');
     cy.contains('Ok').click();
