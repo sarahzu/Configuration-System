@@ -97,7 +97,7 @@ class Home extends React.Component {
                 >
                     <Grid item xs={3} style={gridItemStyle}>
                         <Grid item xs={12}>
-                            <button style={buttonStyle} onClick={this.onDataSourceSettingsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faCog}/><br/>General Settings </button>
+                            <button style={buttonStyle} onClick={this.onDataSourceSettingsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faCog}/><br/>Data Source Settings </button>
                         </Grid>
                         <Grid item xs={12}>
                             <div style={textStyle}>
@@ -111,7 +111,7 @@ class Home extends React.Component {
                         </Grid>
                         <Grid item xs={12}>
                             <div style={textStyle}>
-                                Then decide which components you want to use and modify their parameters in the 'Set Components' page.
+                                Then decide which components you want to use and modify their parameters in the 'Set Visual Components' page.
                             </div>
                         </Grid>
                     </Grid>
@@ -121,7 +121,7 @@ class Home extends React.Component {
                         </Grid>
                         <Grid item xs={12}>
                             <div style={textStyle}>
-                                Lastly, in the 'Arrange Components' page, arrange the chosen components on the screen and save your settings.
+                                Lastly, in the 'Arrange Visual Components' page, arrange the chosen components on the screen and save your settings.
                             </div>
                         </Grid>
                     </Grid>

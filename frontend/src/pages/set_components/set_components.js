@@ -210,7 +210,7 @@ class SetComponents extends React.Component {
         };
         return (
             <div>
-                <h1>Set Components</h1>
+                <h1>Set Visual Components</h1>
                 <div style={{ display: "flex" }}>
                     <button onClick={this.onInfoButtonClicked} style={{ marginLeft: "auto" }}><FontAwesomeIcon icon={faQuestion}/></button>
                 </div>

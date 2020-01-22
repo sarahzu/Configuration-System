@@ -816,7 +816,7 @@ class SettingsComponents extends React.Component {
         return (
             <Grid container spacing={3}  style={this.props.stylesGridUpper}>
                 <Grid item xs={12}>
-                    <h3> Components Settings </h3>
+                    <h3>Visual Components Settings </h3>
                 </Grid>
                 <Grid item xs={3}>
                     {/*<h4>Visual Components</h4>

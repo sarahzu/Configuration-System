@@ -7,14 +7,16 @@ describe('App E2E', () => {
 
   it('whole cycle: enter Github Repo link, select all, finish', () => {
     cy.visit('/');
-    cy.contains('General Settings').click();
+    //cy.contains('General Settings').click();
+    // click on general settings button
+    cy.get('button').eq(2).click();
     cy.get('input').type('https://github.com/sarahzu/Visual-Components-Testcase.git');
     cy.contains('Save').click();
     cy.contains('Are you sure');
     cy.contains('Yes').click();
     cy.contains('Success');
     cy.contains('Ok').click();
-    cy.contains('Go to \'Set Components\' page').click();
+    cy.contains('Go to \'Set Visual Components\' page').click();
     // check all checkboxes
     cy.get('[type="checkbox"]').check();
 
@@ -43,8 +45,35 @@ describe('App E2E', () => {
     //cy.get('.react-grid-Cell__value').eq(11).dblclick(); //.click().type('500', {force:true}).click().type('{enter}');
       //cy.get('.react-grid-Row react-grid-Row--even').click();
 
-    cy.contains('Go to \'Arrange Components\' page').click();
+    cy.contains('Go to \'Arrange Visual Components\' page').click();
     cy.reload();
+    //cy.get('.responsive-grid-background').find('.react-grid-layout layout');
+
+    cy.contains('Energy')
+        .trigger('mousedown', { clientX: 338 , clientY: 268 })
+    .wait(1000)
+        .trigger('mousemove', { clientX: 338 , clientY: 1068 })
+    .wait(1000)
+        .trigger('mouseup');
+
+    cy.contains('Stock Number of Vehicles')
+        .trigger('mousedown', { clientX: 338 , clientY: 268 })
+        .wait(1000)
+        .trigger('mousemove', { clientX: 338 , clientY: -500 })
+        .wait(1000)
+        .trigger('mouseup');
+
+    cy.contains('Stock in Tons of Materials')
+        .trigger('mousedown', { clientX: 338 , clientY: 268 })
+        .wait(1000)
+        .trigger('mousemove', { clientX: 338 , clientY: -500 })
+        .wait(1000)
+        .trigger('mouseup');
+
+        //.trigger('mouseleave', { clientX: 339 , clientY: 258 })
+        //.trigger('mouseover', { clientX: 318, clientY: 262});
+    //cy.get('.react-grid-item components react-draggable cssTransforms react-resizable').eq(0);
+
     cy.contains('Finish').click();
     cy.contains('Success');
     cy.contains('Ok').click();

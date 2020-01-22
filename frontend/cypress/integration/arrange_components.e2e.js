@@ -8,6 +8,6 @@ describe('App E2E arrange components page', () => {
         cy.visit('/arrange');
         // check header
         cy.get('h1')
-            .should('have.text', 'Arrange Components');
+            .should('have.text', 'Arrange Visual Components');
     });
 });

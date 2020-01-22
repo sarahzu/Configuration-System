@@ -16,21 +16,24 @@ describe('App E2E homepage', () => {
 
     it('should direct to right page after General Settings button was clicked', () => {
         cy.visit('/');
-        cy.contains('General Settings').click();
+        cy.get('button').eq(2).click();
+        //cy.contains('General Settings').click();
         // if pull button is on page, then the general settings page was successfully loaded
         cy.contains('pull');
     });
 
     it('should direct to right page after Set Components button was clicked', () => {
         cy.visit('/');
-        cy.contains('Set Visual Components').click();
+        cy.get('button').eq(3).click();
+        //cy.contains('Set Visual Components').click();
         // if 'go to arrange components page' button was found, then the set components page was successfully loaded
-        cy.contains('Go to \'Arrange Components\' page')
+        cy.contains('Go to \'Arrange Visual Components\' page')
     });
 
     it('should direct to right page after Arrange Components button was clicked', () => {
         cy.visit('/');
-        cy.contains('Arrange Visual Components').click();
+        cy.get('button').eq(4).click();
+        //cy.contains('Arrange Visual Components').click();
         // if 'Finish' button was found, then the arrange components page was successfully loaded
         cy.contains('Finish')
     });
@@ -60,7 +63,8 @@ describe('App E2E homepage', () => {
         cy.get('.bm-burger-button').click();
         cy.get('#set').click("center");
         cy.get('.bm-overlay').click("center");
-        cy.contains('Go to \'Arrange Components\' page');
+        cy.reload();
+        cy.contains('Go to \'Arrange Visual Components\' page');
 
     });
 

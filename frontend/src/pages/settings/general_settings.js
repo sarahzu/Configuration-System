@@ -221,7 +221,7 @@ class GeneralSettings extends React.Component {
                     <h1>Settings</h1>
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
-                            <button onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Components' page</button>
+                            <button onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Visual Components' page</button>
                         </Grid>
                         <Grid item xs={12}>
                             Visual Components Git Repo:

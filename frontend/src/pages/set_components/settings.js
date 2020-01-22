@@ -143,7 +143,7 @@ class Settings extends React.Component {
 
         return (
             <div className="container">
-                <button onClick={this.onPageChangeButtonClicked}>Go to 'Arrange Components' page</button>
+                <button onClick={this.onPageChangeButtonClicked}>Go to 'Arrange Visual Components' page</button>
                 <div className="row">
                     <form className="form">
                         <SettingsComponents dynamicColumnsComponents ={this.props.dynamicColumnsComponents} callbackColumnsComponents={this.props.callbackColumnsComponents} stylesGridUpper={stylesGridUpper} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>

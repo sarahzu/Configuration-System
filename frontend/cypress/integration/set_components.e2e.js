@@ -8,6 +8,6 @@ describe('App E2E set components page', () => {
         cy.visit('/set');
         // check header
         cy.get('h1')
-            .should('have.text', 'Set Components');
+            .should('have.text', 'Set Visual Components');
     });
 });

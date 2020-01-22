@@ -466,9 +466,9 @@ class VisualComponentsLayout extends React.Component {
         } else {
             return (
                 <div>
-                    <h1>Arrange Components</h1>
+                    <h1>Arrange Visual Components</h1>
                     {this.props.infoButton}
-                    <button onClick={this.onPageChangeButtonClicked}>Go to 'Set Components' page</button>
+                    <button onClick={this.onPageChangeButtonClicked}>Go to 'Set Visual Components' page</button>
 
                     <div style={{ display: "flex" }}>
                         <button
@@ -486,7 +486,7 @@ class VisualComponentsLayout extends React.Component {
                         items={this.state.toolbox[this.state.currentBreakpoint] || []}
                         onTakeItem={this.onTakeItem}
                     />
-                    <div style={layoutStyle}>
+                    <div className="responsive-grid-background" style={layoutStyle}>
                         <ResponsiveReactGridLayout
                             {...this.props}
                             layouts={this.state.layouts}
