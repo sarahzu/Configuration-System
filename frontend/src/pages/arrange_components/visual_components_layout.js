@@ -1,21 +1,21 @@
 import React, {Suspense} from "react";
-import PropTypes from "prop-types";
+//import PropTypes from "prop-types";
 import _ from "lodash";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "./visual_components_layout.css"
-import { Container, Row, Col } from 'react-grid-system';
+//import { Container, Row, Col } from 'react-grid-system';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCompressArrowsAlt, faExpandArrowsAlt, faToolbox} from "@fortawesome/free-solid-svg-icons";
-import PreviewVisualComponents from "./preview_visual_components";
-import {Link, BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import Home from "../home/home";
+//import PreviewVisualComponents from "./preview_visual_components";
+//import {Link, BrowserRouter as Router, Route, Switch} from "react-router-dom";
+//import Home from "../home/home";
 import { withRouter } from 'react-router-dom';
-import { Button } from 'reactstrap';
-import {IconContext} from "react-icons";
+//import { Button } from 'reactstrap';
+//import {IconContext} from "react-icons";
 import {ToolBox, ToolBoxItem} from "./toolbox";
 import axios from "axios";
-import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
-import parse from 'html-react-parser';
+//import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+//import parse from 'html-react-parser';
 import {confirmAlert} from "react-confirm-alert";
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
@@ -506,9 +506,9 @@ class VisualComponentsLayout extends React.Component {
     }
 }
 
-VisualComponentsLayout.propTypes = {
+/*VisualComponentsLayout.propTypes = {
     onLayoutChange: PropTypes.func.isRequired,
-};
+};*/
 
 VisualComponentsLayout.defaultProps = {
     className: "layout",

@@ -12,11 +12,6 @@ ROOT_DIR = os.path.abspath(os.curdir)
 
 sys.path.append(ROOT_DIR + '/backend/configuration')
 
-# from configuration_model import find_js_files, is_new_pull_available, GitRepo, pull_from_remote,
-#, get_value_from_data
-
-# import find_js_files
-
 
 class ModelTest(unittest.TestCase):
 

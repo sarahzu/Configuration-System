@@ -82,58 +82,43 @@ describe('App E2E', () => {
      * Go to arrange visual components page and re-arrange components
      */
     cy.contains('Go to \'Arrange Visual Components\' page').click().click();
-    cy.reload();
+    //cy.visit('/arrange');
+
     cy.get('h1').should('have.text', 'Arrange Visual Components');
     // open and close info box
     cy.get('button').eq(2).click();
     cy.contains('Info Box');
     cy.contains('Ok').click();
 
-    // resize DonutChart2
-    cy.get('.responsive-grid-background').find('span').eq(71)
-        .trigger('mousedown', { clientX: 0 , clientY: 0 })
-        .wait(1000)
-        .trigger('mousemove', { clientX: -338 , clientY: -50 })
-        .wait(1000)
-        .trigger('mouseup', {force: true}).wait(1000);
-    // resize PieChart
-    cy.get('.responsive-grid-background').find('span').eq(35)
-        .trigger('mousedown', { clientX: 0 , clientY: 0 })
-        .wait(1000)
-        .trigger('mousemove', { clientX: -338 , clientY: -50 })
-        .wait(1000)
-        .trigger('mouseup', {force: true}).wait(1000);
-    // resize DonutChart
-    cy.get('.responsive-grid-background').find('span').eq(107)
-        .trigger('mousedown', { clientX: 0 , clientY: 0 })
-        .wait(1000)
-        .trigger('mousemove', { clientX: -338 , clientY: -50 })
-        .wait(1000)
-        .trigger('mouseup', {force: true}).wait(1000);
+    function resizeComponents(classname, number,  x, y) {
+      cy.get('.' + classname).find('span').eq(number).wait(1000)
+          .trigger('mousedown', { clientX: 0 , clientY: 0 })
+          .wait(1000)
+          .trigger('mousemove', { clientX: x , clientY: y })
+          .wait(1000)
+          .trigger('mouseup', {force: true}).wait(1000);
+    }
 
-    // move PieChart
-    cy.contains('Energy')
-        .trigger('mousedown', { clientX: 338 , clientY: 268 })
-    .wait(1000)
-        .trigger('mousemove', { clientX: 338 , clientY: 1068 })
-    .wait(1000)
-        .trigger('mouseup', {force: true}).wait(1000);
-    // move DonutChart2
-    cy.contains('Stock Number of Vehicles')
-        .trigger('mousedown', { clientX: 338 , clientY: 268 })
-        .wait(1000)
-        .trigger('mousemove', { clientX: 338 , clientY: -500 })
-        .wait(1000)
-        .trigger('mouseup', {force: true}).wait(1000);
-    // move DonutChart
-    cy.contains('Stock in Tons of Materials')
-        .trigger('mousedown', { clientX: 338 , clientY: 268 })
-        .wait(1000)
-        .trigger('mousemove', { clientX: 338 , clientY: -500 })
-        .wait(1000)
-        .trigger('mouseup', {force: true}).wait(1000);
+    // resize components
+    resizeComponents('responsive-grid-background', 71, -338, -50);
+    resizeComponents('responsive-grid-background', 35, -338, -50);
+    resizeComponents('responsive-grid-background', 107, -338, -50);
 
-    // check if parameter change was registered
+    function dragAndDropComponents(compName, prevX, prevY ,x, y) {
+      cy.contains(compName)
+          .trigger('mousedown', { clientX: prevX , clientY: prevY })
+          .wait(1000)
+          .trigger('mousemove', { clientX: x , clientY: y })
+          .wait(1000)
+          .trigger('mouseup', {force: true}).wait(1000);
+    }
+
+    // move components
+    dragAndDropComponents('Energy', 338, 338, 338, 1068);
+    dragAndDropComponents('Stock Number of Vehicles', 338, 268, 338, -500);
+    dragAndDropComponents('Stock in Tons of Materials', 338, 268, 338, -500);
+
+    // check if parameter change from previous page (set visual components page) was registered
     // dynamic parameter
     cy.contains('aum.mfa.in.PublicVehicles');
     // callback parameter
@@ -141,6 +126,7 @@ describe('App E2E', () => {
 
     // open preview, check if all visual components are there and close preview
     cy.get('button').eq(4).click();
+
     cy.contains('Energy');
     cy.contains('Stock Number of Vehicles');
     cy.contains('Stock in Tons of Materials');
@@ -162,16 +148,44 @@ describe('App E2E', () => {
     cy.contains('Stock Number of Vehicles');
     cy.contains('Stock in Tons of Materials');
 
+    /**
+     * Finish configuration and check local storage to make sure that all data was stored correctly
+     */
     // finish procedure
     cy.contains('Finish').click();
     cy.contains('Success');
-    cy.contains('Ok').click();
+
+    /**
+     * ATTENTION:
+     * Apparently there is a bug in the react-grid-layout which prevents the dragging and dropping
+     * to not function well in Google Chrome browsers. This results in a localStorage update problem where the
+     * localStorage is not updated when dragging and dropping as well as resizing the visual components.
+     * Therefore, I cannot test this process here, because cypress uses Google Chrome to run its applications.
+     * Thus, I only check if the parameter settings where successfully updated in the localStorage
+     * but not the location and size of the visual components.
+     */
+    cy.contains('Ok').click().should(() => {
+      expect(localStorage.getItem('fullComponentsInfo'))
+          .to.eq('{"configuration":' +
+          '{"1":' +
+          '{"components":[' +
+          '' +
+          '{"name":"PieChart","parameter":[{"parameter":"breakpoint","type":"integer","value":"500"},{"parameter":"chartWidth","type":"integer","value":"200"},{"parameter":"legendPosition","type":"string","value":"bottom"},{"parameter":"modelA","type":"dynamic","value":"aum.mfa.in.PublicVehicles"},{"parameter":"modelB","type":"dynamic","value":"aum.mfa.out.PrivateVehicles"},{"parameter":"modelC","type":"dynamic","value":"aum.mfa.out.OtherBuildings"},{"parameter":"modelD","type":"dynamic","value":"aum.mfa.out.ResidentialBuildings"},{"parameter":"modelE","type":"dynamic","value":"aum.mfa.out.Industry"},{"parameter":"valueA--modelA--value.10.value","type":"dependent","value":"1"},{"parameter":"valueB--modelB--value.10.value","type":"dependent","value":4000},{"parameter":"valueC--modelC--value.10.value","type":"dependent","value":300},{"parameter":"valueD--modelD--value.10.value","type":"dependent","value":5000},{"parameter":"valueE--modelE--value.10.value","type":"dependent","value":3300},{"parameter":"click--changePublicVehicles--value.1.value","type":"dependent","value":"1"},{"parameter":"changePublicVehicles","type":"callback","value":"changeAverageVehicleLifetime"}],' +
+          '"position":{"width":6,"height":12,"x":0,"y":0},"enabled":true,"toolbox":false},' +
+
+          '{"name":"DonutChart2","parameter":[{"parameter":"title","type":"string","value":"Stock in Tons of Materials"},{"parameter":"firstFillStyle","type":"string","value":"verticalLines"},{"parameter":"secondFillStyle","type":"string","value":"squares"},{"parameter":"thirdFillStyle","type":"string","value":"horizontalLines"},{"parameter":"fourthFillStyle","type":"string","value":"circles"},{"parameter":"fiftFillStyle","type":"string","value":"slantedLines"},{"parameter":"modelA","type":"dynamic","value":"aum.mfa.out.PublicVehicles"},{"parameter":"modelB","type":"dynamic","value":"aum.mfa.out.PrivateVehicles"},{"parameter":"modelC","type":"dynamic","value":"aum.mfa.out.OtherBuildings"},{"parameter":"modelD","type":"dynamic","value":"aum.mfa.out.ResidentialBuildings"},{"parameter":"modelE","type":"dynamic","value":"aum.mfa.out.Industry"},{"parameter":"valueA--modelA--value.1.value","type":"dependent","value":"24"},{"parameter":"valueB--modelB--value.1.value","type":"dependent","value":"75"},{"parameter":"valueC--modelC--value.1.value","type":"dependent","value":"95"},{"parameter":"valueD--modelD--value.1.value","type":"dependent","value":"43"},{"parameter":"valueE--modelE--value.1.value","type":"dependent","value":"42"}],' +
+          '"position":{"width":6,"height":12,"x":0,"y":12},"enabled":true,"toolbox":false},' +
+
+          '{"name":"DonutChart","parameter":[{"parameter":"modelA","type":"dynamic","value":"aum.mfa.out.PublicVehicles"},{"parameter":"modelB","type":"dynamic","value":"aum.mfa.out.PrivateVehicles"},{"parameter":"modelC","type":"dynamic","value":"aum.mfa.out.OtherBuildings"},{"parameter":"modelD","type":"dynamic","value":"aum.mfa.out.ResidentialBuildings"},{"parameter":"modelE","type":"dynamic","value":"aum.mfa.out.Industry"},{"parameter":"valueA--modelA--value.3.value","type":"dependent","value":"440"},{"parameter":"valueB--modelB--value.3.value","type":"dependent","value":"554"},{"parameter":"valueC--modelC--value.3.value","type":"dependent","value":"552"},{"parameter":"valueD--modelD--value.3.value","type":"dependent","value":"433"},{"parameter":"valueE--modelE--value.3.value","type":"dependent","value":"224"}],' +
+          '"position":{"width":6,"height":12,"x":0,"y":24},"enabled":true,"toolbox":false}],' +
+
+          '"decisionCards":[{"name":"Decision Card 1","parameter":[{"parameter":"name","type":"string","value":"First Selected Decision Card"},{"parameter":"value","type":"integer","value":"2"},{"parameter":"functionality","type":"callback","value":"changeAverageVehicleLifetime"}],"enabled":true},{"name":"Decision Card 2","parameter":[{"parameter":"name","type":"string","value":"dc 2"},{"parameter":"value","type":"integer","value":"4"}],"enabled":true},{"name":"Decision Card 3","parameter":[{"parameter":"name","type":"string","value":"dc 3"},{"parameter":"value","type":"integer","value":"8"}],"enabled":true}],"githubRepository":"https://github.com/sarahzu/Visual-Components-Testcase.git"}}}')
+    });
 
   });
 
   Cypress.on('uncaught:exception', (err, runnable) => {
-    // returning false here prevents Cypress from
-    // failing the test
+    // returning false here prevents Cypress from failing the test
     return false
   });
 });
