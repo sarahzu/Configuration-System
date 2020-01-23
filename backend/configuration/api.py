@@ -4,7 +4,7 @@ import git
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_cors import CORS
-from controller import Controller, get_model_names, get_value_from_data_json
+from configuration.controller import Controller, get_model_names, get_value_from_data_json
 import os
 
 from pandas import json
