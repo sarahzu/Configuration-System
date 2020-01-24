@@ -7,7 +7,7 @@ from flask_cors import CORS
 from configuration.controller import Controller, get_model_names, get_value_from_data_json
 import os
 
-from pandas import json
+import json
 
 from configuration.db import get_db, init_app
 
@@ -177,6 +177,7 @@ def get_git_repo_address():
         return ""
 
 
+# Tested
 class LocalGitRepoPath(Resource):
 
     def get(self):
@@ -204,6 +205,168 @@ class FileNames(Resource):
             return []
 
 
+def add_output_json_to_database(database, frontend_request):
+    output_json_string = json.dumps(frontend_request)
+    if database.execute('SELECT * from general_settings where config_id = 1').fetchone() is not None:
+        database.execute('UPDATE OR IGNORE general_settings SET output_json = (?) WHERE config_id = 1',
+                         (output_json_string,))
+    else:
+        database.execute(
+            'INSERT OR IGNORE INTO general_settings (config_id, is_active, output_json) VALUES ((?), (?), (?))',
+            (1, True, output_json_string))
+
+
+def insert_decision_cards_into_database(database, decision_cards):
+    for decision_card in decision_cards:
+        # if decision card is already included in database
+        if is_decision_card_in_database(decision_card.get("name")):
+            # update decision card table
+            database.execute('UPDATE OR IGNORE decision_card '
+                             'SET description = (?), enabled = (?) WHERE decision_card_name = (?)',
+                             (decision_card.get("description"), decision_card.get("enabled"),
+                              decision_card.get("name")))
+
+            decision_card_name = decision_card.get("name")
+            decision_card_id = database.execute(
+                'SELECT decision_card_id FROM decision_card WHERE decision_card_name = (?)',
+                (decision_card_name,)).fetchone()[0]
+            parameters = decision_card.get("parameter")
+            if len(parameters) == 0:
+                # if no parameters given, erase all previously given parameters
+                # database.execute('UPDATE OR IGNORE parameter SET '
+                #                  'parameter_value = (?) WHERE decision_card_id = (?)', ("", decision_card_id))
+                database.execute('DELETE FROM parameter WHERE decision_card_id = (?)', (decision_card_id,))
+            else:
+                # also add parameters to database
+                for parameter in parameters:
+                    value = ""
+                    # extract value if it is given
+                    if parameter.get("value"):
+                        value = parameter.get("value")
+                    # check if parameter is already included in database
+                    if is_decision_card_parameter_in_database(decision_card_id, parameter.get("parameter")):
+                        # update parameter table
+                        database.execute(
+                            'UPDATE OR IGNORE parameter SET parameter_type = (?), '
+                            'parameter_value = (?) WHERE decision_card_id = (?) and parameter_name = (?)',
+                            (parameter.get("type"), value, decision_card_id, parameter.get("parameter")))
+                    else:
+                        # insert the new parameter in the parameter table
+                        database.execute('INSERT OR IGNORE INTO parameter (decision_card_id, parameter_name, '
+                                         'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+                                         (decision_card_id, parameter.get("parameter"), parameter.get("type"),
+                                          value))
+        # decision card is not already included in component table
+        else:
+            # insert new decision card in decision card table
+            database.execute('INSERT INTO decision_card (config_id, decision_card_name, description, enabled) '
+                             'VALUES ((?), (?), (?), (?))',
+                             (1, decision_card.get("name"), decision_card.get("description"),
+                              decision_card.get("enabled")))
+            decision_card_name = decision_card.get("name")
+            decision_card_id = \
+                database.execute('SELECT decision_card_id FROM decision_card WHERE decision_card_name = ?'
+                                 , (decision_card_name,)).fetchone()[0]
+            parameters = decision_card.get("parameter")
+            # also add all parameters to database
+            for parameter in parameters:
+                value = ""
+                # extract value if given
+                if parameter.get("value"):
+                    value = parameter.get("value")
+                # check if parameter is already included parameter table
+                if is_decision_card_parameter_in_database(decision_card_id, parameter.get("parameter")):
+                    # update parameter in parameter table
+                    database.execute('UPDATE parameter SET parameter_type = (?), '
+                                     'parameter_value = (?) WHERE decision_card_id = (?) and parameter_name = (?)',
+                                     (parameter.get("type"), value, decision_card_id, parameter.get("parameter")))
+                else:
+                    # insert new parameter in parameter table
+                    database.execute('INSERT INTO parameter (decision_card_id, parameter_name, '
+                                     'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+                                     (decision_card_id, parameter.get("parameter"), parameter.get("type"), value))
+
+
+def insert_visual_component_into_database(database, components):
+    for component in components:
+        # if component is already included in database
+        if is_component_in_database(component.get("name")):
+            # update component table
+            database.execute('UPDATE OR IGNORE component '
+                             'SET description = (?), width = (?), height = (?), x = (?), y = (?), '
+                             'enabled = (?), toolbox = (?) WHERE component_name = (?)',
+                             (component.get("description"),
+                              component.get("position").get("width"), component.get("position").get("height"),
+                              component.get("position").get("x"), component.get("position").get("y"),
+                              component.get("enabled"), component.get("toolbox"), component.get("name")))
+            comp_name = component.get("name")
+            component_id = database.execute('SELECT component_id FROM component WHERE component_name = (?)'
+                                            , (comp_name,)).fetchone()[0]
+            parameters = component.get("parameter")
+            if len(parameters) == 0:
+                # if no parameters given, erase all previously given parameters
+                # database.execute('UPDATE OR IGNORE parameter SET '
+                #                  'parameter_value = (?) WHERE component_id = (?)', ("", component_id))
+                database.execute('DELETE FROM parameter WHERE component_id = (?)', (component_id,))
+            else:
+                # also add parameters to database
+                for parameter in parameters:
+                    value = ""
+                    # extract value if it is given
+                    if parameter.get("value"):
+                        value = parameter.get("value")
+                    # check if parameter is already included in database
+                    if is_component_parameter_in_database(component_id, parameter.get("parameter"), database):
+                        # update parameter table
+                        database.execute(
+                            'UPDATE OR IGNORE parameter SET parameter_type = (?), '
+                            'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
+                            (parameter.get("type"), value, component_id, parameter.get("parameter")))
+                    else:
+                        # insert the new parameter in the parameter table
+                        database.execute('INSERT OR IGNORE INTO parameter (component_id, parameter_name, '
+                                         'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+                                         (component_id, parameter.get("parameter"), parameter.get("type"), value))
+        # component is not already included in component table
+        else:
+            # insert new component in component table
+            database.execute('INSERT INTO component (config_id, component_name, description, '
+                             'width, height, x, y, enabled, toolbox) '
+                             'VALUES ((?), (?), (?), (?), (?), (?), (?), (?), (?))', (1, component.get("name"),
+                                                                                      component.get("description"),
+                                                                                      component.get("position").get(
+                                                                                          "width"),
+                                                                                      component.get("position").get(
+                                                                                          "height"),
+                                                                                      component.get("position").get(
+                                                                                          "x"),
+                                                                                      component.get("position").get(
+                                                                                          "y"),
+                                                                                      component.get("enabled"),
+                                                                                      component.get("toolbox")))
+            comp_name = component.get("name")
+            component_id = database.execute('SELECT component_id FROM component WHERE component_name = ?'
+                                            , (comp_name,)).fetchone()[0]
+            parameters = component.get("parameter")
+            # also add all parameters to database
+            for parameter in parameters:
+                value = ""
+                # extract value if given
+                if parameter.get("value"):
+                    value = parameter.get("value")
+                # check if parameter is already included parameter table
+                if is_component_parameter_in_database(component_id, parameter.get("parameter"), database):
+                    # update parameter in parameter table
+                    database.execute('UPDATE parameter SET parameter_type = (?), '
+                                     'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
+                                     parameter.get("type"), value, component_id, (parameter.get("parameter")))
+                else:
+                    # insert new parameter in parameter table
+                    database.execute('INSERT INTO parameter (component_id, parameter_name, '
+                                     'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+                                     (component_id, parameter.get("parameter"), parameter.get("type"), value))
+
+
 class ComponentsInfoFromFrontend(Resource):
 
     def post(self):
@@ -214,165 +377,89 @@ class ComponentsInfoFromFrontend(Resource):
         decision_cards = current_configuration.get("decisionCards")
 
         database = get_db()
-        # add request json to database
-        if database.execute('SELECT * from general_settings where config_id = 1').fetchone() is not None:
-            database.execute('UPDATE OR IGNORE general_settings SET output_json = (?) WHERE config_id = 1',
-                             (str(frontend_request),))
-        else:
-            database.execute(
-                'INSERT OR IGNORE INTO general_settings (config_id, is_active, output_json) VALUES ((?), (?), (?))'
-                (1, True, str(frontend_request)))
+        add_output_json_to_database(database, frontend_request)
 
-        ######################
         # inset decision cards
-        ######################
-        for decision_card in decision_cards:
-            # if decision card is already included in database
-            if is_decision_card_in_database(decision_card.get("name")):
-                # update decision card table
-                database.execute('UPDATE OR IGNORE decision_card '
-                                 'SET description = (?), enabled = (?) WHERE decision_card_name = (?)',
-                                 (decision_card.get("description"), decision_card.get("enabled"),
-                                  decision_card.get("name")))
+        insert_decision_cards_into_database(database, decision_cards)
 
-                decision_card_name = decision_card.get("name")
-                decision_card_id = database.execute(
-                    'SELECT decision_card_id FROM decision_card WHERE decision_card_name = (?)',
-                    (decision_card_name,)).fetchone()[0]
-                parameters = decision_card.get("parameter")
-                if len(parameters) == 0:
-                    # if no parameters given, erase all previously given parameters
-                    database.execute('UPDATE OR IGNORE parameter SET '
-                                     'parameter_value = (?) WHERE decision_card_id = (?)', ("", decision_card_id))
-                else:
-                    # also add parameters to database
-                    for parameter in parameters:
-                        value = ""
-                        # extract value if it is given
-                        if parameter.get("value"):
-                            value = parameter.get("value")
-                        # check if parameter is already included in database
-                        if is_decision_card_parameter_in_database(decision_card_id, parameter.get("parameter")):
-                            # update parameter table
-                            database.execute(
-                                'UPDATE OR IGNORE parameter SET parameter_type = (?), '
-                                'parameter_value = (?) WHERE decision_card_id = (?) and parameter_name = (?)',
-                                (parameter.get("type"), value, decision_card_id, parameter.get("parameter")))
-                        else:
-                            # insert the new parameter in the parameter table
-                            database.execute('INSERT OR IGNORE INTO parameter (decision_card_id, parameter_name, '
-                                             'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
-                                             (decision_card_id, parameter.get("parameter"), parameter.get("type"),
-                                              value))
-            # decision card is not already included in component table
-            else:
-                # insert new decision card in decision card table
-                database.execute('INSERT INTO decision_card (config_id, decision_card_name, description, enabled) '
-                                 'VALUES ((?), (?), (?), (?))',
-                                 (1, decision_card.get("name"), decision_card.get("description"),
-                                  decision_card.get("enabled")))
-                decision_card_name = decision_card.get("name")
-                decision_card_id = \
-                    database.execute('SELECT decision_card_id FROM decision_card WHERE decision_card_name = ?'
-                                     , (decision_card_name,)).fetchone()[0]
-                parameters = decision_card.get("parameter")
-                # also add all parameters to database
-                for parameter in parameters:
-                    value = ""
-                    # extract value if given
-                    if parameter.get("value"):
-                        value = parameter.get("value")
-                    # check if parameter is already included parameter table
-                    if is_decision_card_parameter_in_database(decision_card_id, parameter.get("parameter")):
-                        # update parameter in parameter table
-                        database.execute('UPDATE parameter SET parameter_type = (?), '
-                                         'parameter_value = (?) WHERE decision_card_id = (?) and parameter_name = (?)',
-                                         (parameter.get("type"), value, decision_card_id, parameter.get("parameter")))
-                    else:
-                        # insert new parameter in parameter table
-                        database.execute('INSERT INTO parameter (decision_card_id, parameter_name, '
-                                         'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
-                                         (decision_card_id, parameter.get("parameter"), parameter.get("type"), value))
-
-        ##########################
         # insert visual components
-        ##########################
-        for component in components:
-            # if component is already included in database
-            if is_component_in_database(component.get("name")):
-                # update component table
-                database.execute('UPDATE OR IGNORE component '
-                                 'SET description = (?), width = (?), height = (?), x = (?), y = (?), '
-                                 'enabled = (?), toolbox = (?) WHERE component_name = (?)',
-                                 (component.get("description"),
-                                  component.get("position").get("width"), component.get("position").get("height"),
-                                  component.get("position").get("x"), component.get("position").get("y"),
-                                  component.get("enabled"), component.get("toolbox"), component.get("name")))
-                comp_name = component.get("name")
-                component_id = database.execute('SELECT component_id FROM component WHERE component_name = (?)'
-                                                , (comp_name,)).fetchone()[0]
-                parameters = component.get("parameter")
-                if len(parameters) == 0:
-                    # if no parameters given, erase all previously given parameters
-                    database.execute('UPDATE OR IGNORE parameter SET '
-                                     'parameter_value = (?) WHERE component_id = (?)', ("", component_id))
-                else:
-                    # also add parameters to database
-                    for parameter in parameters:
-                        value = ""
-                        # extract value if it is given
-                        if parameter.get("value"):
-                            value = parameter.get("value")
-                        # check if parameter is already included in database
-                        if is_component_parameter_in_database(component_id, parameter.get("parameter"), database):
-                            # update parameter table
-                            database.execute(
-                                'UPDATE OR IGNORE parameter SET parameter_type = (?), '
-                                'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
-                                (parameter.get("type"), value, component_id, parameter.get("parameter")))
-                        else:
-                            # insert the new parameter in the parameter table
-                            database.execute('INSERT OR IGNORE INTO parameter (component_id, parameter_name, '
-                                             'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
-                                             (component_id, parameter.get("parameter"), parameter.get("type"), value))
-            # component is not already included in component table
-            else:
-                # insert new component in component table
-                database.execute('INSERT INTO component (config_id, component_name, description, '
-                                 'width, height, x, y, enabled, toolbox) '
-                                 'VALUES ((?), (?), (?), (?), (?), (?), (?), (?), (?))', (1, component.get("name"),
-                                                                                          component.get("description"),
-                                                                                          component.get("position").get(
-                                                                                              "width"),
-                                                                                          component.get("position").get(
-                                                                                              "height"),
-                                                                                          component.get("position").get(
-                                                                                              "x"),
-                                                                                          component.get("position").get(
-                                                                                              "y"),
-                                                                                          component.get("enabled"),
-                                                                                          component.get("toolbox")))
-                comp_name = component.get("name")
-                component_id = database.execute('SELECT component_id FROM component WHERE component_name = ?'
-                                                , (comp_name,)).fetchone()[0]
-                parameters = component.get("parameter")
-                # also add all parameters to database
-                for parameter in parameters:
-                    value = ""
-                    # extract value if given
-                    if parameter.get("value"):
-                        value = parameter.get("value")
-                    # check if parameter is already included parameter table
-                    if is_component_parameter_in_database(component_id, parameter.get("parameter"), database):
-                        # update parameter in parameter table
-                        database.execute('UPDATE parameter SET parameter_type = (?), '
-                                         'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
-                                         parameter.get("type"), value, component_id, (parameter.get("parameter")))
-                    else:
-                        # insert new parameter in parameter table
-                        database.execute('INSERT INTO parameter (component_id, parameter_name, '
-                                         'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
-                                         (component_id, parameter.get("parameter"), parameter.get("type"), value))
+        insert_visual_component_into_database(database, components)
+        # for component in components:
+        #     # if component is already included in database
+        #     if is_component_in_database(component.get("name")):
+        #         # update component table
+        #         database.execute('UPDATE OR IGNORE component '
+        #                          'SET description = (?), width = (?), height = (?), x = (?), y = (?), '
+        #                          'enabled = (?), toolbox = (?) WHERE component_name = (?)',
+        #                          (component.get("description"),
+        #                           component.get("position").get("width"), component.get("position").get("height"),
+        #                           component.get("position").get("x"), component.get("position").get("y"),
+        #                           component.get("enabled"), component.get("toolbox"), component.get("name")))
+        #         comp_name = component.get("name")
+        #         component_id = database.execute('SELECT component_id FROM component WHERE component_name = (?)'
+        #                                         , (comp_name,)).fetchone()[0]
+        #         parameters = component.get("parameter")
+        #         if len(parameters) == 0:
+        #             # if no parameters given, erase all previously given parameters
+        #             database.execute('UPDATE OR IGNORE parameter SET '
+        #                              'parameter_value = (?) WHERE component_id = (?)', ("", component_id))
+        #         else:
+        #             # also add parameters to database
+        #             for parameter in parameters:
+        #                 value = ""
+        #                 # extract value if it is given
+        #                 if parameter.get("value"):
+        #                     value = parameter.get("value")
+        #                 # check if parameter is already included in database
+        #                 if is_component_parameter_in_database(component_id, parameter.get("parameter"), database):
+        #                     # update parameter table
+        #                     database.execute(
+        #                         'UPDATE OR IGNORE parameter SET parameter_type = (?), '
+        #                         'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
+        #                         (parameter.get("type"), value, component_id, parameter.get("parameter")))
+        #                 else:
+        #                     # insert the new parameter in the parameter table
+        #                     database.execute('INSERT OR IGNORE INTO parameter (component_id, parameter_name, '
+        #                                      'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+        #                                      (component_id, parameter.get("parameter"), parameter.get("type"), value))
+        #     # component is not already included in component table
+        #     else:
+        #         # insert new component in component table
+        #         database.execute('INSERT INTO component (config_id, component_name, description, '
+        #                          'width, height, x, y, enabled, toolbox) '
+        #                          'VALUES ((?), (?), (?), (?), (?), (?), (?), (?), (?))', (1, component.get("name"),
+        #                                                                                   component.get("description"),
+        #                                                                                   component.get("position").get(
+        #                                                                                       "width"),
+        #                                                                                   component.get("position").get(
+        #                                                                                       "height"),
+        #                                                                                   component.get("position").get(
+        #                                                                                       "x"),
+        #                                                                                   component.get("position").get(
+        #                                                                                       "y"),
+        #                                                                                   component.get("enabled"),
+        #                                                                                   component.get("toolbox")))
+        #         comp_name = component.get("name")
+        #         component_id = database.execute('SELECT component_id FROM component WHERE component_name = ?'
+        #                                         , (comp_name,)).fetchone()[0]
+        #         parameters = component.get("parameter")
+        #         # also add all parameters to database
+        #         for parameter in parameters:
+        #             value = ""
+        #             # extract value if given
+        #             if parameter.get("value"):
+        #                 value = parameter.get("value")
+        #             # check if parameter is already included parameter table
+        #             if is_component_parameter_in_database(component_id, parameter.get("parameter"), database):
+        #                 # update parameter in parameter table
+        #                 database.execute('UPDATE parameter SET parameter_type = (?), '
+        #                                  'parameter_value = (?) WHERE component_id = (?) and parameter_name = (?)',
+        #                                  parameter.get("type"), value, component_id, (parameter.get("parameter")))
+        #             else:
+        #                 # insert new parameter in parameter table
+        #                 database.execute('INSERT INTO parameter (component_id, parameter_name, '
+        #                                  'parameter_type, parameter_value) VALUES ((?), (?), (?), (?))',
+        #                                  (component_id, parameter.get("parameter"), parameter.get("type"), value))
 
         # commit all gathered database commands
         database.commit()
