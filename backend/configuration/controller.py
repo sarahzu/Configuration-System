@@ -25,15 +25,16 @@ def get_model_names():
     return all_models
 
 
-def get_value_from_data_json(source_name, node_path_string):
+def get_value_from_data_json(source_name, node_path_string, testing):
     """
     extract a value from the given source
 
     :param source_name:     name of the source e.g. aum.mfa.out.ResidentialBuildings
+    :param testing          True if method is used for unit testing, False otherwise
     :return:                final value
     """
     try:
-        return get_value_from_origin_name(source_name, node_path_string)
+        return get_value_from_origin_name(source_name, node_path_string, testing)
     except():
         return ""
 
@@ -67,9 +68,6 @@ class Controller:
         return json.dumps({"visual components": ["Component 1", "Component 2", "Component 3", "Component 4",
                                                  "Component 5", "Component 6"]})
 
-    def get_models(self):
-        pass
-
     def is_new_pull_request_available(self):
         """
         Check if new pull request is available for this local git repo
@@ -92,7 +90,7 @@ class Controller:
 
         :return: {list} list containing all filenames
         """
-        components_list = find_js_files(self.local_repo_path)
+        components_list = find_js_files(self.local_repo_path, False)
         filenames_list = []
         for comp in components_list:
             filename = comp.get("filename")
@@ -104,7 +102,7 @@ class Controller:
         return a json object with all information needed, to build the configuration frontend page
         :return: {json} input file
         """
-        components_list = find_js_files(self.local_repo_path)
+        components_list = find_js_files(self.local_repo_path, False)
         components_names_list = []
         parameter_list = []
         for comp in components_list:
@@ -141,6 +139,6 @@ class Controller:
         return json_test
 
 
-if __name__ == '__main__':
-    controller = Controller()
-    print(controller.get_configuration_settings_input())
+# if __name__ == '__main__':
+#     controller = Controller()
+#     print(controller.get_configuration_settings_input())

@@ -1,12 +1,7 @@
 import unittest
 
 import sys
-from pathlib import Path
-
 import os
-
-# from configuration.configuration_model import get_value_from_data, find_js_files, is_new_pull_available, GitRepo, \
-#     pull_from_remote, get_value_from_origin_name, get_all_model_names
 
 from configuration.controller import get_model_names, get_value_from_data_json, Controller
 
@@ -78,7 +73,7 @@ class ControllerTest(unittest.TestCase):
     def test_get_value_from_data_json(self):
         value_origin = "aum.mfa.out.PublicVehicles"
         node_path_string = "value.1.value"
-        return_value = get_value_from_data_json(value_origin, node_path_string)
+        return_value = get_value_from_data_json(value_origin, node_path_string, True)
         expected_value = 3300
         self.assertEqual(return_value, expected_value)
 

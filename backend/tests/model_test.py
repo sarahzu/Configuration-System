@@ -6,7 +6,8 @@ from pathlib import Path
 import os
 
 from configuration.configuration_model import get_value_from_data, find_js_files, is_new_pull_available, GitRepo, \
-    pull_from_remote, get_value_from_origin_name, get_all_model_names
+    pull_from_remote, get_value_from_origin_name, get_all_model_names, open_data_file, \
+    get_parent_node_from_value_origin_tree
 
 ROOT_DIR = os.path.abspath(os.curdir)
 
@@ -14,7 +15,6 @@ sys.path.append(ROOT_DIR + '/backend/configuration')
 
 
 class ModelTest(unittest.TestCase):
-
     clone_url = "https://github.com/sarahzu/Visual-Components-Testcase-2.git"
     local_repo_path = ROOT_DIR + "/testing/local"
     git_repo = GitRepo(local_repo_path, clone_url)
@@ -27,16 +27,39 @@ class ModelTest(unittest.TestCase):
     def test_get_value_from_origin_name(self):
         value_origin = "aum.mfa.out.PublicVehicles"
         node_path_string = "value.1.value"
-        return_value = get_value_from_origin_name(value_origin, node_path_string)
+        return_value = get_value_from_origin_name(value_origin, node_path_string, True)
         expected_value = 3300
         self.assertEqual(return_value, expected_value)
 
-    def test_get_value_from_data(self):
+    def test_get_parent_node_from_value_origin_tree(self):
         input_or_output_file = "out"
         filename = "aum.mfa.out.PublicVehicles"
         value_origin_tree_notes = ["value", "1", "value"]
-        return_value = get_value_from_data(input_or_output_file, filename, value_origin_tree_notes)
-        expected_value = 3300
+        env_in = "LOCAL_TEST_DEMO_DATA_PATH_IN"
+        env_out = "LOCAL_TEST_DEMO_DATA_PATH_OUT"
+        data = open_data_file(input_or_output_file, filename, env_in, env_out)
+        expected_value = get_parent_node_from_value_origin_tree(data, value_origin_tree_notes)
+
+        self.assertEqual(3300, expected_value)
+
+    def test_open_data_file(self):
+        input_or_output_file = "out"
+        filename = "aum.mfa.out.PublicVehicles"
+        env_in = "LOCAL_TEST_DEMO_DATA_PATH_IN"
+        env_out = "LOCAL_TEST_DEMO_DATA_PATH_OUT"
+        return_value = open_data_file(input_or_output_file, filename, env_in, env_out)
+        expected_value = {'name': 'aum.mfa.out.PublicVehicles',
+                          'value': {'1': {'name': 'stock', 'unit': 'Tons of Materials', 'value': 3300},
+                                    '10': {'name': 'energy', 'unit': 'TJ', 'value': 4110},
+                                    '11': {'name': 'emissions', 'unit': 'CO2-Eq', 'value': 4002330},
+                                    '3': {'name': 'stock', 'unit': 'Number of Vehicles', 'value': 2300},
+                                    '4': {'name': 'outflow', 'unit': 'Tons of Materials', 'value': 500},
+                                    '6': {'name': 'outflow', 'unit': 'Number of Vehicles', 'value': 300},
+                                    '7': {'name': 'inflow', 'unit': 'Tons of Materials', 'value': 1000},
+                                    '9': {'name': 'inflow',
+                                          'unit': 'Number of Vehicles',
+                                          'value': 1100}}}
+
         self.assertEqual(return_value, expected_value)
 
     def test_get_all_model_names(self):
@@ -46,7 +69,8 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(return_value.sort(), expected_value.sort())
 
     def test_find_js_files(self):
-        return_value = find_js_files(ROOT_DIR + "/backend/tests/files")
+        js_location = ROOT_DIR + "/backend/tests/files"
+        return_value = find_js_files(js_location, True)
         expected_value = [{'name': 'PieChart', 'filename': 'demoVisComp',
                            'path': ROOT_DIR + '/backend/tests/files/demoVisComp.js',
                            'parameters': [
@@ -75,9 +99,9 @@ class ModelTest(unittest.TestCase):
                                 'dependentOn': 'valueE--modelE--value.10.value'},
                                {'name': 'click', 'type': 'dependent', 'defaultValue': '777',
                                 'dependentOn': 'click--getValue--value.1.value'},
-                               {'name': 'getValue', 'type': 'callback', 'defaultValue': 'onButtonClicked',
+                               {'name': 'getValue', 'type': 'callback', 'defaultValue': 'changePublicVehicles',
                                 'dependentOn': ''}]}]
-        self.assertEqual(return_value, expected_value)
+        self.assertEqual(expected_value, return_value)
 
     def test_is_new_pull_available(self):
         # no pull available

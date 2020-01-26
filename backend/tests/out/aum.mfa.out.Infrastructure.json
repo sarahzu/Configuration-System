@@ -1,0 +1,20 @@
+{
+	"name": "aum.mfa.out.Infrastructure",
+	"value": {
+		"1": {
+			"name":"stock",
+			"unit":"Tons of Materials",
+			"value": 324
+		},
+		"4": {
+			"name":"outflow",
+			"unit":"Tons of Materials",
+			"value": 600
+		},
+		"7": {
+			"name":"inflow",
+			"unit":"Tons of Materials",
+			"value": 900
+		}
+	}
+}

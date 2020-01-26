@@ -1,0 +1,45 @@
+{
+	"name": "aum.mfa.out.PrivateVehicles",
+	"value": {
+		"1": {
+			"name":"stock",
+			"unit": "Tons of Materials",
+			"value": 3000
+		},
+		"3": {
+			"name":"stock",
+			"unit":"Number of Vehicles",
+			"value": 2000
+		},
+		"4": {
+			"name":"outflow",
+			"unit":"Tons of Materials",
+			"value": 200
+		},
+		"6": {
+			"name":"outflow",
+			"unit":"Number of Vehicles",
+			"value": 400
+		},
+		"7": {
+			"name":"inflow",
+			"unit": "Tons of Materials",
+			"value": 2000
+		},
+		"9": {
+			"name":"inflow",
+			"unit":"Number of Vehicles",
+			"value": 1000
+		},
+		"10": {
+			"name":"energy",
+			"unit":"TJ",
+			"value": 4000
+		},
+		"11": {
+			"name":"emissions",
+			"unit":"CO2-Eq",
+			"value": 4000000
+		}
+	}
+}

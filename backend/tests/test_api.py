@@ -12,7 +12,11 @@ from configuration.configuration_model import GitRepo
 from configuration.api import enterGitRepoAddressIntoDatabase, get_git_repo_address, is_component_in_database, \
     is_decision_card_in_database, is_component_parameter_in_database, is_decision_card_parameter_in_database, \
     LocalGitRepoPath, add_output_json_to_database, insert_decision_cards_into_database, \
-    insert_visual_component_into_database
+    insert_visual_component_into_database, clone_git_repo_and_store_path_in_database, \
+    ExtractVisualComponentAndDecisionCardsInformationFromGitRepo, \
+    extract_visual_component_and_decision_cards_information_from_git_repo, ExtractGitRepoAddressFromDB, \
+    erase_output_json_and_everything_from_parameter_component_and_dc_tables_in_db, \
+    extract_value_from_models_according_to_location
 from configuration.db import init_app
 
 ROOT_DIR = os.path.abspath(os.curdir)
@@ -52,7 +56,7 @@ class APITest(unittest.TestCase):
             return_value_db = database.execute(
                 'SELECT git_repo_address FROM general_settings WHERE config_id =1').fetchone()[0]
             self.assertEqual(self.clone_url, return_value_db)
-            self.assertEqual(self.clone_url, get_git_repo_address())
+            self.assertEqual(self.clone_url, get_git_repo_address(database))
 
     def test_is_component_in_database(self):
         with app.app_context():
@@ -585,6 +589,90 @@ class APITest(unittest.TestCase):
                              first_param_type_result_list)
             self.assertEqual([],
                              first_param_value_result_list)
+
+    def test_clone_git_repo_and_store_path_in_database(self):
+        with app.app_context():
+            database = get_db()
+            git_repo_address = "https://github.com/sarahzu/Visual-Components-Testcase-2"
+            result = clone_git_repo_and_store_path_in_database(git_repo_address, database, "LOCAL_TEST_REPO_PATH")
+            database.commit()
+            self.assertEqual({'success': True}, result)
+            git_repo_in_database = database.execute(
+                'SELECT git_repo_address FROM general_settings WHERE config_id = 1').fetchone()[0]
+            self.assertEqual(git_repo_address, git_repo_in_database)
+
+    def test_extract_visual_component_and_decision_cards_information_from_git_repo(self):
+        with app.app_context():
+            env_string = "LOCAL_TEST_REPO_PATH"
+            result = extract_visual_component_and_decision_cards_information_from_git_repo(env_string, self.clone_url)
+            expected_result = {'input': {'components': ['DonutChart'],
+                                         'componentsParameters': [{'description': 'bla',
+                                                                   'name': 'DonutChart',
+                                                                   'rows': [{'parameter': 'type',
+                                                                             'type': 'string',
+                                                                             'value': 'gradient'},
+                                                                            {'parameter': 'dataLabelsEnabled',
+                                                                             'type': 'boolean',
+                                                                             'value': 'true'}]}],
+                                         'decisionCards': ['Decision Card 1',
+                                                           'Decision Card 2',
+                                                           'Decision Card 3'],
+                                         'decisionCardsParameters': [{'description': 'bliiiiii',
+                                                                      'name': 'Decision Card 1',
+                                                                      'rows': [{'parameter': 'name',
+                                                                                'type': 'string',
+                                                                                'value': 'dc 1'},
+                                                                               {'parameter': 'value',
+                                                                                'type': 'integer',
+                                                                                'value': '2'},
+                                                                               {'parameter': 'functionality',
+                                                                                'type': 'callback',
+                                                                                'value': 'showAlert'}]},
+                                                                     {'description': 'blooob',
+                                                                      'name': 'Decision Card 2',
+                                                                      'rows': [{'parameter': 'name',
+                                                                                'type': 'string',
+                                                                                'value': 'dc 2'},
+                                                                               {'parameter': 'value',
+                                                                                'type': 'integer',
+                                                                                'value': '4'}]},
+                                                                     {'description': 'blob blob blob',
+                                                                      'name': 'Decision Card 3',
+                                                                      'rows': [{'parameter': 'name',
+                                                                                'type': 'string',
+                                                                                'value': 'dc 3'},
+                                                                               {'parameter': 'value',
+                                                                                'type': 'integer',
+                                                                                'value': '8'}]}]}}
+            self.assertEqual(expected_result, result)
+
+    def test_get_git_repo_address(self):
+        with app.app_context():
+            database = get_db()
+            git_path = get_git_repo_address(database)
+            self.assertEqual(self.clone_url, git_path)
+
+    def test_erase_output_json_and_everything_from_parameter_component_and_dc_tables_in_db(self):
+        with app.app_context():
+            database = get_db()
+            erase_output_json_and_everything_from_parameter_component_and_dc_tables_in_db(database)
+            database.commit()
+
+            git_repo = database.execute("SELECT output_json From general_settings WHERE config_id = 1").fetchone()[0]
+            comps = database.execute("SELECT * From component").fetchone()
+            dcs = database.execute("SELECT * From decision_card").fetchone()
+            params = database.execute("SELECT * From parameter").fetchone()
+
+            self.assertEqual(None, git_repo)
+            self.assertEqual(None, comps)
+            self.assertEqual(None, params)
+            self.assertEqual(None, dcs)
+
+    def test_extract_value_from_models_according_to_location(self):
+        with app.app_context():
+            input_json = {'new_source': 'aum.mfa.out.OtherBuildings', 'node_path': 'value.10.value'}
+            value = extract_value_from_models_according_to_location(input_json, True)
+            self.assertEqual({'value': 300}, value)
 
 
 if __name__ == '__main__':

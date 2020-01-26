@@ -1,0 +1,30 @@
+{
+	"name": "aum.mfa.out.OtherBuildings",
+	"value": {
+		"1": {
+			"name":"stock",
+			"unit":"Tons of Materials",
+			"value": 300
+		},
+		"4": {
+			"name":"outflow",
+			"unit":"Tons of Materials",
+			"value": 6600
+		},
+		"7": {
+			"name":"inflow",
+			"unit":"Tons of Materials",
+			"value": 9900
+		},
+		"10": {
+			"name":"energy",
+			"unit":"TJ",
+			"value": 300
+		},
+		"11": {
+			"name":"emissions",
+			"unit":"CO2-Eq",
+			"value": 1000000
+		}
+	}
+}
