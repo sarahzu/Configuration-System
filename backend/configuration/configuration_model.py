@@ -309,7 +309,7 @@ def get_all_model_names(model_path):
         return []
 
 
-def getDC():
+def get_decision_cards():
     """
     This method return demo decision cards data. When the AUM system is ready, this method has to be replaced
     with a method that extract the decision cards data form the AUM system.
@@ -377,10 +377,3 @@ def getDC():
             }
         ]}
 
-# if __name__ == '__main__':
-#     localRepoPath = os.getcwd() + os.getenv("REPO_NAME")
-#     cloneUrl = os.getenv("REPO_PATH")
-#     gitRepo = GitRepo(localRepoPath, cloneUrl)
-#
-#     testRepoPath = os.getcwd() + "/testParser"
-#     print(findJsFiles(testRepoPath))

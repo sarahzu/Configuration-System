@@ -1,16 +1,7 @@
-import os, json
+import os
 
-# from configuration import model
-import re
-
-import git
-
-# from configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, getDC, get_all_model_names, \
-#    get_value_from_data, get_value_from_origin_name
-
-from configuration.configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, getDC, get_all_model_names, \
-    get_value_from_data, get_value_from_origin_name
-# sys.path.append('/configuration')
+from configuration.configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, \
+    get_decision_cards, get_all_model_names, get_value_from_data, get_value_from_origin_name
 
 
 def get_model_names():
@@ -29,9 +20,10 @@ def get_value_from_data_json(source_name, node_path_string, testing):
     """
     extract a value from the given source
 
-    :param source_name:     name of the source e.g. aum.mfa.out.ResidentialBuildings
-    :param testing          True if method is used for unit testing, False otherwise
-    :return:                final value
+    :param source_name:         {String}    name of the source e.g. aum.mfa.out.ResidentialBuildings
+    :param node_path_string:    {String}    path to the source's value, e.g. value.1.value
+    :param testing              {Boolean}   True if method is used for unit testing, False otherwise
+    :return:                    {*}         final value
     """
     try:
         return get_value_from_origin_name(source_name, node_path_string, testing)
@@ -40,8 +32,18 @@ def get_value_from_data_json(source_name, node_path_string, testing):
 
 
 class Controller:
+    """
+    Controller responsible for cloning a Github Repository and checking its state and files.
+    """
 
     def __init__(self, git_repo_address, local_repo_path):
+        """
+        Init function cloning a given Github repository to a given place and check if everything worked as
+        expected.
+
+        :param git_repo_address:    {String}    Github Repository link
+        :param local_repo_path:     {String}    Path to the location where the remote Github Repo should be cloned to
+        """
         self.git_repo_address = git_repo_address
         self.local_repo_path = local_repo_path
         # clone_url = os.getenv("REPO_PATH")
@@ -51,28 +53,28 @@ class Controller:
         except Exception:
             self.git_repo_created = False
 
-    def get_components(self):
-        json_request = {
-            "latitude": 0.0000,
-            "longitude": 0.0000,
-            "start_date": "2019-12-04",
-            "end_date": "2019-12-05"
-        }
-        return json.dumps(json_request)
+    # def get_components(self):
+    #     json_request = {
+    #         "latitude": 0.0000,
+    #         "longitude": 0.0000,
+    #         "start_date": "2019-12-04",
+    #         "end_date": "2019-12-05"
+    #     }
+    #     return json.dumps(json_request)
 
-    def get_visual_components_name_list(self):
-        """
-        get a list with the names of all visual components
-        :return: dummy values so far
-        """
-        return json.dumps({"visual components": ["Component 1", "Component 2", "Component 3", "Component 4",
-                                                 "Component 5", "Component 6"]})
+    # def get_visual_components_name_list(self):
+    #     """
+    #     get a list with the names of all visual components
+    #     :return: dummy values so far
+    #     """
+    #     return json.dumps({"visual components": ["Component 1", "Component 2", "Component 3", "Component 4",
+    #                                              "Component 5", "Component 6"]})
 
     def is_new_pull_request_available(self):
         """
-        Check if new pull request is available for this local git repo
+        Check if new pull request is available for this local Github Repository
 
-        :return: {Boolean} true if pull is available, false otherwise
+        :return:    {Boolean}   True if pull is available, False otherwise
         """
         return is_new_pull_available(self.local_repo_path)
 
@@ -80,15 +82,15 @@ class Controller:
         """
         trigger pull command for this local git repo
 
-        :return: {Boolean} true if pull was successful, false otherwise
+        :return:    {Boolean}   True if pull was successful, False otherwise
         """
         return pull_from_remote(self.local_repo_path)
 
     def get_file_names(self):
         """
-        return a list with all file names from all components
+        return a list with all filenames from all visual components contained in this Github Repository
 
-        :return: {list} list containing all filenames
+        :return:    {List}  list containing all filenames
         """
         components_list = find_js_files(self.local_repo_path, False)
         filenames_list = []
@@ -99,8 +101,17 @@ class Controller:
 
     def get_configuration_settings_input(self):
         """
-        return a json object with all information needed, to build the configuration frontend page
-        :return: {json} input file
+        extract all information about visual components and decision cards from this Github Repository and
+        return a json object with all this information (needed to build the configuration frontend page)
+
+        The json object has the form:
+        {"components": [...]],
+            "componentsParameters": [...],
+            "decisionCards": [...]],
+            "decisionCardsParameters": [...]
+        }
+
+        :return:    {Dictionary}    json containing all visual component and decision card information
         """
         components_list = find_js_files(self.local_repo_path, False)
         components_names_list = []
@@ -126,9 +137,9 @@ class Controller:
             components_names_list.append(comp_name)
             parameter_list.append({"name": comp_name, "rows": rows_content_list, "description": "bla"})
 
-        description_cards_info = getDC()
+        description_cards_info = get_decision_cards()
 
-        json_test = {
+        output_json = {
             "components": components_names_list,
             "componentsParameters": parameter_list,
             "decisionCards": description_cards_info.get("decisionCards"),
@@ -136,9 +147,5 @@ class Controller:
 
         }
         # return json_input
-        return json_test
+        return output_json
 
-
-# if __name__ == '__main__':
-#     controller = Controller()
-#     print(controller.get_configuration_settings_input())

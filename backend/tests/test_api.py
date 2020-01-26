@@ -24,7 +24,7 @@ ROOT_DIR = os.path.abspath(os.curdir)
 app = Flask(__name__)
 app.config.from_mapping(
     SECRET_KEY='dev',
-    DATABASE=os.path.join(app.instance_path, 'configuration-system.sqlite'),
+    DATABASE=os.path.join(ROOT_DIR, 'instance', 'configuration-system.sqlite'),
 )
 api = Api(app)
 CORS(app)
@@ -36,7 +36,7 @@ init_app(app)
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
-            ROOT_DIR + "/../instance/configuration-system.sqlite")
+            ROOT_DIR + "/instance/configuration-system.sqlite")
         g.db.row_factory = sqlite3.Row
 
     return g.db
@@ -673,6 +673,8 @@ class APITest(unittest.TestCase):
             input_json = {'new_source': 'aum.mfa.out.OtherBuildings', 'node_path': 'value.10.value'}
             value = extract_value_from_models_according_to_location(input_json, True)
             self.assertEqual({'value': 300}, value)
+
+    # TODO: clear database after last test
 
 
 if __name__ == '__main__':
