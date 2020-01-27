@@ -6,6 +6,7 @@ Configuration System for my Master's Thesis
   1. To initialise the sqlight database:
 ```
 cd ~/Configuration-System/backend
+pip install -r requirements.txt
 export FLASK_APP=configuration
 export FLASK_ENV=development
 flask init-db
@@ -15,7 +16,6 @@ When the message *"Initialized the database."* appears, then the database creati
   2. To run the backend API:
 ```
 cd ~/Configuration-System/backend
-pip install -r requirements.txt
 cd ~/Configuration-System
 python -m backend.configuration.configuration_api
 ```
