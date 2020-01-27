@@ -3,7 +3,7 @@ import unittest
 import sys
 import os
 
-from configuration.controller import get_model_names, get_value_from_data_json, Controller
+from ..configuration.configuration_controller import get_model_names, get_value_from_data_json, Controller
 
 ROOT_DIR = os.path.abspath(os.curdir)
 

@@ -1,24 +1,39 @@
 import ast
+import sqlite3
+import json
 
 import git
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_cors import CORS
-from controller import Controller
+from flask import g
+
+from .controller import Controller
 import os
 
-from backend.db import get_db, init_app
+from .db import init_app
+
+ROOT_DIR = os.path.abspath(os.curdir)
+print(ROOT_DIR)
 
 app = Flask(__name__)
 app.config.from_mapping(
     SECRET_KEY='dev',
-    DATABASE=os.path.join(app.instance_path, '../../../backend/instance/configuration-system.sqlite'),
+    DATABASE=os.path.join(ROOT_DIR, '/backend/instance/configuration-system.sqlite'),
 )
 api = Api(app)
 CORS(app)
 
 # initialize database
 init_app(app)
+
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect(
+            ROOT_DIR + "/backend/instance/configuration-system.sqlite")
+        g.db.row_factory = sqlite3.Row
+
+    return g.db
 
 
 class CloneGitRepoForTestcaseUI(Resource):
@@ -101,7 +116,7 @@ class GetOutputJson(Resource):
         if database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone() is not None:
             try:
                 output_string = database.execute('SELECT output_json from general_settings WHERE config_id = 1').fetchone()[0]
-                return ast.literal_eval(output_string)
+                return json.loads(output_string)
             except ValueError:
                 return {}
         else:
@@ -115,5 +130,4 @@ api.add_resource(CloneGitRepoForTestcaseUI, '/config_api/clone_git_repo_for_test
 
 
 if __name__ == '__main__':
-
     app.run(port=5001, debug=True)

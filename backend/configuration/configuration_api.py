@@ -1,15 +1,17 @@
 import ast
+import sys
 
 import git
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_cors import CORS
-from configuration.controller import Controller, get_model_names, get_value_from_data_json
+
+from .configuration_controller import Controller, get_model_names, get_value_from_data_json
 import os
 
 import json
 
-from configuration.db import get_db, init_app
+from .db import get_db, init_app
 
 app = Flask(__name__)
 app.config.from_mapping(
@@ -22,6 +24,8 @@ CORS(app)
 # initialize database
 init_app(app)
 
+ROOT_DIR = os.path.abspath(os.curdir)
+sys.path.append(ROOT_DIR)
 
 class StoreAndCloneGitRepoPath(Resource):
     """

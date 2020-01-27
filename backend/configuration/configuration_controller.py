@@ -1,6 +1,6 @@
 import os
 
-from configuration.configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, \
+from .configuration_model import GitRepo, is_new_pull_available, pull_from_remote, find_js_files, \
     get_decision_cards, get_all_model_names, get_value_from_data, get_value_from_origin_name
 
 

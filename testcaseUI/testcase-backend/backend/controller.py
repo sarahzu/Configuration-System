@@ -1,4 +1,4 @@
-from model import GitRepo, findJsFiles, is_new_pull_available, pull_from_remote
+from .model import GitRepo, findJsFiles, is_new_pull_available, pull_from_remote
 
 
 class Controller:

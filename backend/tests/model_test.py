@@ -5,7 +5,7 @@ from pathlib import Path
 
 import os
 
-from configuration.configuration_model import get_value_from_data, find_js_files, is_new_pull_available, GitRepo, \
+from ..configuration.configuration_model import get_value_from_data, find_js_files, is_new_pull_available, GitRepo, \
     pull_from_remote, get_value_from_origin_name, get_all_model_names, open_data_file, \
     get_parent_node_from_value_origin_tree
 

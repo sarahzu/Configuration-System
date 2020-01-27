@@ -8,8 +8,7 @@ from flask import Flask, request, current_app, g
 from flask_restful import Resource, Api
 from flask_cors import CORS
 
-from configuration.configuration_model import GitRepo
-from configuration.api import enterGitRepoAddressIntoDatabase, get_git_repo_address, is_component_in_database, \
+from ..configuration.configuration_api import enterGitRepoAddressIntoDatabase, get_git_repo_address, is_component_in_database, \
     is_decision_card_in_database, is_component_parameter_in_database, is_decision_card_parameter_in_database, \
     LocalGitRepoPath, add_output_json_to_database, insert_decision_cards_into_database, \
     insert_visual_component_into_database, clone_git_repo_and_store_path_in_database, \
@@ -17,14 +16,17 @@ from configuration.api import enterGitRepoAddressIntoDatabase, get_git_repo_addr
     extract_visual_component_and_decision_cards_information_from_git_repo, ExtractGitRepoAddressFromDB, \
     erase_output_json_and_everything_from_parameter_component_and_dc_tables_in_db, \
     extract_value_from_models_according_to_location
-from configuration.db import init_app
+
+from ..configuration.db import init_app
+
+# print('__file__={0:<35} | __name__={1:<20} | __package__={2:<20}'.format(__file__, __name__, str(__package__)))
 
 ROOT_DIR = os.path.abspath(os.curdir)
 
 app = Flask(__name__)
 app.config.from_mapping(
     SECRET_KEY='dev',
-    DATABASE=os.path.join(ROOT_DIR, 'instance', 'configuration-system.sqlite'),
+    DATABASE=os.path.join(ROOT_DIR, 'backend', 'tests', 'instance', 'configuration-system.sqlite'),
 )
 api = Api(app)
 CORS(app)
@@ -36,7 +38,7 @@ init_app(app)
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
-            ROOT_DIR + "/instance/configuration-system.sqlite")
+            ROOT_DIR + "/backend/tests/instance/configuration-system.sqlite")
         g.db.row_factory = sqlite3.Row
 
     return g.db
