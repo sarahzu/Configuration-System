@@ -1,8 +1,8 @@
 # Configuration-System
 In the scope of my Master's Thesis, I implemented a Configuration System for the simulation game of the Post-fossil cities project. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions.
 
-## Run Webapplication
-The configuration sytem is split into frontend, backend and database part. The database is already set up. In order to run the configuration webapplication, you need to run a backend and frontend server.
+## Run Web-Application
+The configuration system is split into frontend, backend and database part. The database is already set up. In order to run the configuration web-application, you need to run a backend and frontend server.
 
   1. To run the backend API:
 ```
@@ -18,10 +18,10 @@ cd ~/Configuration-System/frontend
 npm install
 npm start
 ```
-On mac OS X and Windows please use Firefox Browser to view the UI. On Linux, please use Midori Webbrowser.
+On mac OS X and Windows please use Firefox Browser to view the UI. On Linux, please use Midori web-browser.
 
 ## Run the Test-case Environment
-This environment simulates the interface to the gameplay system. The backend extracts the needed information from the configuration system's database and the frontend loads a webapplication which visualises all visual components as they where set in the configuration system. 
+This environment simulates the interface to the gameplay system. The backend extracts the needed information from the configuration system's database and the frontend loads a web-application which visualises all visual components as they where set in the configuration system. 
 
   3. To run the test-case UI backend API:
 ```
