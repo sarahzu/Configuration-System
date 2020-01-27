@@ -1,37 +1,29 @@
 # Configuration-System
-Configuration System for my Master's Thesis
+In the scope of my Master's Thesis, I implemented a Configuration System for the simulation game of the Post-fossil cities project. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions.
 
 ## Run Webapplication
+The configuration sytem is split into frontend, backend and database part. The database is already set up. In order to run the configuration webapplication, you need to run a backend and frontend server.
 
-  1. To initialise the sqlight database:
+  1. To run the backend API:
 ```
 cd ~/Configuration-System/backend
 pip install -r requirements.txt
-export FLASK_APP=configuration
-export FLASK_ENV=development
-flask init-db
-```
-When the message *"Initialized the database."* appears, then the database creation was successful. This step only needs to be done once.
-
-  2. To run the backend API:
-```
-cd ~/Configuration-System/backend
 cd ~/Configuration-System
 python -m backend.configuration.configuration_api
 ```
 
-  3. To run the frontend:
+  2. To run the frontend:
 ```
 cd ~/Configuration-System/frontend
 npm install
 npm start
 ```
-
+On mac OS X and Windows please use Firefox Browser to view the UI. On Linux, please use Midori Webbrowser.
 
 ## Run the Test-case Environment
-You need to complete at least step 1 in order to run the test-case environment.
+This environment simulates the interface to the gameplay system. The backend extracts the needed information from the configuration system's database and the frontend loads a webapplication which visualises all visual components as they where set in the configuration system. 
 
-  4. To run the test-case UI backend API:
+  3. To run the test-case UI backend API:
 ```
 cd ~/testcaseUI/testcase-backend
 pip install -r requirements.txt
@@ -39,7 +31,7 @@ cd ~/Configuration-System
 python -m testcaseUI.testcase-backend.backend.api
 ```
 
-  5. To run the test-case UI frontend:
+  4. To run the test-case UI frontend:
 ```
 cd ~/testcaseUI/testcase-backend
 npm install
@@ -48,7 +40,7 @@ npm start
 
 ## Run Unit and End-to-End Tests
 
-  6. To run backend unit tests:
+  5. To run backend unit tests:
 ```
 cd  ~/Configuration-System
 python -m backend.tests.controller_test
@@ -56,7 +48,7 @@ python -m backend.tests.model_test
 python -m backend.tests.test_api
 ```
 
-  7. To run frontend cypress end-to-end tests (frontend mustn't (step 3) but API in backend (step 2) needs to run during testing):
+  6. To run frontend cypress end-to-end tests (frontend mustn't (step 2) but API in backend (step 1) needs to run during testing):
 ```
 cd ~/Configuration-System/frontend
 npm run test:cypress
