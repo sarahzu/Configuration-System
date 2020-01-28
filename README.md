@@ -31,7 +31,7 @@ cd ~/Configuration-System/frontend
 npm install
 npm start
 ```
-I've tested the web-application with mac OS X on Firefox 72.0.2 browser, with Windows 10 on Google Chrome 79.0.39.45.130 browser and with Linux (Ubuntu) on Midori web-browser.
+I've tested the web-application with mac OS X on Firefox 72.0.2 browser, with Windows 10 on Google Chrome 79.0.39.45.130 browser and with Linux (Ubuntu) on Midori v8.0-31-gf6b3b1e web-browser.
 
 ## Run the Test-case Environment
 This environment simulates the interface to the gameplay system. The backend extracts the needed information from the configuration system's database and the frontend loads a web-application which visualises all visual components as they where set in the configuration system. 
