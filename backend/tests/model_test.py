@@ -11,6 +11,8 @@ from ..configuration.configuration_model import get_value_from_data, find_js_fil
 
 ROOT_DIR = os.path.abspath(os.curdir)
 
+operating_system = sys.platform
+
 sys.path.append(ROOT_DIR + '/backend/configuration')
 
 
@@ -71,8 +73,12 @@ class ModelTest(unittest.TestCase):
     def test_find_js_files(self):
         js_location = ROOT_DIR + "/backend/tests/files"
         return_value = find_js_files(js_location, True)
+        path = ROOT_DIR + '/backend/tests/files/demoVisComp.js'
+        # use other path syntax on windows operating system
+        if operating_system == "win32":
+            path = ROOT_DIR + '/backend/tests/files\\demoVisComp.js'
         expected_value = [{'name': 'PieChart', 'filename': 'demoVisComp',
-                           'path': ROOT_DIR + '/backend/tests/files/demoVisComp.js',
+                           'path': path,
                            'parameters': [
                                {'name': 'breakpoint', 'type': 'integer', 'defaultValue': '480', 'dependentOn': ''},
                                {'name': 'chartWidth', 'type': 'integer', 'defaultValue': '200', 'dependentOn': ''},

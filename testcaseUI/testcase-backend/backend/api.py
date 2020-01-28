@@ -14,7 +14,6 @@ import os
 from .db import init_app
 
 ROOT_DIR = os.path.abspath(os.curdir)
-print(ROOT_DIR)
 
 app = Flask(__name__)
 app.config.from_mapping(
