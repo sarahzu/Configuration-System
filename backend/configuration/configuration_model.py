@@ -24,6 +24,10 @@ def is_new_pull_available(local_repo_path):
     :return:                {Boolean}   True if pull is available, False otherwise
     """
     try:
+        #  because on different operating systems the git commands do not return the exact same thing, I
+        #  check for different operating systems differently for available pulls
+
+        #  windows 10
         if operating_system == "win32":
             g = git.cmd.Git(local_repo_path)
             git_remote_show_origin = g.execute(["git", "status"])
@@ -34,6 +38,18 @@ def is_new_pull_available(local_repo_path):
             else:
                 return False
 
+        #  Linux
+        elif operating_system == "linux" or operating_system == "linux2":
+            g = git.cmd.Git(local_repo_path)
+            git_remote_show_origin = g.execute(["git", "diff", "master"])
+            # regex = re.compile(r'Your branch is up to date with')
+            #  match = re.search(regex, git_remote_show_origin)
+            if git_remote_show_origin is not "":
+                return True
+            else:
+                return False
+
+        #  mac OS X and others
         else:
             g = git.cmd.Git(local_repo_path)
             git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
@@ -182,7 +198,8 @@ def find_js_files(dirPath, testing):
                                  'dependentOn': value_dependent})
                         elif vis_comp_found and line.find(' */') != -1:
                             end_of_doc_string_found = True
-                        elif vis_comp_found and end_of_doc_string_found and (line.startswith('class') or line.startswith('function')):
+                        elif vis_comp_found and end_of_doc_string_found and (
+                                line.startswith('class') or line.startswith('function')):
                             vis_comp_found = False
                             end_of_doc_string_found = False
 
@@ -390,4 +407,3 @@ def get_decision_cards():
                 "description": "blob blob blob"
             }
         ]}
-

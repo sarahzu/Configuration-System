@@ -1,18 +1,18 @@
 # Configuration-System
 In the scope of my Master's Thesis, I implemented a Configuration System for the simulation game of the Post-fossil cities project. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions.
 
-After cloning this Repository, make sure to also clone the linked Repository in the testing folder which is used for the backend unit tests.
-
-This project uses Python 3.7 and React 16.12.0.
+After cloning this Repository, make sure to also clone the linked Repository in the testing folder which is used for the backend unit tests. If you skip this step, some unit tests are bound to fail.
 
 ```
 cd ~/Configuration-System
 git submodule init 
 cd ~/Configuration-System/testing/github2
-submodule update
+git submodule update
 cd ~/Configuration-System/testing/github
 touch .git
 ```
+
+This project uses Python 3.7.6 and React 16.12.0.
 
 ## Run Web-Application
 The configuration system is split into frontend, backend and database part. The database is already set up. In order to run the configuration web-application, you need to run a backend and frontend server.
@@ -31,12 +31,15 @@ cd ~/Configuration-System/frontend
 npm install
 npm start
 ```
+
+You only need to run *pip install -r requirements.txt* and *npm install* once in order to install all dependencies. When you want to run the application again, you can omit those commands.
+
 I've tested the web-application with mac OS X on Firefox 72.0.2 browser, with Windows 10 on Google Chrome 79.0.39.45.130 browser and with Linux (Ubuntu) on Midori v8.0-31-gf6b3b1e web-browser.
 
 ## Run the Test-case Environment
-This environment simulates the interface to the gameplay system. The backend extracts the needed information from the configuration system's database and the frontend loads a web-application which visualises all visual components as they where set in the configuration system. 
+This environment simulates the interface to the gameplay system and serves as a proof of concept. The backend extracts the needed information from the configuration system's database and the frontend loads a web-application which visualises all visual components as they where set in the configuration system. 
 
-  3. To run the test-case UI backend API:
+  3. To run the test-case backend API:
 ```
 cd ~/testcaseUI/testcase-backend
 pip install -r requirements.txt
@@ -51,6 +54,8 @@ npm install
 npm start
 ```
 
+You only need to run *pip install -r requirements.txt* and *npm install* once in order to install all dependencies. When you want to run the test-case application again, you can omit those commands.
+
 ## Run Unit and End-to-End Tests
 
   5. To run backend unit tests:
@@ -61,10 +66,12 @@ python -m backend.tests.model_test
 python -m backend.tests.test_api
 ```
 
-All unit tests where tested on Mac OS X 10.14.6. On other operating systems, some tests might fail because of different system path syntaxes. 
+All unit tests where tested on Mac OS X 10.14.6, Ubuntu 18.04.1 LTS and Windows 10. 
 
   6. To run frontend cypress end-to-end tests (frontend mustn't (step 2) but API in backend (step 1) needs to run during testing):
 ```
+cd ~/Configuration-System
+python -m backend.configuration.configuration_api
 cd ~/Configuration-System/frontend
 npm run test:cypress
 ```
