@@ -1,17 +1,6 @@
 # Configuration-System
 In the scope of my Master's Thesis, I implemented a Configuration System for the simulation game of the Post-fossil cities project. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions.
 
-After cloning this Repository, make sure to also clone the linked Repository in the testing folder which is used for the backend unit tests. If you skip this step, some unit tests are bound to fail.
-
-```
-cd ~/Configuration-System
-git submodule init 
-cd ~/Configuration-System/testing/github2
-git submodule update
-cd ~/Configuration-System/testing/github
-touch .git
-```
-
 This project uses Python 3.7.6 and React 16.12.0.
 
 ## Run Web-Application
