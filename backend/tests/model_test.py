@@ -116,27 +116,13 @@ class ModelTest(unittest.TestCase):
         expected_value = False
         self.assertEqual(return_value, expected_value)
 
-        # I unfortunately didn't find a way to simulate a new pull request on an existing up to date repo
-        # therefore, I had ot emit this test and tested it manually
+        # I unfortunately didn't find a way to simulate a new pull request appearing after a git repo was already cloned
+        # therefore, I had to omit this test. I instead tested it manually
 
         # local_repo_path = ROOT_DIR + "/testing/github2"
         # return_value = is_new_pull_available(local_repo_path)
         # expected_value = True
         # self.assertEqual(return_value, expected_value)
-
-    # def test_upper(self):
-    #     self.assertEqual('foo'.upper(), 'FOO')
-    #
-    # def test_isupper(self):
-    #     self.assertTrue('FOO'.isupper())
-    #     self.assertFalse('Foo'.isupper())
-    #
-    # def test_split(self):
-    #     s = 'hello world'
-    #     self.assertEqual(s.split(), ['hello', 'world'])
-    #     # check that s.split fails when the separator is not a string
-    #     with self.assertRaises(TypeError):
-    #         s.split(2)
 
 
 if __name__ == '__main__':

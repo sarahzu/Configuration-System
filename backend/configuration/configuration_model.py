@@ -24,42 +24,16 @@ def is_new_pull_available(local_repo_path):
     :return:                {Boolean}   True if pull is available, False otherwise
     """
     try:
-        #  because on different operating systems the git commands do not return the exact same thing, I
-        #  check for different operating systems differently for available pulls
 
-        #  windows 10
-        if operating_system == "win32":
-            g = git.cmd.Git(local_repo_path)
-            git_remote_show_origin = g.execute(["git", "status"])
-            regex = re.compile(r'Your branch is up to date with')
-            match = re.search(regex, git_remote_show_origin)
-            if not match:
-                return True
-            else:
-                return False
-
-        #  Linux
-        elif operating_system == "linux" or operating_system == "linux2":
-            g = git.cmd.Git(local_repo_path)
-            git_remote_show_origin = g.execute(["git", "diff", "master"])
-            # regex = re.compile(r'Your branch is up to date with')
-            #  match = re.search(regex, git_remote_show_origin)
-            if git_remote_show_origin is not "":
-                return True
-            else:
-                return False
-
-        #  mac OS X and others
+        g = git.cmd.Git(local_repo_path)
+        git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
+        regex = re.compile(r'master pushes to master \((.*)\)')
+        match = re.search(regex, git_remote_show_origin)
+        up_to_date_status = match.group(1)
+        if up_to_date_status == 'local out of date':
+            return True
         else:
-            g = git.cmd.Git(local_repo_path)
-            git_remote_show_origin = g.execute(["git", "remote", "show", "origin"])
-            regex = re.compile(r'master pushes to master \((.*)\)')
-            match = re.search(regex, git_remote_show_origin)
-            up_to_date_status = match.group(1)
-            if up_to_date_status == 'local out of date':
-                return True
-            else:
-                return False
+            return False
 
     except (git.exc.GitCommandError, git.exc.GitCommandNotFound, AttributeError):
         return False
