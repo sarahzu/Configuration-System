@@ -1,7 +1,7 @@
 # Configuration-System
 In the scope of my Master's Thesis, I implemented a Configuration System for the simulation game of the Post-fossil cities project. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions.
 
-This project uses Python 3.7.6 and React 16.12.0.
+This project uses Python 3.7.6 and React 16.12.0. I worked with mac OS X 10.14.6 on Firefox 72.0.2 browser.
 
 ## Run Web-Application
 The configuration system is split into frontend, backend and database part. The database is already set up. In order to run the configuration web-application, you need to run a backend and frontend server.
@@ -23,10 +23,8 @@ npm start
 
 You only need to run *pip install -r requirements.txt* and *npm install* once in order to install all dependencies. When you want to run the application again, you can omit those commands.
 
-I've tested the web-application with mac OS X on Firefox 72.0.2 browser, with Windows 10 on Google Chrome 79.0.39.45.130 browser and with Linux (Ubuntu) on Midori v8.0-31-gf6b3b1e web-browser.
-
 ## Run the Test-case Environment
-This environment simulates the interface to the gameplay system and serves as a proof of concept. The backend extracts the needed information from the configuration system's database and the frontend loads a web-application which visualises all visual components as they where set in the configuration system. 
+This environment simulates the interface to the gameplay system and serves as a proof of concept. The backend extracts the needed information from the configuration system's database and the frontend loads a web-application which visualises all visual components as they were set in the configuration system. 
 
   3. To run the test-case backend API:
 ```
@@ -54,8 +52,6 @@ python -m backend.tests.controller_test
 python -m backend.tests.model_test
 python -m backend.tests.test_api
 ```
-
-All unit tests where tested on Mac OS X 10.14.6, Ubuntu 18.04.1 LTS and Windows 10. 
 
   6. To run frontend cypress end-to-end tests (frontend mustn't (step 2) but API in backend (step 1) needs to run during testing):
 ```
