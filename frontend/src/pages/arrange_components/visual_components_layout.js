@@ -1,7 +1,11 @@
 import React, {Suspense} from "react";
 //import PropTypes from "prop-types";
 import _ from "lodash";
-import { Responsive, WidthProvider } from "react-grid-layout";
+
+
+// import { Responsive, WidthProvider } from "react-grid-layout";
+import RGL, { WidthProvider } from "react-grid-layout";
+
 import "./visual_components_layout.css"
 //import { Container, Row, Col } from 'react-grid-system';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -22,10 +26,11 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 require('dotenv').config();
 
 
-const ResponsiveReactGridLayout = WidthProvider(Responsive);
+// const ResponsiveReactGridLayout = WidthProvider(Responsive);
+const ResponsiveReactGridLayout = WidthProvider(RGL);
 
 
-class VisualComponentsLayout extends React.Component {
+class VisualComponentsLayout extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -225,8 +230,10 @@ class VisualComponentsLayout extends React.Component {
                             </div>
                         }
 
+                        let datagrid = { w: l.w, h: l.h, x: l.x, y: l.y };
+
                         return (
-                            <div key={l.i} className={"components"}>
+                            <div key={l.i} data-grid={{ w: l.w, h: l.h, x: l.x, y: l.y }}>
                                 {toolboxButton}
                                 <div>
                                     <Suspense fallback={<div>Loading...</div>}>
@@ -238,7 +245,7 @@ class VisualComponentsLayout extends React.Component {
                     }
                     else {
                         return (
-                            <div key={l.i} className={"components"}>
+                            <div key={l.i} data-grid={{ w: l.w, h: l.h, x: l.x, y: l.y }}>
                                 <div className="hide-button" onClick={this.onPutItem.bind(this, l)}>
                                     &times;
                                 </div>
@@ -372,11 +379,26 @@ class VisualComponentsLayout extends React.Component {
      * @param layouts dictionary containing all visual components layouts
      *
      */
-    onLayoutChange(layout, layouts) {
-        this.props.onLayoutChange(layout, layouts);
-        let jsonString = JSON.stringify(layouts);
-        localStorage.setItem("SelectedLayout", jsonString);
-        this.setState({layouts: layouts})
+    onLayoutChange(layout) {
+        let layouts = {lg: layout};
+        layout.map(item => {
+            if (item.i === "null") {
+                layouts = this.state.layouts
+            }
+        })
+        // if (layout[0].i === "null") {
+        //     layouts = this.state.layouts
+        // }
+        if (global.localStorage) {
+            let jsonString = JSON.stringify(layouts);
+            global.localStorage.setItem("SelectedLayout", jsonString);
+        }
+        else {
+            let jsonString = JSON.stringify(layouts);
+            localStorage.setItem("SelectedLayout", jsonString);
+        }
+        this.setState({layouts});
+        this.props.onLayoutChange(layout);
     }
 
     loadPreview() {
@@ -490,7 +512,6 @@ class VisualComponentsLayout extends React.Component {
                         <ResponsiveReactGridLayout
                             {...this.props}
                             layouts={this.state.layouts}
-                            onBreakpointChange={this.onBreakpointChange}
                             onLayoutChange={this.onLayoutChange}
                             // WidthProvider option
                             measureBeforeMount={true}
@@ -514,7 +535,8 @@ VisualComponentsLayout.defaultProps = {
     className: "layout",
     rowHeight: 30,
     onLayoutChange: function() {},
-    cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+    //cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+    cols: 12,
     verticalCompact: false,
 };
 
