@@ -1,30 +1,26 @@
 import React, {Suspense} from "react";
-//import PropTypes from "prop-types";
 import _ from "lodash";
-
-
-// import { Responsive, WidthProvider } from "react-grid-layout";
 import RGL, { WidthProvider } from "react-grid-layout";
-
 import "./visual_components_layout.css"
-//import { Container, Row, Col } from 'react-grid-system';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCompressArrowsAlt, faExpandArrowsAlt, faToolbox} from "@fortawesome/free-solid-svg-icons";
+import { withRouter } from 'react-router-dom';
+import {ToolBox, ToolBoxItem} from "./toolbox";
+import axios from "axios";
+import {confirmAlert} from "react-confirm-alert";
+import 'react-confirm-alert/src/react-confirm-alert.css';
+//import { Container, Row, Col } from 'react-grid-system';
 //import PreviewVisualComponents from "./preview_visual_components";
 //import {Link, BrowserRouter as Router, Route, Switch} from "react-router-dom";
 //import Home from "../home/home";
-import { withRouter } from 'react-router-dom';
 //import { Button } from 'reactstrap';
 //import {IconContext} from "react-icons";
-import {ToolBox, ToolBoxItem} from "./toolbox";
-import axios from "axios";
 //import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 //import parse from 'html-react-parser';
-import {confirmAlert} from "react-confirm-alert";
-import 'react-confirm-alert/src/react-confirm-alert.css';
+// import { Responsive, WidthProvider } from "react-grid-layout";
+//import PropTypes from "prop-types";
 
 require('dotenv').config();
-
 
 // const ResponsiveReactGridLayout = WidthProvider(Responsive);
 const ResponsiveReactGridLayout = WidthProvider(RGL);
@@ -50,12 +46,9 @@ class VisualComponentsLayout extends React.PureComponent {
             currentBreakpoint: "lg",
             compactType: "vertical",
             mounted: false,
-            //layouts: { lg: props.initialLayout }
             layouts: layout,
             preview: false,
-            //toolbox: { lg: [] }
             toolbox: toolbox,
-            //localGitPath: "",
         };
 
         this.onBreakpointChange = this.onBreakpointChange.bind(this);
@@ -67,8 +60,6 @@ class VisualComponentsLayout extends React.PureComponent {
         this.removeEmptyDictFromList = this.removeEmptyDictFromList.bind(this);
         this.onFinishClicked = this.onFinishClicked.bind(this);
         this.onPageChangeButtonClicked = this.onPageChangeButtonClicked.bind(this);
-
-        //this.getLocalGitRepoPath = this.getLocalGitRepoPath.bind(this);
     }
 
     componentDidMount() {
@@ -84,18 +75,6 @@ class VisualComponentsLayout extends React.PureComponent {
         }
         //this.getLocalGitRepoPath();
     }
-
-    // /**
-    //  * get the location of the local git repo
-    //  *
-    //  * @returns {Promise<void>}
-    //  */
-    // async getLocalGitRepoPath() {
-    //     await axios.get(process.env.REACT_APP_LOCAL_GIT_REPO_PATH)
-    //         .then(response => {
-    //             this.setState({localGitPath: response.data});
-    //         })
-    // }
 
     /**
      * remove all empty dictionaries form the given list.
@@ -127,7 +106,6 @@ class VisualComponentsLayout extends React.PureComponent {
             }
         }
 
-        //var componentFilenameList = this.state.componentFilenameList;
         var componentFilenameList = this.props.componentFilenameList;
 
         return _.map(this.state.layouts[this.state.currentBreakpoint], l => {
@@ -268,8 +246,6 @@ class VisualComponentsLayout extends React.PureComponent {
 
         });
     }
-    //                        <div>{ ReactHtmlParser(html)[0] }</div>
-    //                        <PieChart width={200} breakpoint={480} position={"bottom"}>Pie</PieChart>
 
     onBreakpointChange = breakpoint => {
         this.setState(prevState => ({
@@ -288,7 +264,7 @@ class VisualComponentsLayout extends React.PureComponent {
      * Triggered if an item from toolbox is taken to the visual component arrangement section.
      * Update local storage entries of layouts and toolbox and the corresponding states.
      *
-     * @param item item which has been selected
+     * @param item visual component which has been selected
      */
     onTakeItem = item => {
         let toolbox = {...this.state.toolbox,
@@ -298,7 +274,6 @@ class VisualComponentsLayout extends React.PureComponent {
             [this.state.currentBreakpoint]: [...this.state.layouts[this.state.currentBreakpoint], item]};
 
         this.setState({toolbox: toolbox, layouts: layouts});
-
         localStorage.setItem("toolbox", JSON.stringify(toolbox));
         localStorage.setItem("SelectedLayout", JSON.stringify(layouts));
 
@@ -319,7 +294,7 @@ class VisualComponentsLayout extends React.PureComponent {
      * Triggered if an item from the visual component arrangement section is taken to the toolbox.
      * Update local storage entries of layouts and toolbox and the corresponding states.
      *
-     * @param item item which has been selected
+     * @param item visual component which has been selected
      */
     onPutItem = item => {
         let toolbox = {
@@ -365,18 +340,11 @@ class VisualComponentsLayout extends React.PureComponent {
         this.setState({ compactType });
     }
 
-    /*onNewLayout() {
-        this.setState({
-            layouts: { lg: generateLayout() }
-        });
-    }*/
-
     /**
      * triggered when layout of visual components have been changed.
      * Update all according states and local storage entries.
      *
-     * @param layout Used for recursive call.
-     * @param layouts dictionary containing all visual components layouts
+     * @param layout dictionary containing all visual components' layout
      *
      */
     onLayoutChange(layout) {
@@ -385,10 +353,7 @@ class VisualComponentsLayout extends React.PureComponent {
             if (item.i === "null") {
                 layouts = this.state.layouts
             }
-        })
-        // if (layout[0].i === "null") {
-        //     layouts = this.state.layouts
-        // }
+        });
         if (global.localStorage) {
             let jsonString = JSON.stringify(layouts);
             global.localStorage.setItem("SelectedLayout", jsonString);
@@ -401,14 +366,26 @@ class VisualComponentsLayout extends React.PureComponent {
         this.props.onLayoutChange(layout);
     }
 
+    /**
+     * switch to preview mode
+     */
     loadPreview() {
         this.setState({preview: true});
     }
 
+    /**
+     * switch to arrange components mode
+     */
     backToArranging() {
         this.setState({preview: false});
     }
 
+    /**
+     * show popup with message
+     *
+     * @param title     title of popup
+     * @param message   message of popup
+     */
     showMessage = (title, message) => {
         confirmAlert({
             title: title,
@@ -422,7 +399,7 @@ class VisualComponentsLayout extends React.PureComponent {
     };
 
     /**
-     * send all settings and component infos back to backend
+     * send all settings and visual components informations back to backend
      */
     async onFinishClicked() {
 
@@ -443,6 +420,9 @@ class VisualComponentsLayout extends React.PureComponent {
             });
     }
 
+    /**
+     * go to set components page
+     */
     onPageChangeButtonClicked() {
         let path = `/set`;
         this.props.history.push(path);
@@ -527,9 +507,6 @@ class VisualComponentsLayout extends React.PureComponent {
     }
 }
 
-/*VisualComponentsLayout.propTypes = {
-    onLayoutChange: PropTypes.func.isRequired,
-};*/
 
 VisualComponentsLayout.defaultProps = {
     className: "layout",
@@ -539,19 +516,5 @@ VisualComponentsLayout.defaultProps = {
     cols: 12,
     verticalCompact: false,
 };
-
-/*function generateLayout() {
-    return _.map(_.range(0, 4), function(item, i) {
-        var y = Math.ceil(4) + 1;
-        return {
-            x: (3 * 2) % 12,
-            y: Math.floor(i / 6) * y,
-            w: 2,
-            h: y,
-            i: i.toString(),
-            static: false
-        };
-    });
-}*/
 
 export default withRouter(VisualComponentsLayout);

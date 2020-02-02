@@ -1,8 +1,10 @@
 import json
+import shutil
 import sqlite3
 import unittest
 import sys
 import os
+from pathlib import Path
 
 from flask import Flask, request, current_app, g
 from flask_restful import Resource, Api
@@ -679,7 +681,7 @@ class APITest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """
-        clear database after all tests have run
+        clear database after all tests have run and delete created Github Repo
         :return:
         """
         with app.app_context():
@@ -689,6 +691,11 @@ class APITest(unittest.TestCase):
             database.execute("DELETE FROM decision_card")
             database.execute("DELETE FROM general_settings")
             database.commit()
+
+        # remove created github repo
+        local_repo_path = Path(os.path.dirname(os.path.abspath(__file__)) + os.getenv("LOCAL_TEST_REPO_PATH"))
+        if local_repo_path.exists() and local_repo_path.is_dir():
+            shutil.rmtree(local_repo_path)
 
 
 if __name__ == '__main__':

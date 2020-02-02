@@ -1,7 +1,9 @@
+import shutil
 import unittest
 
 import sys
 import os
+from pathlib import Path
 
 from ..configuration.configuration_controller import get_model_names, get_value_from_data_json, Controller
 
@@ -14,7 +16,7 @@ class ControllerTest(unittest.TestCase):
 
     def test_controller(self):
         clone_url = "https://github.com/sarahzu/Visual-Components-Testcase-2.git"
-        local_repo_path = ROOT_DIR + "/testing/local"
+        local_repo_path = ROOT_DIR + "/backend/tests/testing-repos/local"
         controller = Controller(clone_url, local_repo_path)
 
         self.assertEqual(controller.git_repo_created, True)
@@ -76,6 +78,16 @@ class ControllerTest(unittest.TestCase):
         return_value = get_value_from_data_json(value_origin, node_path_string, True)
         expected_value = 3300
         self.assertEqual(return_value, expected_value)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        delete all created folders
+        :return:
+        """
+        local_repo_path = Path(ROOT_DIR + "/backend/tests/testing-repos/local")
+        if local_repo_path.exists() and local_repo_path.is_dir():
+            shutil.rmtree(local_repo_path)
 
 
 if __name__ == '__main__':

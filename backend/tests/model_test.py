@@ -1,3 +1,4 @@
+import shutil
 import unittest
 
 import sys
@@ -18,11 +19,11 @@ sys.path.append(ROOT_DIR + '/backend/configuration')
 
 class ModelTest(unittest.TestCase):
     clone_url = "https://github.com/sarahzu/Visual-Components-Testcase-2.git"
-    local_repo_path = ROOT_DIR + "/testing/local"
+    local_repo_path = ROOT_DIR + "/backend/tests/testing-repos/local"
     git_repo = GitRepo(local_repo_path, clone_url)
 
     def test_pull_from_remote(self):
-        return_value = pull_from_remote(ROOT_DIR + "/testing/local")
+        return_value = pull_from_remote(self.local_repo_path)
         expected_value = False
         self.assertEqual(expected_value, return_value)
 
@@ -111,7 +112,7 @@ class ModelTest(unittest.TestCase):
 
     def test_is_new_pull_available(self):
         # no pull available
-        local_repo_path = ROOT_DIR + "/testing/github"
+        local_repo_path = ROOT_DIR + "/backend/tests/testing-repos/test-repo"
         return_value = is_new_pull_available(local_repo_path)
         expected_value = False
         self.assertEqual(return_value, expected_value)
@@ -119,10 +120,20 @@ class ModelTest(unittest.TestCase):
         # I unfortunately didn't find a way to simulate a new pull request appearing after a git repo was already cloned
         # therefore, I had to omit this test. I instead tested it manually
 
-        # local_repo_path = ROOT_DIR + "/testing/github2"
+        # local_repo_path = ROOT_DIR + "/testing-repos/github2"
         # return_value = is_new_pull_available(local_repo_path)
         # expected_value = True
         # self.assertEqual(return_value, expected_value)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        delete all created folders
+        :return:
+        """
+        local_repo_path = Path(ROOT_DIR + "/backend/tests/testing-repos/local")
+        if local_repo_path.exists() and local_repo_path.is_dir():
+            shutil.rmtree(local_repo_path)
 
 
 if __name__ == '__main__':
