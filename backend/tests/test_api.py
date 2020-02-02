@@ -676,7 +676,19 @@ class APITest(unittest.TestCase):
             value = extract_value_from_models_according_to_location(input_json, True)
             self.assertEqual({'value': 300}, value)
 
-    # TODO: clear database after last test
+    @classmethod
+    def tearDownClass(cls):
+        """
+        clear database after all tests have run
+        :return:
+        """
+        with app.app_context():
+            database = get_db()
+            database.execute("DELETE FROM parameter")
+            database.execute("DELETE FROM component")
+            database.execute("DELETE FROM decision_card")
+            database.execute("DELETE FROM general_settings")
+            database.commit()
 
 
 if __name__ == '__main__':
