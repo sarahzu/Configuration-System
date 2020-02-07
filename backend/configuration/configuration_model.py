@@ -92,7 +92,7 @@ class GitRepo:
                 print("dir is full with non git related content")
 
     def get_visual_components_from_git(self):
-        return find_js_files(self.local_repo_path)
+        return find_js_files(self.local_repo_path, False)
 
 
 def pull_from_remote(local_repo_path):

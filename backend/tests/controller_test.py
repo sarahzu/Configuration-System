@@ -18,6 +18,7 @@ class ControllerTest(unittest.TestCase):
         clone_url = "https://github.com/sarahzu/Visual-Components-Testcase-2.git"
         local_repo_path = ROOT_DIR + "/backend/tests/testing-repos/local"
         controller = Controller(clone_url, local_repo_path)
+        controller.create_git_repo()
 
         self.assertEqual(controller.git_repo_created, True)
 

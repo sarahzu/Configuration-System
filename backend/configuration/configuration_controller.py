@@ -46,12 +46,26 @@ class Controller:
         """
         self.git_repo_address = git_repo_address
         self.local_repo_path = local_repo_path
+        self.git_repo_created = False
         # clone_url = os.getenv("REPO_PATH")
+        # try:
+        #     self.git_repo = GitRepo(self.local_repo_path, self.git_repo_address)
+        #     self.git_repo_created = True
+        # except Exception:
+        #     self.git_repo_created = False
+
+    def create_git_repo(self):
+        """
+        clone Github Repository
+
+        :return:
+        """
         try:
-            self.git_repo = GitRepo(self.local_repo_path, self.git_repo_address)
+            GitRepo(self.local_repo_path, self.git_repo_address)
             self.git_repo_created = True
         except Exception:
             self.git_repo_created = False
+
 
     # def get_components(self):
     #     json_request = {
