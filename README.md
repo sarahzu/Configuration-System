@@ -34,9 +34,9 @@ Alternatively, the following Github Repository contains visual components design
 
 Because this project is not open source, all mentioned Github Repositories are set to private. If you would like to have access to them, please contact me. 
 
-If you have not added your computers ssh key to our github account, the terminal running the API Server will ask you about your Gitub Account password two times on the general settings page while running the application:
-* when you enter a new Github Repository
-* when the program checks if a new pull is available for the set Repository
+If you use a private Github Repository and have not added your computer's ssh key to your Github account, the terminal running the API server will ask you about your accounts password two times on the general settings page while running the application:
+* after loading the general settings page (the program checks if a new pull is available in order to decide if the pull button should get enabled)
+* when you enter a new Github Repository and submit it
 
 Please enter your account credentials directly into the terminal in order to get access to the set Github Repository.
 
@@ -60,7 +60,7 @@ npm start
 
 You only need to run *pip install -r requirements.txt* and *npm install* once in order to install all dependencies. When you want to run the test-case application again, you can omit those commands.
 
-If you use a private Github Repository for the visual components and have not added your computers ssh key to your Github Account, the terminal of the running API server will ask you about your credentials before loading the visual components on screen. Please enter your credentials in order to give the programm access to load all visual components.
+If you use a private Github Repository for the visual components and have not added your computer's ssh key to your Github Account, the terminal of the running API server will ask you about your credentials before loading the visual components on screen. Please enter your credentials in order to give the program access to load all visual components.
 
 ## Run Unit and End-to-End Tests
 
@@ -89,5 +89,5 @@ When cypress testing interface opens, either click *"Run all specs"* to run ever
 
 ### Github Repository Used for Testing
 
-Because the unit tests and cypress end-to-end tests use one of the above mentioned private testing Github Repositories, you need access to be able to run the tests. If you have not added your computers ssh key to your Github Account, the terminal of the running API will ask you about your credentials while running the tests. If a cypress test needs your Github Account credentials, it will give you 10 seconds to enter them. Please enter them into the terminal in the given timeframe, otherwise the test will fail. 
+Because the unit tests and cypress end-to-end tests use one of the above mentioned private testing Github Repositories, you need access to be able to run the tests. If you have not added your computer's ssh key to your Github Account, the terminal of the running API will ask you about your credentials while running the tests. If a cypress test needs your Github account credentials, it will wait 10 seconds in order to give you enough time to enter them. Please enter your credentials into the terminal in the given timeframe, otherwise the test will fail. 
 
