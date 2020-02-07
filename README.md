@@ -30,6 +30,8 @@ If you do not have a Github Repository at hand, which you could use with this ap
 Alternatively, the following Github Repository contains visual components designed for the Post-fossil cities project, which also work with this application: 
 * https://github.com/sarahzu/post_fossil_cities_visualizations
 
+Because this project is not open source, all mentioned Github Repositories are set to private. If you would like to have access to them, please contact me. 
+
 ## Run the Test-case Environment
 This environment simulates the interface to the gameplay system and serves as a proof of concept. The backend extracts the needed information from the configuration system's database and the frontend loads a web-application which visualises all visual components as they were set in the configuration system. 
 
