@@ -20,6 +20,7 @@
     "env-cmd": "^10.0.1",
     "html-react-parser": "^0.10.0",
     "list-react-files": "^0.2.0",
+    "lodash": "latest",
     "moment": "^2.24.0",
     "node-sass": "^4.13.1",
     "prop-types": "latest",
@@ -53,8 +54,7 @@
     "redux": "^4.0.5",
     "styled-components": "^4.4.0",
     "victory": "^33.1.1",
-    "write-json-file": "^4.2.1",
-    "lodash": "latest"
+    "write-json-file": "^4.2.1"
   },
   "scripts": {
     "start": "PORT=3000 react-scripts start",

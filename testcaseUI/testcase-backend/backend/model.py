@@ -189,7 +189,8 @@ def findJsFiles(dirPath):
                             component_info = {'name': component_name, 'filename': filename,
                                               'path': file_path, 'parameters': parameter_list}
                             vis_comp_name_list.append(component_info)
-    return vis_comp_name_list
+    # return vis_comp_name_list
+    return sorted(vis_comp_name_list, key=lambda i: i['name'])
 
 
 def get_value_from_origin_name(value_origin, node_path_string):

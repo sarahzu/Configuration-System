@@ -23,7 +23,7 @@ describe('App E2E', () => {
     // save settings
     cy.contains('Save').click();
     cy.contains('Are you sure');
-    cy.contains('Yes').click();
+    cy.contains('Yes').click().wait(10000);
     cy.contains('Success');
     cy.contains('Ok').click();
 
@@ -164,19 +164,315 @@ describe('App E2E', () => {
      */
     cy.contains('Ok').click().should(() => {
       expect(localStorage.getItem('fullComponentsInfo'))
-          .to.eq('{' +
-        '"configuration":' +
-            '{"1":' +
-              '{"components":[{"name":"PieChart","parameter":[{"parameter":"breakpoint","type":"integer","value":"500"},{"parameter":"chartWidth","type":"integer","value":"200"},{"parameter":"legendPosition","type":"string","value":"bottom"},{"parameter":"modelA","type":"dynamic","value":"aum.mfa.in.PublicVehicles"},{"parameter":"modelB","type":"dynamic","value":"aum.mfa.out.PrivateVehicles"},{"parameter":"modelC","type":"dynamic","value":"aum.mfa.out.OtherBuildings"},{"parameter":"modelD","type":"dynamic","value":"aum.mfa.out.ResidentialBuildings"},{"parameter":"modelE","type":"dynamic","value":"aum.mfa.out.Industry"},{"parameter":"valueA--modelA--value.10.value","type":"dependent","value":"1"},{"parameter":"valueB--modelB--value.10.value","type":"dependent","value":4000},{"parameter":"valueC--modelC--value.10.value","type":"dependent","value":300},{"parameter":"valueD--modelD--value.10.value","type":"dependent","value":5000},{"parameter":"valueE--modelE--value.10.value","type":"dependent","value":3300},{"parameter":"click--changePublicVehicles--value.1.value","type":"dependent","value":"1"},{"parameter":"changePublicVehicles","type":"callback","value":"changeAverageVehicleLifetime"}],' +
-                  '"position":{"width":11,"height":18,"x":0,"y":35},"enabled":true,"toolbox":false},' +
-                  '{"name":"DonutChart2","parameter":[{"parameter":"title","type":"string","value":"Stock in Tons of Materials"},{"parameter":"firstFillStyle","type":"string","value":"verticalLines"},{"parameter":"secondFillStyle","type":"string","value":"squares"},{"parameter":"thirdFillStyle","type":"string","value":"horizontalLines"},{"parameter":"fourthFillStyle","type":"string","value":"circles"},{"parameter":"fiftFillStyle","type":"string","value":"slantedLines"},{"parameter":"modelA","type":"dynamic","value":"aum.mfa.out.PublicVehicles"},{"parameter":"modelB","type":"dynamic","value":"aum.mfa.out.PrivateVehicles"},{"parameter":"modelC","type":"dynamic","value":"aum.mfa.out.OtherBuildings"},{"parameter":"modelD","type":"dynamic","value":"aum.mfa.out.ResidentialBuildings"},{"parameter":"modelE","type":"dynamic","value":"aum.mfa.out.Industry"},{"parameter":"valueA--modelA--value.1.value","type":"dependent","value":"24"},{"parameter":"valueB--modelB--value.1.value","type":"dependent","value":"75"},{"parameter":"valueC--modelC--value.1.value","type":"dependent","value":"95"},{"parameter":"valueD--modelD--value.1.value","type":"dependent","value":"43"},{"parameter":"valueE--modelE--value.1.value","type":"dependent","value":"42"}],' +
-                  '"position":{"width":11,"height":18,"x":0,"y":17},"enabled":true,"toolbox":false},' +
-                  '{"name":"DonutChart","parameter":[{"parameter":"modelA","type":"dynamic","value":"aum.mfa.out.PublicVehicles"},{"parameter":"modelB","type":"dynamic","value":"aum.mfa.out.PrivateVehicles"},{"parameter":"modelC","type":"dynamic","value":"aum.mfa.out.OtherBuildings"},{"parameter":"modelD","type":"dynamic","value":"aum.mfa.out.ResidentialBuildings"},{"parameter":"modelE","type":"dynamic","value":"aum.mfa.out.Industry"},{"parameter":"valueA--modelA--value.3.value","type":"dependent","value":"440"},{"parameter":"valueB--modelB--value.3.value","type":"dependent","value":"554"},{"parameter":"valueC--modelC--value.3.value","type":"dependent","value":"552"},{"parameter":"valueD--modelD--value.3.value","type":"dependent","value":"433"},{"parameter":"valueE--modelE--value.3.value","type":"dependent","value":"224"}],' +
-                  '"position":{"width":11,"height":18,"x":0,"y":54},"enabled":true,"toolbox":false}],' +
-                  '"decisionCards":[{"name":"Decision Card 1","parameter":[{"parameter":"name","type":"string","value":"First Selected Decision Card"},{"parameter":"value","type":"integer","value":"2"},{"parameter":"functionality","type":"callback","value":"changeAverageVehicleLifetime"}],"enabled":true},{"name":"Decision Card 2","parameter":[{"parameter":"name","type":"string","value":"dc 2"},{"parameter":"value","type":"integer","value":"4"}],"enabled":true},{"name":"Decision Card 3","parameter":[{"parameter":"name","type":"string","value":"dc 3"},{"parameter":"value","type":"integer","value":"8"}],"enabled":true}],' +
-                  '"githubRepository":"https://github.com/sarahzu/Visual-Components-Testcase.git"}}}')
-        });
-
+          .to.eq(JSON.stringify({
+        "configuration": {
+          "1": {
+            "components": [
+              {
+                "name": "DonutChart",
+                "parameter": [
+                  {
+                    "parameter": "modelA",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.PublicVehicles"
+                  },
+                  {
+                    "parameter": "modelB",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.PrivateVehicles"
+                  },
+                  {
+                    "parameter": "modelC",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.OtherBuildings"
+                  },
+                  {
+                    "parameter": "modelD",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.ResidentialBuildings"
+                  },
+                  {
+                    "parameter": "modelE",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.Industry"
+                  },
+                  {
+                    "parameter": "valueA--modelA--value.3.value",
+                    "type": "dependent",
+                    "value": "440"
+                  },
+                  {
+                    "parameter": "valueB--modelB--value.3.value",
+                    "type": "dependent",
+                    "value": "554"
+                  },
+                  {
+                    "parameter": "valueC--modelC--value.3.value",
+                    "type": "dependent",
+                    "value": "552"
+                  },
+                  {
+                    "parameter": "valueD--modelD--value.3.value",
+                    "type": "dependent",
+                    "value": "433"
+                  },
+                  {
+                    "parameter": "valueE--modelE--value.3.value",
+                    "type": "dependent",
+                    "value": "224"
+                  }
+                ],
+                "position": {
+                  "width": 11,
+                  "height": 18,
+                  "x": 0,
+                  "y": 0
+                },
+                "enabled": true,
+                "toolbox": false
+              },
+              {
+                "name": "DonutChart2",
+                "parameter": [
+                  {
+                    "parameter": "title",
+                    "type": "string",
+                    "value": "Stock in Tons of Materials"
+                  },
+                  {
+                    "parameter": "firstFillStyle",
+                    "type": "string",
+                    "value": "verticalLines"
+                  },
+                  {
+                    "parameter": "secondFillStyle",
+                    "type": "string",
+                    "value": "squares"
+                  },
+                  {
+                    "parameter": "thirdFillStyle",
+                    "type": "string",
+                    "value": "horizontalLines"
+                  },
+                  {
+                    "parameter": "fourthFillStyle",
+                    "type": "string",
+                    "value": "circles"
+                  },
+                  {
+                    "parameter": "fiftFillStyle",
+                    "type": "string",
+                    "value": "slantedLines"
+                  },
+                  {
+                    "parameter": "modelA",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.PublicVehicles"
+                  },
+                  {
+                    "parameter": "modelB",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.PrivateVehicles"
+                  },
+                  {
+                    "parameter": "modelC",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.OtherBuildings"
+                  },
+                  {
+                    "parameter": "modelD",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.ResidentialBuildings"
+                  },
+                  {
+                    "parameter": "modelE",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.Industry"
+                  },
+                  {
+                    "parameter": "valueA--modelA--value.1.value",
+                    "type": "dependent",
+                    "value": "24"
+                  },
+                  {
+                    "parameter": "valueB--modelB--value.1.value",
+                    "type": "dependent",
+                    "value": "75"
+                  },
+                  {
+                    "parameter": "valueC--modelC--value.1.value",
+                    "type": "dependent",
+                    "value": "95"
+                  },
+                  {
+                    "parameter": "valueD--modelD--value.1.value",
+                    "type": "dependent",
+                    "value": "43"
+                  },
+                  {
+                    "parameter": "valueE--modelE--value.1.value",
+                    "type": "dependent",
+                    "value": "42"
+                  }
+                ],
+                "position": {
+                  "width": 11,
+                  "height": 18,
+                  "x": 0,
+                  "y": 18
+                },
+                "enabled": true,
+                "toolbox": false
+              },
+              {
+                "name": "PieChart",
+                "parameter": [
+                  {
+                    "parameter": "breakpoint",
+                    "type": "integer",
+                    "value": "500"
+                  },
+                  {
+                    "parameter": "chartWidth",
+                    "type": "integer",
+                    "value": "200"
+                  },
+                  {
+                    "parameter": "legendPosition",
+                    "type": "string",
+                    "value": "bottom"
+                  },
+                  {
+                    "parameter": "modelA",
+                    "type": "dynamic",
+                    "value": "aum.mfa.in.PublicVehicles"
+                  },
+                  {
+                    "parameter": "modelB",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.PrivateVehicles"
+                  },
+                  {
+                    "parameter": "modelC",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.OtherBuildings"
+                  },
+                  {
+                    "parameter": "modelD",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.ResidentialBuildings"
+                  },
+                  {
+                    "parameter": "modelE",
+                    "type": "dynamic",
+                    "value": "aum.mfa.out.Industry"
+                  },
+                  {
+                    "parameter": "valueA--modelA--value.10.value",
+                    "type": "dependent",
+                    "value": "1"
+                  },
+                  {
+                    "parameter": "valueB--modelB--value.10.value",
+                    "type": "dependent",
+                    "value": 4000
+                  },
+                  {
+                    "parameter": "valueC--modelC--value.10.value",
+                    "type": "dependent",
+                    "value": 300
+                  },
+                  {
+                    "parameter": "valueD--modelD--value.10.value",
+                    "type": "dependent",
+                    "value": 5000
+                  },
+                  {
+                    "parameter": "valueE--modelE--value.10.value",
+                    "type": "dependent",
+                    "value": 3300
+                  },
+                  {
+                    "parameter": "click--changePublicVehicles--value.1.value",
+                    "type": "dependent",
+                    "value": "1"
+                  },
+                  {
+                    "parameter": "changePublicVehicles",
+                    "type": "callback",
+                    "value": "changeAverageVehicleLifetime"
+                  }
+                ],
+                "position": {
+                  "width": 11,
+                  "height": 18,
+                  "x": 0,
+                  "y": 90
+                },
+                "enabled": true,
+                "toolbox": false
+              }
+            ],
+            "decisionCards": [
+              {
+                "name": "Decision Card 1",
+                "parameter": [
+                  {
+                    "parameter": "name",
+                    "type": "string",
+                    "value": "First Selected Decision Card"
+                  },
+                  {
+                    "parameter": "value",
+                    "type": "integer",
+                    "value": "2"
+                  },
+                  {
+                    "parameter": "functionality",
+                    "type": "callback",
+                    "value": "changeAverageVehicleLifetime"
+                  }
+                ],
+                "enabled": true
+              },
+              {
+                "name": "Decision Card 2",
+                "parameter": [
+                  {
+                    "parameter": "name",
+                    "type": "string",
+                    "value": "dc 2"
+                  },
+                  {
+                    "parameter": "value",
+                    "type": "integer",
+                    "value": "4"
+                  }
+                ],
+                "enabled": true
+              },
+              {
+                "name": "Decision Card 3",
+                "parameter": [
+                  {
+                    "parameter": "name",
+                    "type": "string",
+                    "value": "dc 3"
+                  },
+                  {
+                    "parameter": "value",
+                    "type": "integer",
+                    "value": "8"
+                  }
+                ],
+                "enabled": true
+              }
+            ],
+            "githubRepository": "https://github.com/sarahzu/Visual-Components-Testcase.git"
+          }
+        }
+      }))
+    });
   });
 
   Cypress.on('uncaught:exception', (err, runnable) => {
@@ -184,8 +480,4 @@ describe('App E2E', () => {
     return false
   });
 });
-
-
-
-
 
