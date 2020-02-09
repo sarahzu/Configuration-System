@@ -1,5 +1,5 @@
 # Configuration-System
-In the scope of my Master's Thesis, I implemented a Configuration System for the simulation game of the Post-fossil cities project. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions.
+In the scope of my Master's Thesis, I implemented a Configuration System for the simulation game of the Post-fossil cities project. It consists of a web-application, a corresponding backend sytem and a database storage. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions. It enables the user to decide which visual components and decision cards should be used during the game session. The components can furthermore be modified. Additionally, the user can arrange the visual components on screen. The configuration system accepts visual components which are stored on a Github Repository. They can be loaded into the system by providing the corresponding Repository link.
 
 This project uses Python 3.7.6 and React 16.12.0. I worked with mac OS X 10.14.6 on Firefox 72.0.2 browser.
 
@@ -72,7 +72,7 @@ python -m backend.tests.model_test
 python -m backend.tests.test_api
 ```
 
-  6. To run frontend cypress end-to-end tests (frontend mustn't (step 2) but API in backend (step 1) needs to run during testing):
+  6. To run frontend cypress end-to-end tests (API server in backend (step 1) needs to run during testing):
 ```
 cd ~/Configuration-System
 python -m backend.configuration.configuration_api
@@ -85,9 +85,9 @@ You need to have at least one of the following browsers installed in order for c
 * Chromium
 * Electron
 
-When cypress testing interface opens, either click *"Run all specs"* to run every test or click on the individual spec you want to run. The test(s) will be executed in your Browser. For more information about cypress testing, see [https://www.cypress.io/](https://www.cypress.io/)
+When cypress testing interface opens, either click *"Run all specs"* to run every test or click on the individual spec you want to run. The test(s) will be executed in your browser. For more information about cypress testing, see [https://www.cypress.io/](https://www.cypress.io/)
 
 ### Github Repository Used for Testing
 
-Because the unit tests and cypress end-to-end tests use one of the above mentioned private testing Github Repositories, you need access to be able to run the tests. If you have not added your computer's ssh key to your Github Account, the terminal of the running API will ask you about your credentials while running the tests. If a cypress test needs your Github account credentials, it will wait 10 seconds in order to give you enough time to enter them. Please enter your credentials into the terminal in the given timeframe, otherwise the test will fail. 
+Because the unit tests and cypress end-to-end tests use one of the above mentioned private testing Github Repositories, you need access to be able to run the tests. If you have not added your computer's ssh key to your Github Account, the terminal of the running API will ask you about your credentials while running the tests. If a cypress test needs your Github account credentials, it will wait 10 seconds in order to give you enough time to enter them. Please enter your credentials into the terminal of the running API server in the given timeframe, otherwise the test will fail. 
 
