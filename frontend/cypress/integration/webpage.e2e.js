@@ -23,7 +23,7 @@ describe('App E2E', () => {
     // save settings
     cy.contains('Save').click();
     cy.contains('Are you sure');
-    cy.contains('Yes').click().wait(10000);
+    cy.contains('Yes').click().wait(2000);
     cy.contains('Success');
     cy.contains('Ok').click();
 
