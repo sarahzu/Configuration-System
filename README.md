@@ -1,7 +1,9 @@
 # Configuration-System
-In the scope of my Master's Thesis, I implemented a Configuration System for the simulation game of the Post-fossil cities project. It consists of a web-application, a corresponding backend sytem and a database storage. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions. It enables the user to decide which visual components and decision cards should be used during the game session. The components can furthermore be modified. Additionally, the user can arrange the visual components on screen. The configuration system accepts visual components which are stored on a Github Repository. They can be loaded into the system by providing the corresponding Repository link.
+In the scope of my Master's Thesis, I implemented a User Interface Management System (UIMS) used as configuration system for the simulation game of the Post-fossil cities project. It consists of a web-application, a corresponding backend system and a database storage. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions. It enables its users to decide which visual components (plots and similar visualisations) and decision cards (the simulation game's play cards) should be used during the game session. The components can furthermore be modified. Additionally, the user can arrange the visual components on screen and save the whole configuration. 
 
-This project uses Python 3.7.6 and React 16.12.0. I worked with mac OS X 10.14.6 on Firefox 72.0.2 browser.
+The UIMS contains flexible interfaces to its connected simulation game system parts. For instance, in order to adapt to newly created or modified visual components, the UIMS lets its users decide which visual components should be loaded into the system. They have the possibility to submit a link to a Github Repository containing visual components via the web-application. The visual components in the Repository only have to contain a predefined ontology docstring structure, in order to function well with the UIMS. The UIMS will then extract all visual components according to the docstring ontology from the Github Repository and use them in the running web-application. This structure only requires the designers of  visual components to focus on the docstring ontology when writing visual components usable with the UIMS. They do not have to worry about integrating the components themselves into the system. This is one example of a flexible interface design of the UIMS. More information can be found in my written Master's thesis. 
+
+This project uses Python 3.7.6 and React 16.12.0. I worked with mac OS X 10.14.6.
 
 ## Run Web-Application
 The configuration system is split into frontend, backend and database part. The database is already set up. In order to run the configuration web-application, you need to run a backend and frontend server.
@@ -23,9 +25,15 @@ npm start
 
 You only need to run *pip install -r requirements.txt* and *npm install* once in order to install all dependencies. When you want to run the application again, you can omit those commands.
 
+There are four pages on the web-application:
+* home page: Introduction page
+* general settings page: Here you can decide which visual component Github Repository should be used and submit its link.
+* set visual components page: After submitting a link in the general settings page, you can modify all visual components on this page.
+* arrange components page: The modified visual components can be arranged on screen on this page. Finally, when you are satisfied with your configuration, you can save your settings. 
+
 ### Github Repository Information
 
-If you do not have a Github Repository at hand, which you could use with this application, you can use one of these two testing Repositories:
+If you do not have a Github Repository containing visual components at hand, which you could use with this application, you can use one of these two testing Repositories:
 * https://github.com/sarahzu/Visual-Components-Testcase
 * https://github.com/sarahzu/Visual-Components-Testcase-2
 
