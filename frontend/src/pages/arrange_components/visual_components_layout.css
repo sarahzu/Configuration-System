@@ -113,6 +113,7 @@ body {
     margin: 5px;
     border: 1px solid black;
     background-color: #ddd;
+    border-radius: 10px;
 }
 .droppable-element {
     width: 150px;
