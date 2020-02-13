@@ -2,7 +2,7 @@
     display: none !important;
 }
 .noHeaderWrapper  .react-grid-Viewport {
-    top: 0px !important;
+    top: 0 !important;
 }
 
 .react-grid-Container
@@ -15,10 +15,7 @@ div.react-grid-HeaderCell
     font-size: 17px;
 }
 
-div.react-grid-HeaderCell:hover
-{
-    overflow:visible;
-}
+
 
 .sub-settings {
     background-color: #68c1e2;
