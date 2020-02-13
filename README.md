@@ -38,10 +38,10 @@ npm start
 You only need to run *pip install -r requirements.txt* and *npm install* once in order to install all dependencies. When you want to run the application again, you can omit those commands.
 
 There are four pages on the web-application:
-* home page: Introduction page
-* general settings page: On this page, you can submit the link of the visual components Github Repository which should be used during the configuration session.
-* set visual components page: After submitting a link in the general settings page, you can modify all visual components on this page.
-* arrange components page: The modified visual components can be arranged on screen on this page. Finally, when you are satisfied with your configuration, you can save your settings. 
+* **home page**: Introduction page
+* **data source settings page**: On this page, you can submit the link of the visual components Github Repository which should be used during the configuration session.
+* **set visual components page**: After submitting a link in the *data source settings page*, you can modify all visual components on this page.
+* **arrange components page**: The modified visual components can be arranged on screen on this page. Finally, when you are satisfied with your configuration, you can save your settings. 
 
 ### Github Repository Information
 
