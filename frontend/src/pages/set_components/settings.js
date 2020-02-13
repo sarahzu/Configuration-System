@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import SettingsDecisionCards from "./settings_decision_cards";
 import SettingsComponents from "./settings_components";
 import axios from "axios";
+import "../../pages.css"
 
 require('dotenv').config();
 
@@ -75,7 +76,7 @@ class Settings extends React.Component {
         };
 
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.onPageChangeButtonClicked = this.onPageChangeButtonClicked.bind(this);
+        //this.onPageChangeButtonClicked = this.onPageChangeButtonClicked.bind(this);
     }
 
     componentDidMount() {
@@ -111,10 +112,10 @@ class Settings extends React.Component {
     //     localStorage.setItem("fullComponentsInfo", finalComponents);
     // }
 
-    onPageChangeButtonClicked() {
+    /*onPageChangeButtonClicked() {
         let path = `/arrange`;
         this.props.history.push(path);
-    }
+    }*/
 
     render() {
 
@@ -143,7 +144,7 @@ class Settings extends React.Component {
 
         return (
             <div className="container">
-                <button onClick={this.onPageChangeButtonClicked}>Go to 'Arrange Visual Components' page</button>
+                {/*<button className="configuration-button" onClick={this.onPageChangeButtonClicked}>Go to 'Arrange Visual Components' page</button>*/}
                 <div className="row">
                     <form className="form">
                         <SettingsComponents dynamicColumnsComponents ={this.props.dynamicColumnsComponents} callbackColumnsComponents={this.props.callbackColumnsComponents} stylesGridUpper={stylesGridUpper} stylesCheckbox={stylesCheckbox} settingsInfo={this.props.settingsInfo}/>

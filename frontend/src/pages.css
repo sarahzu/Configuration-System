@@ -1,0 +1,33 @@
+
+.configuration-text {
+    font-size: large;
+}
+
+.settings-wrapper {
+    background-color: lightblue;
+    border-radius: 10px;
+    margin-top:5px;
+    margin-bottom: 10px;
+}
+
+.configuration-input {
+    font-size: small;
+}
+
+.configuration-button {
+    font-size: small;
+}
+.icon-button {
+    font-size: small;
+}
+
+input[type=checkbox]
+{
+    /* Double-sized Checkboxes */
+    -ms-transform: scale(1.2); /* IE */
+    -moz-transform: scale(1.2); /* FF */
+    -webkit-transform: scale(1.2); /* Safari and Chrome */
+    -o-transform: scale(1.2); /* Opera */
+    transform: scale(1.2);
+    padding: 2px;
+}

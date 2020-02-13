@@ -9,6 +9,7 @@ import axios from "axios";
 import {confirmAlert} from "react-confirm-alert";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faQuestion} from "@fortawesome/free-solid-svg-icons";
+import "../../pages.css"
 require('dotenv').config();
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -100,7 +101,7 @@ class ArrangeComponents extends React.Component {
         }
 
         const infoButton = <div style={{ display: "flex" }}>
-            <button onClick={this.onInfoButtonClicked} style={{ marginLeft: "auto" }}><FontAwesomeIcon icon={faQuestion}/></button>
+            <button className="configuration-button" onClick={this.onInfoButtonClicked} style={{marginLeft: "auto", marginBottom: "10px"}}><FontAwesomeIcon icon={faQuestion}/></button>
         </div>
         return (
             <div>

@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import {faClone, faCog, faTh} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {withRouter} from "react-router";
+import "../../pages.css"
 
 require('dotenv').config();
 
@@ -68,13 +69,15 @@ class Home extends React.Component {
             height:"auto",
             width:"auto",
             margin:"10px",
+            borderRadius: "10px"
         };
         const buttonStyle = {
             height: "auto",
-            width: "110px",
+            width: "120px",
             paddingTop:"10px",
             paddingButton:"10px",
             textAlign: "center",
+            fontSize: "small"
         };
         const fontStyle = {
             height: "50%",
@@ -87,9 +90,9 @@ class Home extends React.Component {
         return (
             <div style={{textAlign:"center"}}>
                 <h1 style={{textAlign:"center"}}>Welcome to the Configuration System of the Post fossil cities project!</h1>
-                <h4 style={{marginTop:"50px", marginBottom:"50px"}}>This website enables you to make configuration to the visual components which are shown during the game session.
+                <h3 style={{marginTop:"50px", marginBottom:"50px"}}>This website enables you to make configuration to the visual components which are shown during the game session.
                     Please follow the following guideline while configuring.
-                </h4>
+                </h3>
                 <Grid container
                       spacing={3}
                       direction="row"
@@ -100,7 +103,7 @@ class Home extends React.Component {
                             <button style={buttonStyle} onClick={this.onDataSourceSettingsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faCog}/><br/>Data Source Settings </button>
                         </Grid>
                         <Grid item xs={12}>
-                            <div style={textStyle}>
+                            <div className="configuration-text" style={textStyle}>
                                 First, set the location of the used visual components in the 'Data Source Settings' page.
                             </div>
                         </Grid>
@@ -110,7 +113,7 @@ class Home extends React.Component {
                             <button style={buttonStyle} onClick={this.onSetComponentsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faClone}/><br/>Set Visual Components </button>
                         </Grid>
                         <Grid item xs={12}>
-                            <div style={textStyle}>
+                            <div className="configuration-text" style={textStyle}>
                                 Then decide which components you want to use and modify their parameters in the 'Set Visual Components' page.
                             </div>
                         </Grid>
@@ -120,7 +123,7 @@ class Home extends React.Component {
                             <button style={buttonStyle} onClick={this.onArrangeComponentsPageClicked}><FontAwesomeIcon style={fontStyle} icon={faTh}/><br/>Arrange Visual Components</button>
                         </Grid>
                         <Grid item xs={12}>
-                            <div style={textStyle}>
+                            <div className="configuration-text" style={textStyle}>
                                 Lastly, in the 'Arrange Visual Components' page, arrange the chosen components on the screen and save your settings.
                             </div>
                         </Grid>

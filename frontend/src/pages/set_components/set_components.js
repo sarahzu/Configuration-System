@@ -9,6 +9,8 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faQuestion} from "@fortawesome/free-solid-svg-icons";
 import {confirmAlert} from "react-confirm-alert";
 import listReactFiles from 'list-react-files'
+import "../../pages.css"
+import Grid from "@material-ui/core/Grid";
 require('dotenv').config();
 const { DropDownEditor } = Editors;
 
@@ -26,6 +28,7 @@ class SetComponents extends React.Component {
 
         this.onInfoButtonClicked = this.onInfoButtonClicked.bind(this);
         this.showMessage = this.showMessage.bind(this);
+        this.onPageChangeButtonClicked = this.onPageChangeButtonClicked.bind(this);
     }
 
     componentDidMount() {
@@ -199,6 +202,11 @@ class SetComponents extends React.Component {
             "and by clicking on the Value row of each parameter, you can edit it's value.");
     }
 
+    onPageChangeButtonClicked() {
+        let path = `/arrange`;
+        this.props.history.push(path);
+    }
+
     render () {
         const info = this.state.info;
 
@@ -211,9 +219,17 @@ class SetComponents extends React.Component {
         return (
             <div>
                 <h1>Set Visual Components</h1>
-                <div style={{ display: "flex" }}>
-                    <button onClick={this.onInfoButtonClicked} style={{ marginLeft: "auto" }}><FontAwesomeIcon icon={faQuestion}/></button>
-                </div>
+                <div>&nbsp;</div>
+                <Grid container spacing={1}>
+                    <Grid item xs={6}>
+                        <button className="configuration-button" onClick={this.onPageChangeButtonClicked}>Go to 'Arrange Visual Components' page</button>
+                    </Grid>
+                    <Grid item xs={6}>
+                        {/*<div style={{ display: "flex" }}>*/}
+                        <button className="configuration-button" onClick={this.onInfoButtonClicked} style={{ marginLeft: "95%", marginBottom: "10px"}}><FontAwesomeIcon icon={faQuestion}/></button>
+                        {/*</div>*/}
+                    </Grid>
+                </Grid>
                 <Settings
                     settingsInfo={this.state.info}
                     dynamicColumnsComponents={this.state.dynamicColumnsComponents}

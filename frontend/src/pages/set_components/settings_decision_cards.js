@@ -4,6 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import Select from "react-select";
 import Checkbox from "./checkbox";
 import './settings_components.css'
+import "../../pages.css"
 
 class SettingsDecisionCards extends React.Component {
 
@@ -624,11 +625,11 @@ class SettingsDecisionCards extends React.Component {
         return (
             <Grid container spacing={3} style={this.props.stylesGridLower} >
                 <Grid item xs={12}>
-                    <h3> Decision Cards Settings </h3>
+                    <h2> Decision Cards Settings </h2>
                 </Grid>
                 <Grid item xs={3}>
                     <div style={this.props.stylesCheckbox}>
-                        <h4>Decision Cards</h4>
+                        <h3>Decision Cards</h3>
                         {/*<CheckboxList
                                        onChange={(values) => this.onCheckboxChange('decision_cards', values)}
                                        values={decisionCards}
@@ -648,8 +649,8 @@ class SettingsDecisionCards extends React.Component {
                 </Grid>
                 <Grid item xs={3}>
                     <div>
-                        <h4>Selected</h4>
-                        <div id="selector-decision-cards">
+                        <h3>Selected</h3>
+                        <div className="configuration-text" id="selector-decision-cards">
                             <Select value={this.state.selectedItemLower} options={ selectedFormattedDcList } maxMenuHeight={180} onChange = {this.getSelectedDcInput}/>
                         </div>
                     </div>

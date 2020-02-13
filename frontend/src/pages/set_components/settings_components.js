@@ -6,6 +6,7 @@ import Checkbox from "./checkbox";
 import "./settings_components.css"
 import {Editors} from "react-data-grid-addons";
 import axios from "axios";
+import "../../pages.css"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faExpandArrowsAlt, faQuestion} from "@fortawesome/free-solid-svg-icons";
 import {confirmAlert} from "react-confirm-alert";
@@ -816,38 +817,26 @@ class SettingsComponents extends React.Component {
         return (
             <Grid container spacing={3}  style={this.props.stylesGridUpper}>
                 <Grid item xs={12}>
-                    <h3>Visual Components Settings </h3>
+                    <h2>Visual Components Settings </h2>
                 </Grid>
                 <Grid item xs={3}>
-                    {/*<h4>Visual Components</h4>
-                                <div style={stylesCheckbox}>
-                                    <div>
-                                    {Object.keys(checkboxComponent).map((value, i) => (
-                                        <div className="checkbox" key={i}>
-                                            <Checkbox
-                                                onChange={(value) => this.onCheckboxChange('vis_components', value)}
-                                                value={value}
-                                            />
-                                        </div>))}
-                                    </div>
-                                </div>*/}
                     <div style={this.props.stylesCheckbox}>
-                        <h4>Visual Components</h4>
-                            <Checkbox
-                                label={"Check / Uncheck All"}
-                                isSelected={this.state.checkboxAllChecked}
-                                onCheckboxChange={this.handleAllChecked}
-                                key={"Check / Uncheck All"}
-                            />
-                            <ul>
-                                {propsComponents}
-                            </ul>
+                        <h3>Visual Components</h3>
+                        <Checkbox
+                            label={"Check / Uncheck All"}
+                            isSelected={this.state.checkboxAllChecked}
+                            onCheckboxChange={this.handleAllChecked}
+                            key={"Check / Uncheck All"}
+                        />
+                        <ul>
+                            {propsComponents}
+                        </ul>
                     </div>
                 </Grid>
                 <Grid item xs={3}>
                     <div>
-                        <h4>Selected</h4>
-                        <div id="selector-visual-components">
+                        <h3>Selected</h3>
+                        <div className="configuration-text" id="selector-visual-components">
                             <Select value={this.state.selectedItemUpper} options={selectedFormattedComponentsList} maxMenuHeight={180} onChange = {this.getSelectedComponentsInput}/>
                         </div>
                     </div>

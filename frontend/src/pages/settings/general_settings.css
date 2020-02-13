@@ -1,0 +1,23 @@
+
+.pull-text {
+    font-size: large;
+}
+
+.normal-text {
+    font-size: large;
+}
+
+.settings-wrapper {
+    background-color: lightblue;
+    border-radius: 10px;
+    margin-top:5px;
+    margin-bottom: 10px;
+}
+
+.input-text {
+    font-size: small;
+}
+
+.button-text {
+    font-size: small;
+}

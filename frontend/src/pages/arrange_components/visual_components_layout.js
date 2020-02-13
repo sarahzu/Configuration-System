@@ -9,6 +9,8 @@ import {ToolBox, ToolBoxItem} from "./toolbox";
 import axios from "axios";
 import {confirmAlert} from "react-confirm-alert";
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import "../../pages.css"
+import Grid from "@material-ui/core/Grid";
 //import { Container, Row, Col } from 'react-grid-system';
 //import PreviewVisualComponents from "./preview_visual_components";
 //import {Link, BrowserRouter as Router, Route, Switch} from "react-router-dom";
@@ -435,7 +437,8 @@ class VisualComponentsLayout extends React.PureComponent {
             borderStyle: "dashed",
             height: "auto",
             width: "auto",
-        };
+            borderRadius: "10px"
+    };
 
         const previewStyle = {
             height: "auto",
@@ -446,7 +449,7 @@ class VisualComponentsLayout extends React.PureComponent {
                 return (
                 <div>
                     <div style={{ display: "flex" }}>
-                        <button className="button" onClick={this.backToArranging} style={{ marginLeft: "auto"}}>
+                        <button className="icon-button" onClick={this.backToArranging} style={{ marginLeft: "auto"}}>
                             <div className="font-awesome">
                                 <FontAwesomeIcon icon={faCompressArrowsAlt}/>
                             </div>
@@ -469,21 +472,32 @@ class VisualComponentsLayout extends React.PureComponent {
             return (
                 <div>
                     <h1>Arrange Visual Components</h1>
-                    {this.props.infoButton}
-                    <button onClick={this.onPageChangeButtonClicked}>Go to 'Set Visual Components' page</button>
-
-                    <div style={{ display: "flex" }}>
-                        <button
-                            className="button"
-                            onClick={this.loadPreview}
-                            style={{ marginLeft: "auto"}}>
-                            <FontAwesomeIcon icon={faExpandArrowsAlt}/>
-                        </button>
-                    </div>
-                    <div style={{ display: "flex" }}>
-                        <button className="button" onClick={this.onFinishClicked} style={{ marginLeft: "auto", marginTop:"20px" }}>Finish</button>
-                    </div>
-
+                    <div>&nbsp;</div>
+                    <Grid container spacing={1}>
+                        <Grid item xs={3} style={{marginTop:"auto", marginBottom:"10px"}}>
+                            <button className="configuration-button" onClick={this.onPageChangeButtonClicked} style={{align:"center"}} >Go to 'Set Visual Components' page</button>
+                        </Grid>
+                        <Grid item xs={9}>
+                            <Grid item xs={12}>
+                                {this.props.infoButton}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <div style={{ display: "flex" }}>
+                                    <button
+                                        className="configuration-button"
+                                        onClick={this.loadPreview}
+                                        style={{marginLeft: "auto", marginBottom: "10px"}}>
+                                        <FontAwesomeIcon icon={faExpandArrowsAlt}/>
+                                    </button>
+                                </div>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <div style={{ display: "flex" }}>
+                                    <button className="configuration-button" onClick={this.onFinishClicked} style={{marginLeft: "auto", marginBottom: "10px"}}>Finish</button>
+                                </div>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                     <ToolBox
                         items={this.state.toolbox[this.state.currentBreakpoint] || []}
                         onTakeItem={this.onTakeItem}

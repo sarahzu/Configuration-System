@@ -6,6 +6,8 @@ import {faCog, faQuestion} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Grid from "@material-ui/core/Grid";
 import {withRouter} from "react-router";
+import "./general_settings.css";
+import "../../pages.css"
 
 require('dotenv').config();
 
@@ -188,30 +190,30 @@ class GeneralSettings extends React.Component {
     render()
         {
             let infoButton =
-                <button onClick={this.onSecondInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>;
+                <button className="configuration-button" onClick={this.onSecondInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>;
 
             let content;
             if (this.state.onLoading && !this.state.pullPressed) {
-                content = <div>Loading...</div>;
+                content = <div className="configuration-text">Loading...</div>;
             }
             else if (!this.state.onLoading && !this.state.pullPressed) {
-                content = <div>
-                    {this.returnStringAccordingToBooleanValue(this.state.pull, "new pull available", "no new pull available")}
-                    <button onClick={this.submitPull} disabled={!this.state.pull} >Pull</button>
+                content = <div className="configuration-text">
+                    {this.returnStringAccordingToBooleanValue(this.state.pull, "new pull available", "no new pull available")} &nbsp;
+                    <button className="configuration-button" onClick={this.submitPull} disabled={!this.state.pull} >Pull</button> &nbsp;
                     {infoButton}
                 </div>;
             }
             else if (!this.state.onLoading && this.state.pullPressed && !this.state.pullSuccess) {
-                content = <div>
-                    {"pulling..."}
-                    <button onClick={this.submitPull} disabled={true} >Pull</button>
+                content = <div className="configuration-text">
+                    {"pulling..."} &nbsp;
+                    <button className="configuration-button" onClick={this.submitPull} disabled={true} >Pull</button> &nbsp;
                     {infoButton}
                 </div>;
             }
             else if (!this.state.onLoading && this.state.pullPressed && this.state.pullSuccess) {
-                content = <div>
-                    {"pulled successfully"}
-                    <button onClick={this.submitPull} disabled={!this.state.pull} >Pull</button>
+                content = <div className="configuration-text">
+                    {"pulled successfully"} &nbsp;
+                    <button className="configuration-button" onClick={this.submitPull} disabled={!this.state.pull} >Pull</button> &nbsp;
                     {infoButton}
                 </div>;
             }
@@ -219,22 +221,29 @@ class GeneralSettings extends React.Component {
             return (
                 <div>
                     <h1>Settings</h1>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                            <button onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Visual Components' page</button>
-                        </Grid>
-                        <Grid item xs={12}>
-                            Visual Components Git Repo:
-                            <input type="text" value={this.state.gitRepoAddress} name="gitRepoAddress"
-                                   onChange={this.handleChange}
-                            />
-                            <button onClick={this.submitGitRepo}>Save</button>
+                    <div>&nbsp;</div>
+                    <button className="configuration-button" style={{marginBottom:"20px"}} onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Visual Components' page</button>
 
-                            <button onClick={this.onFirstInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>
-
-                            {content}
+                    <div className="settings-wrapper">
+                        <Grid item xs={12} container spacing={3} className="settings-wrapper">
+                            {/*<Grid item xs={12}>
+                                <button className="configuration-button" onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Visual Components' page</button>
+                            </Grid>*/}
+                            <Grid item xs={12}>
+                                <div className="configuration-text">
+                                        Visual Components Git Repo: &nbsp;
+                                    <input className="configuration-input" type="text" value={this.state.gitRepoAddress} name="gitRepoAddress"
+                                           onChange={this.handleChange}
+                                    /> &nbsp;
+                                    <button className="configuration-button" onClick={this.submitGitRepo}>Save</button>
+                                    &nbsp;
+                                    <button className="configuration-button" onClick={this.onFirstInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>
+                                </div>
+                                <div> &nbsp; </div>
+                                {content}
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </div>
                 </div>
             );
         }
