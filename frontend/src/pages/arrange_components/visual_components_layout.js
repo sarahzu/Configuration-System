@@ -474,10 +474,10 @@ class VisualComponentsLayout extends React.PureComponent {
                     <h1>Arrange Visual Components</h1>
                     <div>&nbsp;</div>
                     <Grid container spacing={1}>
-                        <Grid item xs={3} style={{marginTop:"auto", marginBottom:"10px"}}>
+                        <Grid item xs={6} style={{marginTop:"auto", marginBottom:"10px"}}>
                             <button className="configuration-button" onClick={this.onPageChangeButtonClicked} style={{align:"center"}} >Go to 'Set Visual Components' page</button>
                         </Grid>
-                        <Grid item xs={9}>
+                        <Grid item xs={6}>
                             <Grid item xs={12}>
                                 {this.props.infoButton}
                             </Grid>

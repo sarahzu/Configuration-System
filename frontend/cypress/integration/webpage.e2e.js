@@ -34,7 +34,7 @@ describe('App E2E', () => {
     cy.contains('Go to \'Set Visual Components\' page').click();
     cy.get('h1').should('have.text', 'Set Visual Components');
     // open and close info box
-    cy.get('button').eq(2).click();
+    cy.get('button').eq(3).click();
     cy.contains('Info Box');
     cy.contains('Ok').click();
     // check all checkboxes
@@ -86,7 +86,7 @@ describe('App E2E', () => {
 
     cy.get('h1').should('have.text', 'Arrange Visual Components');
     // open and close info box
-    cy.get('button').eq(2).click();
+    cy.get('button').eq(3).click();
     cy.contains('Info Box');
     cy.contains('Ok').click();
 

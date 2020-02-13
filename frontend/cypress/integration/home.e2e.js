@@ -10,7 +10,7 @@ describe('App E2E homepage', () => {
         // check header
         cy.get('h1')
             .should('have.text', 'Welcome to the Configuration System of the Post fossil cities project!');
-        cy.get('h4')
+        cy.get('h3')
             .should('have.text', 'This website enables you to make configuration to the visual components which are shown during the game session. Please follow the following guideline while configuring.');
     });
 
