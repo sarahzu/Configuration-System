@@ -1,9 +1,20 @@
 # Configuration-System
-In the scope of my Master's Thesis, I implemented a User Interface Management System (UIMS) used as configuration system for the simulation game of the Post-fossil cities project. It consists of a web-application, a corresponding backend system and a database storage. This system is used as an intermediary system between the gameplay system, a model-processing backend system (called Agents Using System) and a storage of visual components used during game sessions. It enables its users to decide which visual components (plots and similar visualisations) and decision cards (the simulation game's play cards) should be used during the game session. The components can furthermore be modified. Additionally, the user can arrange the visual components on screen and save the whole configuration. 
+In the scope of my Master's Thesis, I implemented a User Interface Management System (UIMS) used as configuration system for the simulation game of the Post-fossil cities project. It consists of:
+* a web-application
+* a corresponding backend system
+* a database storage 
+* a test-case environment simulating all interfaces between the UIMS and other simulation game system subparts.
 
-The UIMS contains flexible interfaces to its connected simulation game system parts. For instance, in order to adapt to newly created or modified visual components, the UIMS lets its users decide which visual components should be loaded into the system. They have the possibility to submit a link to a Github Repository containing visual components via the web-application. The visual components in the Repository only have to contain a predefined ontology docstring structure, in order to function well with the UIMS. The UIMS will then extract all visual components according to the docstring ontology from the Github Repository and use them in the running web-application. This structure only requires the designers of  visual components to focus on the docstring ontology when writing visual components usable with the UIMS. They do not have to worry about integrating the components themselves into the system. This is one example of a flexible interface design of the UIMS. More information can be found in my written Master's thesis. 
+The UIMS is used as an intermediary system between the following gameplay system subparts:
+* the system behind the simulation game's screen, called gameplay system, which presents game relevant information during the game session
+* a model-processing backend system called Agents Using Model (AUM)
+* a storage of visual components (plots and similar visualisations). 
 
-This project uses Python 3.7.6 and React 16.12.0. I worked with mac OS X 10.14.6.
+It enables its users, hereafter called configurators, to decide which visual components should be visualized on the simulation game screen and which play cards should be used during each game session. The components can furthermore be modified by deciding which models form the AUM system they should represent. Additionally, the user can arrange the visual components on screen in order to decide the game screen's layout. The finished configuration data can furthermore be used by the gameplay system in order to visualise the needed information during the game session.
+
+The UIMS contains flexible interfaces to its connected simulation game system subparts. The configuration data of the UIMS is stored as a modifiable JSON structure which allows the gameplay system to easily extract all needed data. The UIMS extracts the available visual components directly from their source code (which is defined outside of the UIMS's code) by using a self-defined ontology, called Visual Component Specification Language (VCSL). The visual components are therefore not hardcoded into the UIMS source code but stored in separate Github Repositories. By providing the link via the web-application, the configurators are able to decide which collection of visual components should be used for the configuration. Therefore, the UIMS does not need to be changed when new visual components are created in the future. Similarly, the UIMS does not use hardcoded data from the AUM system, but only uses location paths which are extracted from the visual components (that define them) by using the VCSL. Thus, the UIMS stays robust to changes even when other data sources are used.
+
+
 
 ## Run Web-Application
 The configuration system is split into frontend, backend and database part. The database is already set up. In order to run the configuration web-application, you need to run a backend and frontend server.
