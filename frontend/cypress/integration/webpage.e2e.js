@@ -468,7 +468,7 @@ describe('App E2E', () => {
                 "enabled": true
               }
             ],
-            "githubRepository": "https://github.com/sarahzu/Visual-Components-Testcase.git"
+            "gitRepository": "https://github.com/sarahzu/Visual-Components-Testcase.git"
           }
         }
       }))

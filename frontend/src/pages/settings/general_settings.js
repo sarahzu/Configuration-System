@@ -63,7 +63,7 @@ class GeneralSettings extends React.Component {
                     //alert('Git Repo was successfully updated');
                     this.message('Success!', 'Git Repo was successfully updated');
                     localStorage.clear();
-                    localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration: {'1':{components:[], decisionCards:[], githubRepository: this.state.gitRepoAddress}}}));
+                    localStorage.setItem("fullComponentsInfo", JSON.stringify({configuration: {'1':{components:[], decisionCards:[], gitRepository: this.state.gitRepoAddress}}}));
 
                 }
                 else {
@@ -169,13 +169,13 @@ class GeneralSettings extends React.Component {
     onFirstInfoButtonClicked() {
         this.showMessage("Info Box",
             "On this page you can decide the source of your visual components. " +
-            "Please store your visual components in a Github Repository and enter the path to it " +
+            "Please store your visual components in a git repository and enter the path to it " +
             "in the input field. Make sure to save your settings, so that you can start making your " +
             "configuration. ");
     }
 
     onSecondInfoButtonClicked() {
-        this.showMessage("Info Box", "If a new pull is available from your already entered Github Repository, " +
+        this.showMessage("Info Box", "If a new pull is available from your already entered git repository, " +
             "the pull button will become enabled. If you wish to update your already entered Git Repo " +
             "to the newest version, click the pull button. However, your unsaved configurations so far will " +
             "get deleted if you do so, so be careful.");
