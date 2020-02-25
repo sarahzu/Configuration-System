@@ -37,9 +37,19 @@ class SettingsComponents extends React.Component {
         if (localStorage.getItem("parametersUpper")) {parameters = JSON.parse(localStorage.getItem("parametersUpper"))}
         else {parameters = {}}
 
-        if (localStorage.getItem("visualComponents")) {
-            visComponents =  JSON.parse(localStorage.getItem("visualComponents"));
-            if (Object.keys(visComponents).length < this.props.settingsInfo.components.length) {
+        try {
+            if (localStorage.getItem("visualComponents")) {
+                visComponents = JSON.parse(localStorage.getItem("visualComponents"));
+                if (Object.keys(visComponents).length < this.props.settingsInfo.components.length) {
+                    visComponents = this.props.settingsInfo.components.reduce(
+                        (options, option) => ({
+                            ...options,
+                            [option]: false
+                        }),
+                        {}
+                    )
+                }
+            } else if (this.props.settingsInfo.components) {
                 visComponents = this.props.settingsInfo.components.reduce(
                     (options, option) => ({
                         ...options,
@@ -47,18 +57,11 @@ class SettingsComponents extends React.Component {
                     }),
                     {}
                 )
+            } else {
+                visComponents = []
             }
         }
-        else if (this.props.settingsInfo.components) {
-            visComponents = this.props.settingsInfo.components.reduce(
-                (options, option) => ({
-                    ...options,
-                    [option]: false
-                }),
-                {}
-            )
-        }
-        else {
+        catch (e) {
             visComponents = []
         }
 
@@ -109,19 +112,22 @@ class SettingsComponents extends React.Component {
     }
 
     componentDidMount() {
-        if (localStorage.getItem("visualComponents")) {
-            let visComps = JSON.parse(localStorage.getItem("visualComponents"));
-            if (Object.keys(visComps).length < this.props.settingsInfo.components.length) {
-                visComps = this.props.settingsInfo.components.reduce(
-                    (options, option) => ({
-                        ...options,
-                        [option]: false
-                    }),
-                    {}
-                )
+        try {
+            if (localStorage.getItem("visualComponents")) {
+                let visComps = JSON.parse(localStorage.getItem("visualComponents"));
+                if (Object.keys(visComps).length < this.props.settingsInfo.components.length) {
+                    visComps = this.props.settingsInfo.components.reduce(
+                        (options, option) => ({
+                            ...options,
+                            [option]: false
+                        }),
+                        {}
+                    )
+                }
+                this.setState({vis_components: visComps});
             }
-            this.setState({vis_components: visComps});
         }
+        catch (e) {}
         if (localStorage.getItem("checkedComponents")) {this.setState({checkedComponents: JSON.parse(localStorage.getItem("checkedComponents"))});}
         if (localStorage.getItem("componentsDataGridRows")) {this.setState({componentsDataGridRows: JSON.parse(localStorage.getItem("componentsDataGridRows"))});}
         //if (localStorage.getItem("issueTypesDataGridComponents")) {this.setState({issueTypesDataGridComponents: JSON.parse(localStorage.getItem("issueTypesDataGridComponents"))});}

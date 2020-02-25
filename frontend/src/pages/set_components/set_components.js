@@ -121,7 +121,10 @@ class SetComponents extends React.Component {
                             "enabled": false,
                             "toolbox": false
                         };
-                        finalOutput.configuration['1'].components.push(currComp);
+                        try {
+                            finalOutput.configuration['1'].components.push(currComp);
+                        }
+                        catch (e) {}
                     });
                     decisionCards.map(v => {
                         let currDc = {
@@ -129,7 +132,10 @@ class SetComponents extends React.Component {
                             "parameter": [],
                             "enabled": false
                         };
-                        finalOutput.configuration['1'].decisionCards.push(currDc);
+                        try {
+                            finalOutput.configuration['1'].decisionCards.push(currDc);
+                        }
+                        catch (e) {}
                     });
                     localStorage.setItem("fullComponentsInfo", JSON.stringify(finalOutput))
                 }
