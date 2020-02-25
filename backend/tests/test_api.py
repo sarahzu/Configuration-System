@@ -133,7 +133,7 @@ class APITest(unittest.TestCase):
     def test_LocalGitRepoPath(self):
         with app.app_context():
             local_git_repo_path = LocalGitRepoPath()
-            self.assertEqual('/../../frontend/src/gitclone', local_git_repo_path.get())
+            self.assertEqual('/../../frontend/src/pages/arrange_components/gitclone', local_git_repo_path.get())
 
     def test_add_output_json_to_database(self):
         with app.app_context():
@@ -609,9 +609,9 @@ class APITest(unittest.TestCase):
         with app.app_context():
             env_string = "LOCAL_TEST_REPO_PATH"
             result = extract_visual_component_and_decision_cards_information_from_git_repo(env_string, self.clone_url)
-            expected_result = {'input': {'components': ['DonutChart'],
+            expected_result = {'input': {'components': ['DonutChart3'],
                                          'componentsParameters': [{'description': 'bla',
-                                                                   'name': 'DonutChart',
+                                                                   'name': 'DonutChart3',
                                                                    'rows': [{'parameter': 'type',
                                                                              'type': 'string',
                                                                              'value': 'gradient'},

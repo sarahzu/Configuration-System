@@ -26,11 +26,11 @@ class ControllerTest(unittest.TestCase):
 
         self.assertEqual(controller.pull_from_remote_repo(), False)
 
-        self.assertEqual(controller.get_file_names(), ["DonutChart"])
+        self.assertEqual(controller.get_file_names(), ["DonutChart3"])
 
         expected_configuration_setting = {
-            "components": ["DonutChart"],
-            "componentsParameters": [{"name": "DonutChart",
+            "components": ["DonutChart3"],
+            "componentsParameters": [{"name": "DonutChart3",
                                       "rows": [{"parameter": "type", "type": "string", "value": "gradient"},
                                                {"parameter": "dataLabelsEnabled", "type": "boolean", "value": "true"}],
                                       "description": "bla"}],

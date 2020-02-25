@@ -26,6 +26,8 @@ class GeneralSettings extends React.Component {
             pullSuccess: false,
             pullPressed: false,
             onLoading: true,
+            hasError: false,
+            submitted: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -47,12 +49,17 @@ class GeneralSettings extends React.Component {
         this.setState({pullSuccess:false})
     }
 
+    componentDidCatch(error, info) {
+        this.setState({ hasError: true });
+    }
+
     handleChange(event) {
         this.setState({gitRepoAddress: event.target.value});
     }
 
     async handleGitRepoChange() {
         //event.preventDefault();
+        this.setState({submitted: true});
         let json_req = {
             gitRepoAddress: this.state.gitRepoAddress
         };
@@ -218,34 +225,45 @@ class GeneralSettings extends React.Component {
                 </div>;
             }
 
-            return (
-                <div>
-                    <h1>Settings</h1>
-                    <div>&nbsp;</div>
-                    <button className="configuration-button" style={{marginBottom:"20px"}} onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Visual Components' page</button>
+            if (this.state.hasError && this.state.submitted) {
+                window.location.reload();
+            }
+            else {
+                return (
+                    <div>
+                        <h1>Settings</h1>
+                        <div>&nbsp;</div>
+                        <button className="configuration-button" style={{marginBottom: "20px"}}
+                                onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Visual Components' page
+                        </button>
 
-                    <div className="settings-wrapper">
-                        <Grid item xs={12} container spacing={3} className="settings-wrapper">
-                            {/*<Grid item xs={12}>
+                        <div className="settings-wrapper">
+                            <Grid item xs={12} container spacing={3} className="settings-wrapper">
+                                {/*<Grid item xs={12}>
                                 <button className="configuration-button" onClick={this.onGoToSetComponentsButtonClicked}>Go to 'Set Visual Components' page</button>
                             </Grid>*/}
-                            <Grid item xs={12}>
-                                <div className="configuration-text">
+                                <Grid item xs={12}>
+                                    <div className="configuration-text">
                                         Visual Components Git Repo: &nbsp;
-                                    <input className="configuration-input" type="text" value={this.state.gitRepoAddress} name="gitRepoAddress"
-                                           onChange={this.handleChange}
-                                    /> &nbsp;
-                                    <button className="configuration-button" onClick={this.submitGitRepo}>Save</button>
-                                    &nbsp;
-                                    <button className="configuration-button" onClick={this.onFirstInfoButtonClicked}><FontAwesomeIcon icon={faQuestion}/></button>
-                                </div>
-                                <div> &nbsp; </div>
-                                {content}
+                                        <input className="configuration-input" type="text"
+                                               value={this.state.gitRepoAddress} name="gitRepoAddress"
+                                               onChange={this.handleChange}
+                                        /> &nbsp;
+                                        <button className="configuration-button" onClick={this.submitGitRepo}>Save
+                                        </button>
+                                        &nbsp;
+                                        <button className="configuration-button"
+                                                onClick={this.onFirstInfoButtonClicked}><FontAwesomeIcon
+                                            icon={faQuestion}/></button>
+                                    </div>
+                                    <div> &nbsp; </div>
+                                    {content}
+                                </Grid>
                             </Grid>
-                        </Grid>
+                        </div>
                     </div>
-                </div>
-            );
+                );
+            }
         }
     }
 

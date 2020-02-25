@@ -11,6 +11,7 @@ import {confirmAlert} from "react-confirm-alert";
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import "../../pages.css"
 import Grid from "@material-ui/core/Grid";
+import Loadable from "react-loadable";
 //import { Container, Row, Col } from 'react-grid-system';
 //import PreviewVisualComponents from "./preview_visual_components";
 //import {Link, BrowserRouter as Router, Route, Switch} from "react-router-dom";
@@ -51,6 +52,7 @@ class VisualComponentsLayout extends React.PureComponent {
             layouts: layout,
             preview: false,
             toolbox: toolbox,
+            importCount: 0
         };
 
         this.onBreakpointChange = this.onBreakpointChange.bind(this);
@@ -195,7 +197,12 @@ class VisualComponentsLayout extends React.PureComponent {
                 //let dynamicProps = {"width":1000, "breakpoint":5000, position:'bottom'};
 
                 if (""+ currentFileName !== "undefined") {
-                    const CurrentComponent = React.lazy(() => import("../../gitclone/" + currentFileName));
+                    //const CurrentComponent = React.lazy(() => import("../../gitclone/" + currentFileName));
+
+                    const CurrentComponent = Loadable({
+                        loader: () => import("./gitclone/" + currentFileName),
+                        loading: Loading //() => <div>Loading...</div>
+                    });
 
                     if (Object.keys(dynamicProps) !== 0) {
 
@@ -216,9 +223,11 @@ class VisualComponentsLayout extends React.PureComponent {
                             <div key={l.i} data-grid={{ w: l.w, h: l.h, x: l.x, y: l.y }}>
                                 {toolboxButton}
                                 <div>
-                                    <Suspense fallback={<div>Loading...</div>}>
+                                    <ErrorBoundary>
+                                        {/*<Suspense fallback={<div>Loading...</div>}>*/}
                                         <CurrentComponent {...dynamicProps}/>
-                                    </Suspense>
+                                        {/*</Suspense>*/}
+                                    </ErrorBoundary>
                                 </div>
                             </div>
                         );
@@ -532,3 +541,40 @@ VisualComponentsLayout.defaultProps = {
 };
 
 export default withRouter(VisualComponentsLayout);
+
+/**
+ * Class taken and modified from https://web.dev/code-splitting-suspense/
+ * last visited: 25.02.2020
+ */
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {hasError: false};
+    }
+
+    static getDerivedStateFromError(error) {
+        return {hasError: true};
+    }
+
+    render() {
+        if (this.state.hasError) {
+            // if statement taken from https://stackoverflow.com/questions/6160415/reload-an-html-page-just-once-using-javascript
+            // last visited 25.02.2020
+            if(window.location.href.substr(-2) !== "?r") {
+                window.location = window.location.href + "?r";
+            }
+            return <p>Loading failed! Please reload.</p>;
+
+        }
+
+        return this.props.children;
+    }
+}
+
+function Loading(props) {
+    if (props.error) {
+        return <div>Error! Please restart frontend server.</div>;
+    } else {
+        return <div>Loading...</div>;
+    }
+}

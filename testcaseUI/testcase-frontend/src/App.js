@@ -197,6 +197,7 @@ class WebPage extends React.Component {
       componentList: null,
       gitRepoAddress: "",
       gitClonedSuccessfully: null,
+      hasError: false,
     };
 
     this.generateVisualComponents = this.generateVisualComponents.bind(this);
@@ -213,6 +214,10 @@ class WebPage extends React.Component {
     this.cloneGitRepo()
   }
 
+  componentDidCatch(error, info) {
+    this.setState({ hasError: true });
+  }
+
   /**
    * Generate HTML code used in render function. Generates all visual components boxes.
    *
@@ -227,111 +232,102 @@ class WebPage extends React.Component {
    * @returns {*} HTML code
    */
   generateVisualComponents(componentsList, componentFilenameList, layouts, currentBreakPoint = this.state.currentBreakpoint) {
+    try {
+      return _.map(layouts[currentBreakPoint], l => {
+        let compIndex = parseInt(l.i, 10);
 
-    return _.map(layouts[currentBreakPoint], l => {
-      let compIndex = parseInt(l.i, 10);
+        try {
+          const currentFileName = componentFilenameList[compIndex];
 
-      try {
-        const currentFileName = componentFilenameList[compIndex];
-
-        // create dynamic props from parameters
-        const visCompParameters = componentsList[compIndex].parameter;
-        const component = componentsList[compIndex];
-        let dynamicProps = {};
-        visCompParameters.map(parameter => {
-          let value = '';
-          let dependent = false;
-          if (parameter.value) {
-            if (parameter.type === 'integer') {
-              value = parseInt(parameter.value, 10)
-            } else if (parameter.type === 'string') {
-              value = parameter.value;
-            } else if (parameter.type === 'boolean') {
-              value = (parameter.value.toLowerCase() === 'true')
-            } else if (parameter.type === 'dictionary') {
-              try {
-                value = JSON.parse(parameter.value)
-              }
-              catch {
-                value = {}
-              }
-            }
-            else if (parameter.type === "dynamic") {
-              if (parseInt(parameter.value, 10)) {
+          // create dynamic props from parameters
+          const visCompParameters = componentsList[compIndex].parameter;
+          const component = componentsList[compIndex];
+          let dynamicProps = {};
+          visCompParameters.map(parameter => {
+            let value = '';
+            let dependent = false;
+            if (parameter.value) {
+              if (parameter.type === 'integer') {
                 value = parseInt(parameter.value, 10)
-              }
-              else if (parameter.value.toLowerCase() === 'true') {
-                value = true
-              }
-              else if (parameter.value.toLowerCase() === 'false') {
-                value = false
-              }
-              else {
-                value = parameter.value
+              } else if (parameter.type === 'string') {
+                value = parameter.value;
+              } else if (parameter.type === 'boolean') {
+                value = (parameter.value.toLowerCase() === 'true')
+              } else if (parameter.type === 'dictionary') {
+                try {
+                  value = JSON.parse(parameter.value)
+                } catch {
+                  value = {}
+                }
+              } else if (parameter.type === "dynamic") {
+                if (parseInt(parameter.value, 10)) {
+                  value = parseInt(parameter.value, 10)
+                } else if (parameter.value.toLowerCase() === 'true') {
+                  value = true
+                } else if (parameter.value.toLowerCase() === 'false') {
+                  value = false
+                } else {
+                  value = parameter.value
+                }
+              } else if (parameter.type === "dependent") {
+                dependent = true;
+                let match = parameter.parameter.match(/(.*?)--(.*?)--(.*)/);
+                const parameterName = match[1];
+                if (parseInt(parameter.value, 10)) {
+                  value = parseInt(parameter.value, 10)
+                } else if (parameter.value.toLowerCase() === 'true') {
+                  value = true
+                } else if (parameter.value.toLowerCase() === 'false') {
+                  value = false
+                } else {
+                  value = parameter.value
+                }
+                dynamicProps[parameterName] = value
+              } else if (parameter.type === 'callback') {
+                value = parameter.value;
               }
             }
-            else if (parameter.type === "dependent") {
-              dependent = true;
-              let match = parameter.parameter.match(/(.*?)--(.*?)--(.*)/);
-              const parameterName = match[1];
-              if (parseInt(parameter.value, 10)) {
-                value = parseInt(parameter.value, 10)
-              }
-              else if (parameter.value.toLowerCase() === 'true') {
-                value = true
-              }
-              else if (parameter.value.toLowerCase() === 'false') {
-                value = false
-              }
-              else {
-                value = parameter.value
-              }
-              dynamicProps[parameterName] = value
+            if (!dependent) {
+              dynamicProps[parameter.parameter] = value;
             }
-            else if (parameter.type === 'callback') {
-              value = parameter.value;
-            }
-          }
-          if (!dependent) {
-            dynamicProps[parameter.parameter] = value;
-          }
-        });
+          });
 
-        if (""+ currentFileName !== "undefined" && component.enabled && !component.toolbox) {
-          const CurrentComponent = React.lazy(() => import("./components/" + currentFileName));
+          if ("" + currentFileName !== "undefined" && component.enabled && !component.toolbox) {
+            const CurrentComponent = React.lazy(() => import("./components/" + currentFileName));
 
-          if (Object.keys(dynamicProps).length !== 0) {
-            return (
-                <div key={l.i} className={"components"}>
-                  <div>
-                    <Suspense fallback={<div>Loading...</div>}>
-                      <CurrentComponent {...dynamicProps}/>
-                    </Suspense>
+            if (Object.keys(dynamicProps).length !== 0) {
+              return (
+                  <div key={l.i} className={"components"}>
+                    <div>
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <CurrentComponent {...dynamicProps}/>
+                      </Suspense>
+                    </div>
                   </div>
-                </div>
-            );
-          }
-          else {
-            return (
-                <div key={l.i} className={"components"}>
-                  <div>
-                    <Suspense fallback={<div>Loading...</div>}>
-                      <CurrentComponent/>
-                    </Suspense>
+              );
+            } else {
+              return (
+                  <div key={l.i} className={"components"}>
+                    <div>
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <CurrentComponent/>
+                      </Suspense>
+                    </div>
                   </div>
-                </div>
-            );
+              );
+            }
+          } else {
+            return (<div><h1>nothing</h1></div>)
           }
+        } catch (e) {
+          return (<div><h1>nothing too</h1></div>)
         }
-        else {
-          return (<div><h1>nothing</h1></div>)
-        }
-      }
-      catch (e) {
-        return (<div><h1>nothing too</h1></div>)
-      }
 
-    });
+      });
+    }
+    catch (e) {
+      window.location.reload();
+    }
   }
 
 
@@ -357,7 +353,7 @@ class WebPage extends React.Component {
         layoutJson.moved = false;
         layoutJson.static = false;
         layout[this.state.currentBreakpoint].push(layoutJson)
-      })
+      });
       return layout
     }
     catch (e) {
@@ -427,8 +423,12 @@ class WebPage extends React.Component {
       return <span>Loading data...</span>
     }
     else {
-      return (
-          <div>
+      if(this.state.hasError) {
+        window.location.reload();
+      }
+      else {
+        return (
+            <div>
               <div style={textStyle}>
                 <h1>Post fossil cities Simulation Game</h1>
               </div>
@@ -445,8 +445,9 @@ class WebPage extends React.Component {
                   {this.generateVisualComponents(this.state.componentList, this.state.componentFilenameList, this.state.layouts)}
                 </ResponsiveReactGridLayout>
               </div>
-          </div>
-      );
+            </div>
+        );
+      }
     }
   }
 }

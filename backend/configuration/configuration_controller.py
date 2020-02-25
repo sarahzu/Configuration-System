@@ -66,7 +66,6 @@ class Controller:
         except Exception:
             self.git_repo_created = False
 
-
     # def get_components(self):
     #     json_request = {
     #         "latitude": 0.0000,
