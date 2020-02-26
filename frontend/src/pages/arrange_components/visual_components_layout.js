@@ -573,6 +573,11 @@ class ErrorBoundary extends React.Component {
 
 function Loading(props) {
     if (props.error) {
+        // if statement taken from https://stackoverflow.com/questions/6160415/reload-an-html-page-just-once-using-javascript
+        // last visited 25.02.2020
+        if(window.location.href.substr(-2) !== "?r") {
+            window.location = window.location.href + "?r";
+        }
         return <div>Error! Please restart frontend server.</div>;
     } else {
         return <div>Loading...</div>;
