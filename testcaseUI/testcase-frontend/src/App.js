@@ -1,14 +1,17 @@
 import React, {Suspense} from "react";
 import _ from "lodash";
-import { Responsive, WidthProvider } from "react-grid-layout";
+//import { Responsive, WidthProvider } from "react-grid-layout";
+import RGL, { WidthProvider } from "react-grid-layout";
 import "./App.css"
 import axios from "axios";
+import Loadable from "react-loadable";
 
 import {useDispatch} from "react-redux";
 import {updateCarbonEmissionArea, updateCarbonGauge, updateGenericRolls, updateGenericValue, updateGenericTimeseries, updateRollspecificGoals} from "./actions";
 
 
-const ResponsiveReactGridLayout = WidthProvider(Responsive);
+// const ResponsiveReactGridLayout = WidthProvider(Responsive);
+const ResponsiveReactGridLayout = WidthProvider(RGL);
 
 require('dotenv').config();
 
@@ -293,25 +296,35 @@ class WebPage extends React.Component {
           });
 
           if ("" + currentFileName !== "undefined" && component.enabled && !component.toolbox) {
-            const CurrentComponent = React.lazy(() => import("./components/" + currentFileName));
+            //const CurrentComponent = React.lazy(() => import("./components/" + currentFileName));
+            const CurrentComponent = Loadable({
+              loader: () => import("./components/" + currentFileName),
+              loading: Loading //() => <div>Loading...</div>
+            });
 
             if (Object.keys(dynamicProps).length !== 0) {
               return (
-                  <div key={l.i} className={"components"}>
+                  //<div key={l.i} className={"components"}>
+                  <div key={l.i} data-grid={{ w: l.w, h: l.h, x: l.x, y: l.y }}>
                     <div>
-                      <Suspense fallback={<div>Loading...</div>}>
+                      <ErrorBoundary>
+                      {/*<Suspense fallback={<div>Loading...</div>}>*/}
                         <CurrentComponent {...dynamicProps}/>
-                      </Suspense>
+                      {/*</Suspense>*/}
+                      </ErrorBoundary>
                     </div>
                   </div>
               );
             } else {
               return (
-                  <div key={l.i} className={"components"}>
+                  //<div key={l.i} className={"components"}>
+                  <div key={l.i} data-grid={{ w: l.w, h: l.h, x: l.x, y: l.y }}>
                     <div>
-                      <Suspense fallback={<div>Loading...</div>}>
+                      <ErrorBoundary>
+                      {/*<Suspense fallback={<div>Loading...</div>}>*/}
                         <CurrentComponent/>
-                      </Suspense>
+                      {/*</Suspense>*/}
+                      </ErrorBoundary>
                     </div>
                   </div>
               );
@@ -326,7 +339,12 @@ class WebPage extends React.Component {
       });
     }
     catch (e) {
-      window.location.reload();
+      // if statement taken from https://stackoverflow.com/questions/6160415/reload-an-html-page-just-once-using-javascript
+      // last visited 25.02.2020
+      if(window.location.href.substr(-2) !== "?r") {
+        window.location = window.location.href + "?r";
+      }
+      //window.location.reload();
     }
   }
 
@@ -424,7 +442,12 @@ class WebPage extends React.Component {
     }
     else {
       if(this.state.hasError) {
-        window.location.reload();
+        // if statement taken from https://stackoverflow.com/questions/6160415/reload-an-html-page-just-once-using-javascript
+        // last visited 25.02.2020
+        if(window.location.href.substr(-2) !== "?r") {
+          window.location = window.location.href + "?r";
+        }
+        //window.location.reload();
       }
       else {
         return (
@@ -452,11 +475,49 @@ class WebPage extends React.Component {
   }
 }
 
+/**
+ * Class taken and modified from https://web.dev/code-splitting-suspense/
+ * last visited: 25.02.2020
+ */
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {hasError: false};
+  }
+
+  static getDerivedStateFromError(error) {
+    return {hasError: true};
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // if statement taken from https://stackoverflow.com/questions/6160415/reload-an-html-page-just-once-using-javascript
+      // last visited 25.02.2020
+      if(window.location.href.substr(-2) !== "?r") {
+        window.location = window.location.href + "?r";
+      }
+      return <p>Loading failed! Please reload.</p>;
+
+    }
+
+    return this.props.children;
+  }
+}
+
+function Loading(props) {
+  if (props.error) {
+    return <div>Error! Please restart frontend server.</div>;
+  } else {
+    return <div>Loading...</div>;
+  }
+}
+
 WebPage.defaultProps = {
   className: "layout",
   rowHeight: 30,
   onLayoutChange: function() {},
-  cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+  //cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+  cols: 12,
   verticalCompact: false,
 };
 
