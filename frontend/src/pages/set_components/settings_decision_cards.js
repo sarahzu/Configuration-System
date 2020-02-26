@@ -36,9 +36,19 @@ class SettingsDecisionCards extends React.Component {
         if (localStorage.getItem("currentParametersDc")) {currentParametersDc = JSON.parse(localStorage.getItem("currentParametersDc"))}
         else {currentParametersDc = []}
 
-        if (localStorage.getItem("decisionCards")) {
-            decisionCards =  JSON.parse(localStorage.getItem("decisionCards"));
-            if (Object.keys(decisionCards).length < this.props.settingsInfo.decisionCards.length) {
+        try {
+            if (localStorage.getItem("decisionCards")) {
+                decisionCards = JSON.parse(localStorage.getItem("decisionCards"));
+                if (Object.keys(decisionCards).length < this.props.settingsInfo.decisionCards.length) {
+                    decisionCards = this.props.settingsInfo.decisionCards.reduce(
+                        (options, option) => ({
+                            ...options,
+                            [option]: false
+                        }),
+                        {}
+                    )
+                }
+            } else if (this.props.settingsInfo.decisionCards) {
                 decisionCards = this.props.settingsInfo.decisionCards.reduce(
                     (options, option) => ({
                         ...options,
@@ -46,18 +56,11 @@ class SettingsDecisionCards extends React.Component {
                     }),
                     {}
                 )
+            } else {
+                decisionCards = []
             }
         }
-        else if (this.props.settingsInfo.decisionCards) {
-            decisionCards = this.props.settingsInfo.decisionCards.reduce(
-                (options, option) => ({
-                    ...options,
-                    [option]: false
-                }),
-                {}
-            )
-        }
-        else {
+        catch (e) {
             decisionCards = []
         }
 
@@ -107,19 +110,22 @@ class SettingsDecisionCards extends React.Component {
     }
 
     componentDidMount() {
-        if (localStorage.getItem("decisionCards")) {
-            let dcs = JSON.parse(localStorage.getItem("decisionCards"));
-            if (Object.keys(dcs).length < this.props.settingsInfo.decisionCards.length) {
-                dcs = this.props.settingsInfo.decisionCards.reduce(
-                    (options, option) => ({
-                        ...options,
-                        [option]: false
-                    }),
-                    {}
-                )
+        try {
+            if (localStorage.getItem("decisionCards")) {
+                let dcs = JSON.parse(localStorage.getItem("decisionCards"));
+                if (Object.keys(dcs).length < this.props.settingsInfo.decisionCards.length) {
+                    dcs = this.props.settingsInfo.decisionCards.reduce(
+                        (options, option) => ({
+                            ...options,
+                            [option]: false
+                        }),
+                        {}
+                    )
+                }
+                this.setState({decision_cards: dcs});
             }
-            this.setState({decision_cards: dcs});
         }
+        catch (e) {}
         if (localStorage.getItem("dcDataGridColumns")) {this.setState({dcDataGridColumns: JSON.parse(localStorage.getItem("dcDataGridColumns"))});}
         if (localStorage.getItem("dcDataGridRows")) {this.setState({dcDataGridRows: JSON.parse(localStorage.getItem("dcDataGridRows"))});}
         if (localStorage.getItem("checkedDecisionCards")) {this.setState({checkedDc: JSON.parse(localStorage.getItem("checkedDecisionCards"))});}
