@@ -16,7 +16,7 @@ const ResponsiveReactGridLayout = WidthProvider(RGL);
 require('dotenv').config();
 
 /**
- * Fill redux storage with dummy data by using the predefined actions.
+ * Fill redux storage with dummy data by using the predefined actions. Function content partially taken from Patrick Zurmühle's project: https://github.com/kavengo/post_fossil_cities_visualizations
  *
  * This function is temporarily implemented. When the storage is filled with data form the AUM system
  * this function is no longer needed
@@ -136,7 +136,7 @@ function AddActionsToRedux () {
 }
 
 /**
- * function taken from Patrick Zurmühle's project (DataGenerator.js)
+ * function taken from Patrick Zurmühle's project (DataGenerator.js): https://github.com/kavengo/post_fossil_cities_visualizations
  *
  * generateData
  * ------------

@@ -1,4 +1,4 @@
-// File taken from Patrick Zurmühle's project
+// File taken from Patrick Zurmühle's project: https://github.com/kavengo/post_fossil_cities_visualizations
 
 let initialState = {};
 
