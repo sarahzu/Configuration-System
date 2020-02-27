@@ -82,7 +82,7 @@ python -m backend.tests.model_test
 python -m backend.tests.test_api
 ```
 
-  6. To run frontend cypress end-to-end tests (API server in backend (step 1) needs to run during testing):
+  6. To run frontend cypress end-to-end tests (API server in backend (step 1) and frontend server (step 2) needs to run during testing):
 ```
 cd ~/Configuration-System
 python -m backend.configuration.configuration_api
