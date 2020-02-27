@@ -563,10 +563,10 @@ class ErrorBoundary extends React.Component {
             if(window.location.href.substr(-2) !== "?r") {
                 window.location = window.location.href + "?r";
             }
-            return <p>Loading failed! Please reload.</p>;
-
+            else {
+                return <p>Loading failed! Please reload.</p>;
+            }
         }
-
         return this.props.children;
     }
 }
@@ -578,7 +578,9 @@ function Loading(props) {
         if(window.location.href.substr(-2) !== "?r") {
             window.location = window.location.href + "?r";
         }
-        return <div>Error! Please restart frontend server.</div>;
+        else {
+            return <div>Something went wrong! Please restart frontend server.</div>;
+        }
     } else {
         return <div>Loading...</div>;
     }

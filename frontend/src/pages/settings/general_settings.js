@@ -57,8 +57,11 @@ class GeneralSettings extends React.Component {
         this.setState({gitRepoAddress: event.target.value});
     }
 
-    async handleGitRepoChange() {
-        //event.preventDefault();
+    async handleGitRepoChange(event) {
+        try {
+            event.preventDefault();
+        }
+        catch (e) {}
         this.setState({submitted: true});
         let json_req = {
             gitRepoAddress: this.state.gitRepoAddress
