@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/242994821.svg)](https://zenodo.org/badge/latestdoi/242994821)
+
 # Configuration-System
 ## Introduction
 In the scope of my Master's Thesis, I implemented a User Interface Management System (UIMS) used as configuration system for the simulation game of the Post-fossil cities project. It consists of:
