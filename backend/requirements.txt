@@ -2,7 +2,7 @@ Flask_RESTful==0.3.7
 Flask==1.0.2
 Werkzeug==0.16.0
 pandas==0.23.3
-Flask_Cors==3.0.8
+Flask_Cors==3.0.9
 Click==7.0
 GitPython==3.0.9
 python-dotenv==0.10.3
